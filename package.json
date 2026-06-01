@@ -18,13 +18,9 @@
     "@vitejs/plugin-react": "latest",
     "date-fns": "latest",
     "dexie": "latest",
-    "framework7": "^9.0.5",
-    "framework7-icons": "^5.0.5",
-    "framework7-react": "^9.0.5",
-    "material-icons": "^1.13.14",
+    "vite-plugin-pwa": "latest",
     "react": "latest",
-    "react-dom": "latest",
-    "vite-plugin-pwa": "latest"
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@eslint/js": "latest",
