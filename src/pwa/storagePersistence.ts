@@ -9,16 +9,25 @@ export async function getStoragePersistenceStatus(): Promise<StoragePersistenceS
   const storage = navigator.storage;
 
   if (!storage) {
-    return { supported: false, persisted: false, quota: null, usage: null };
+    return {
+      supported: false,
+      persisted: false,
+      quota: null,
+      usage: null,
+    };
   }
 
+  const persistSupported =
+    typeof (storage as Partial<StorageManager>).persist === "function" &&
+    typeof (storage as Partial<StorageManager>).persisted === "function";
+
   const [persisted, estimate] = await Promise.all([
-    storage.persisted ? storage.persisted() : Promise.resolve(false),
+    persistSupported ? storage.persisted() : Promise.resolve(false),
     storage.estimate ? storage.estimate() : Promise.resolve(null),
   ]);
 
   return {
-    supported: Boolean(storage.persist && storage.persisted),
+    supported: persistSupported,
     persisted,
     quota: estimate?.quota ?? null,
     usage: estimate?.usage ?? null,
@@ -28,11 +37,20 @@ export async function getStoragePersistenceStatus(): Promise<StoragePersistenceS
 export async function requestPersistentStorage(): Promise<StoragePersistenceStatus> {
   const storage = navigator.storage;
 
-  if (!storage?.persist || !storage.persisted) {
+  if (!storage) {
+    return getStoragePersistenceStatus();
+  }
+
+  const persistSupported =
+    typeof (storage as Partial<StorageManager>).persist === "function" &&
+    typeof (storage as Partial<StorageManager>).persisted === "function";
+
+  if (!persistSupported) {
     return getStoragePersistenceStatus();
   }
 
   const alreadyPersisted = await storage.persisted();
+
   if (!alreadyPersisted) {
     await storage.persist();
   }
