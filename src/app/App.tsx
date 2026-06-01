@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { AddWeightForm } from "../components/AddWeightForm";
-import { BackupPanel } from "../components/BackupPanel";
-import { StorageStatusCard } from "../components/StorageStatusCard";
-import { WeightList } from "../components/WeightList";
+import { BottomNav } from "../components/BottomNav";
 import { deleteWeightEntry, listWeightEntries, upsertWeightEntry } from "../db/weightEntries";
 import { downloadTextFile } from "../export/downloadFile";
 import { createCsv } from "../export/exportCsv";
@@ -10,14 +7,15 @@ import { createJsonBackup } from "../export/exportJson";
 import { createMarkdown } from "../export/exportMarkdown";
 import { createTxt } from "../export/exportTxt";
 import { importJsonBackupText } from "../export/importJson";
+import { HomePage } from "../pages/HomePage";
+import { MorePage } from "../pages/MorePage";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import type { WeightEntry, WeightUnit } from "../types/weight";
-
-type Page = "home" | "more";
+import type { PageId } from "./pages";
 
 export function App() {
-  const [page, setPage] = useState<Page>("home");
+  const [page, setPage] = useState<PageId>("home");
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
   const [message, setMessage] = useState<string>("");
@@ -69,43 +67,24 @@ export function App() {
         {message ? <p className="notice">{message}</p> : null}
 
         {page === "home" ? (
-          <>
-            {status && !status.persisted ? (
-              <section className="warning storage-warning">
-                <div>
-                  <strong>Persistent storage is not active.</strong>
-                  <p>Export JSON backups before changing device, deleting the app, or clearing website data.</p>
-                </div>
-                {status.supported ? <button type="button" onClick={handleRequestPersistentStorage}>Enable</button> : null}
-              </section>
-            ) : null}
-            <AddWeightForm onSave={handleSave} />
-            <WeightList entries={entries} onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }} />
-          </>
+          <HomePage
+            entries={entries}
+            status={status}
+            onSave={handleSave}
+            onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
+            onRequestPersistentStorage={handleRequestPersistentStorage}
+          />
         ) : (
-          <>
-            <header className="page-header">
-              <h1>More</h1>
-            </header>
-            <StorageStatusCard standalone={standalone} status={status} onRequest={handleRequestPersistentStorage} />
-            <BackupPanel
-              onExportJson={() => exportWith("json")}
-              onExportCsv={() => exportWith("csv")}
-              onExportMarkdown={() => exportWith("md")}
-              onExportTxt={() => exportWith("txt")}
-              onImportJson={handleImport}
-            />
-          </>
+          <MorePage
+            standalone={standalone}
+            status={status}
+            onRequestPersistentStorage={handleRequestPersistentStorage}
+            onExport={exportWith}
+            onImportJson={handleImport}
+          />
         )}
       </main>
-      <nav className="bottom-nav" aria-label="Primary navigation">
-        <button type="button" className={page === "home" ? "active" : ""} aria-pressed={page === "home"} onClick={() => setPage("home")}>
-          Home
-        </button>
-        <button type="button" className={page === "more" ? "active" : ""} aria-pressed={page === "more"} onClick={() => setPage("more")}>
-          More
-        </button>
-      </nav>
+      <BottomNav activePage={page} onNavigate={setPage} />
     </>
   );
 }
