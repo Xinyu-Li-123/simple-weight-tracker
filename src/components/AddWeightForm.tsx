@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { WeightUnit } from "../types/weight";
 
 function today() {
@@ -7,14 +7,25 @@ function today() {
 
 type Props = {
   onSave: (input: { date: string; weight: number; unit: WeightUnit; note?: string }) => Promise<void>;
+  autoFocusWeight?: boolean;
+  selectWeightOnMount?: boolean;
 };
 
-export function AddWeightForm({ onSave }: Props) {
+export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnMount = false }: Props) {
   const [date, setDate] = useState(today());
   const [weight, setWeight] = useState("");
   const [unit, setUnit] = useState<WeightUnit>("kg");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const weightInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!autoFocusWeight) return;
+    const input = weightInputRef.current;
+    if (!input) return;
+    input.focus();
+    if (selectWeightOnMount) input.select();
+  }, [autoFocusWeight, selectWeightOnMount]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -39,7 +50,14 @@ export function AddWeightForm({ onSave }: Props) {
       </label>
       <label>
         Weight
-        <input inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} placeholder="68.4" required />
+        <input
+          ref={weightInputRef}
+          inputMode="decimal"
+          value={weight}
+          onChange={(event) => setWeight(event.target.value)}
+          placeholder="68.4"
+          required
+        />
       </label>
       <label>
         Unit

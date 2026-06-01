@@ -1,14 +1,35 @@
-import { navigationItems, type PageId } from "../app/pages";
+import { recordAction, navigationItems, type PageId } from "../app/pages";
 
 type Props = {
   activePage: PageId;
   onNavigate: (page: PageId) => void;
+  onRecord: () => void;
 };
 
-export function BottomNav({ activePage, onNavigate }: Props) {
+export function BottomNav({ activePage, onNavigate, onRecord }: Props) {
+  const RecordIcon = recordAction.icon;
+
   return (
     <nav className="bottom-nav" aria-label="Primary navigation">
-      {navigationItems.map((item) => (
+      {navigationItems.slice(0, 1).map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          className={activePage === item.id ? "active" : ""}
+          aria-pressed={activePage === item.id}
+          onClick={() => onNavigate(item.id)}
+        >
+          <item.icon className="bottom-nav__icon" aria-hidden="true" strokeWidth={2.2} />
+          <span className="bottom-nav__label">{item.label}</span>
+        </button>
+      ))}
+      <button type="button" className="bottom-nav__action" onClick={onRecord} aria-label="Open record form">
+        <span className="bottom-nav__action-badge">
+          <RecordIcon className="bottom-nav__icon bottom-nav__icon--action" aria-hidden="true" strokeWidth={2.4} />
+        </span>
+        <span className="bottom-nav__label">{recordAction.label}</span>
+      </button>
+      {navigationItems.slice(1).map((item) => (
         <button
           key={item.id}
           type="button"

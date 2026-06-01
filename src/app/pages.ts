@@ -1,6 +1,6 @@
 import { Ellipsis, House, SquarePen, type LucideIcon } from "lucide-react";
 
-export type PageId = "home" | "record" | "more";
+export type PageId = "home" | "more";
 
 export type NavigationItem = {
   id: PageId;
@@ -10,6 +10,10 @@ export type NavigationItem = {
 
 export const navigationItems: NavigationItem[] = [
   { id: "home", label: "Home", icon: House },
-  { id: "record", label: "Record", icon: SquarePen },
   { id: "more", label: "More", icon: Ellipsis },
 ];
+
+export const recordAction = {
+  label: "Record",
+  icon: SquarePen,
+};

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BottomNav } from "../components/BottomNav";
+import { RecordSheet } from "../components/RecordSheet";
 import { deleteWeightEntry, listWeightEntries, upsertWeightEntry } from "../db/weightEntries";
 import { downloadTextFile } from "../export/downloadFile";
 import { createCsv } from "../export/exportCsv";
@@ -9,7 +10,6 @@ import { createTxt } from "../export/exportTxt";
 import { importJsonBackupText } from "../export/importJson";
 import { HomePage } from "../pages/HomePage";
 import { MorePage } from "../pages/MorePage";
-import { RecordPage } from "../pages/RecordPage";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import type { WeightEntry, WeightUnit } from "../types/weight";
@@ -17,6 +17,7 @@ import type { PageId } from "./pages";
 
 export function App() {
   const [page, setPage] = useState<PageId>("home");
+  const [recordOpen, setRecordOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
   const [message, setMessage] = useState<string>("");
@@ -35,11 +36,32 @@ export function App() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!recordOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setRecordOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [recordOpen]);
+
   async function handleSave(input: { date: string; weight: number; unit: WeightUnit; note?: string }) {
     await upsertWeightEntry(input);
     setStatus(await requestPersistentStorage());
     await refresh();
     setMessage("Saved locally.");
+    setRecordOpen(false);
   }
 
   async function exportWith(kind: "json" | "csv" | "md" | "txt") {
@@ -74,8 +96,6 @@ export function App() {
             onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
             onRequestPersistentStorage={handleRequestPersistentStorage}
           />
-        ) : page === "record" ? (
-          <RecordPage onSave={handleSave} />
         ) : (
           <MorePage
             standalone={standalone}
@@ -86,7 +106,8 @@ export function App() {
           />
         )}
       </main>
-      <BottomNav activePage={page} onNavigate={setPage} />
+      <BottomNav activePage={page} onNavigate={setPage} onRecord={() => setRecordOpen(true)} />
+      <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} onSave={handleSave} />
     </>
   );
 }
