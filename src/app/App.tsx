@@ -14,9 +14,10 @@ import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import type { WeightEntry, WeightUnit } from "../types/weight";
 
-const appVersion = "0.1.0";
+type Page = "home" | "more";
 
 export function App() {
+  const [page, setPage] = useState<Page>("home");
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
   const [message, setMessage] = useState<string>("");
@@ -29,7 +30,10 @@ export function App() {
   }
 
   useEffect(() => {
-    void refresh();
+    void Promise.all([listWeightEntries(), getStoragePersistenceStatus()]).then(([nextEntries, nextStatus]) => {
+      setEntries(nextEntries);
+      setStatus(nextStatus);
+    });
   }, []);
 
   async function handleSave(input: { date: string; weight: number; unit: WeightUnit; note?: string }) {
@@ -55,29 +59,53 @@ export function App() {
     setMessage(`Imported ${count} entries.`);
   }
 
+  async function handleRequestPersistentStorage() {
+    setStatus(await requestPersistentStorage());
+  }
+
   return (
-    <main className="shell">
-      <header className="hero">
-        <div>
-          <p className="eyebrow">Offline-first PWA</p>
-          <h1>Simple Weight Tracker</h1>
-          <p>Private local weight tracking with manual backups.</p>
-        </div>
-        <span className="version">v{appVersion}</span>
-      </header>
+    <>
+      <main className="shell">
+        {message ? <p className="notice">{message}</p> : null}
 
-      {message ? <p className="notice">{message}</p> : null}
-
-      <AddWeightForm onSave={handleSave} />
-      <WeightList entries={entries} onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }} />
-      <StorageStatusCard standalone={standalone} status={status} onRequest={async () => setStatus(await requestPersistentStorage())} />
-      <BackupPanel
-        onExportJson={() => exportWith("json")}
-        onExportCsv={() => exportWith("csv")}
-        onExportMarkdown={() => exportWith("md")}
-        onExportTxt={() => exportWith("txt")}
-        onImportJson={handleImport}
-      />
-    </main>
+        {page === "home" ? (
+          <>
+            {status && !status.persisted ? (
+              <section className="warning storage-warning">
+                <div>
+                  <strong>Persistent storage is not active.</strong>
+                  <p>Export JSON backups before changing device, deleting the app, or clearing website data.</p>
+                </div>
+                {status.supported ? <button type="button" onClick={handleRequestPersistentStorage}>Enable</button> : null}
+              </section>
+            ) : null}
+            <AddWeightForm onSave={handleSave} />
+            <WeightList entries={entries} onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }} />
+          </>
+        ) : (
+          <>
+            <header className="page-header">
+              <h1>More</h1>
+            </header>
+            <StorageStatusCard standalone={standalone} status={status} onRequest={handleRequestPersistentStorage} />
+            <BackupPanel
+              onExportJson={() => exportWith("json")}
+              onExportCsv={() => exportWith("csv")}
+              onExportMarkdown={() => exportWith("md")}
+              onExportTxt={() => exportWith("txt")}
+              onImportJson={handleImport}
+            />
+          </>
+        )}
+      </main>
+      <nav className="bottom-nav" aria-label="Primary navigation">
+        <button type="button" className={page === "home" ? "active" : ""} aria-pressed={page === "home"} onClick={() => setPage("home")}>
+          Home
+        </button>
+        <button type="button" className={page === "more" ? "active" : ""} aria-pressed={page === "more"} onClick={() => setPage("more")}>
+          More
+        </button>
+      </nav>
+    </>
   );
 }
