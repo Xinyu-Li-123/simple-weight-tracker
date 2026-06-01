@@ -16,7 +16,8 @@ export function BottomNav({ activePage, onNavigate }: Props) {
           aria-pressed={activePage === item.id}
           onClick={() => onNavigate(item.id)}
         >
-          {item.label}
+          <item.icon className="bottom-nav__icon" aria-hidden="true" strokeWidth={2.2} />
+          <span className="bottom-nav__label">{item.label}</span>
         </button>
       ))}
     </nav>

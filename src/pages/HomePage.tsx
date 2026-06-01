@@ -1,17 +1,15 @@
-import { AddWeightForm } from "../components/AddWeightForm";
 import { WeightList } from "../components/WeightList";
 import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
-import type { WeightEntry, WeightUnit } from "../types/weight";
+import type { WeightEntry } from "../types/weight";
 
 type Props = {
   entries: WeightEntry[];
   status: StoragePersistenceStatus | null;
-  onSave: (input: { date: string; weight: number; unit: WeightUnit; note?: string }) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onRequestPersistentStorage: () => Promise<void>;
 };
 
-export function HomePage({ entries, status, onSave, onDelete, onRequestPersistentStorage }: Props) {
+export function HomePage({ entries, status, onDelete, onRequestPersistentStorage }: Props) {
   return (
     <>
       {status && !status.persisted ? (
@@ -23,7 +21,10 @@ export function HomePage({ entries, status, onSave, onDelete, onRequestPersisten
           {status.supported ? <button type="button" onClick={onRequestPersistentStorage}>Enable</button> : null}
         </section>
       ) : null}
-      <AddWeightForm onSave={onSave} />
+      <section className="card summary-placeholder">
+        <h2>Summary</h2>
+        <p className="muted">Visualization placeholder. A chart or trend summary will live here in a later slice.</p>
+      </section>
       <WeightList entries={entries} onDelete={onDelete} />
     </>
   );

@@ -18,6 +18,7 @@
     "@vitejs/plugin-react": "latest",
     "date-fns": "latest",
     "dexie": "latest",
+    "lucide-react": "latest",
     "vite-plugin-pwa": "latest",
     "react": "latest",
     "react-dom": "latest"

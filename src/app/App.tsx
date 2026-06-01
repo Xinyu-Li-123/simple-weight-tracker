@@ -9,6 +9,7 @@ import { createTxt } from "../export/exportTxt";
 import { importJsonBackupText } from "../export/importJson";
 import { HomePage } from "../pages/HomePage";
 import { MorePage } from "../pages/MorePage";
+import { RecordPage } from "../pages/RecordPage";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import type { WeightEntry, WeightUnit } from "../types/weight";
@@ -70,10 +71,11 @@ export function App() {
           <HomePage
             entries={entries}
             status={status}
-            onSave={handleSave}
             onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
             onRequestPersistentStorage={handleRequestPersistentStorage}
           />
+        ) : page === "record" ? (
+          <RecordPage onSave={handleSave} />
         ) : (
           <MorePage
             standalone={standalone}
