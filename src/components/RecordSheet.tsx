@@ -1,11 +1,10 @@
 import { X } from "lucide-react";
 import { AddWeightForm } from "./AddWeightForm";
-import type { WeightUnit } from "../types/weight";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSave: (input: { date: string; weight: number; unit: WeightUnit; note?: string }) => Promise<void>;
+  onSave: (input: { date: string; weight: number; note?: string }) => Promise<void>;
 };
 
 export function RecordSheet({ open, onClose, onSave }: Props) {
@@ -20,7 +19,6 @@ export function RecordSheet({ open, onClose, onSave }: Props) {
         role="dialog"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="sheet__handle" aria-hidden="true" />
         <div className="sheet__header">
           <h1 id="record-sheet-title">Record</h1>
           <button type="button" className="sheet__close" onClick={onClose} aria-label="Close record form">

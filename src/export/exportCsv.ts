@@ -7,11 +7,10 @@ function escapeCsv(value: string | number | undefined): string {
 }
 
 export function createCsv(entries: WeightEntry[]): string {
-  const header = ["date", "weight", "unit", "note", "createdAt", "updatedAt"];
+  const header = ["date", "weightKg", "note", "createdAt", "updatedAt"];
   const rows = entries.map((entry) => [
     entry.date,
     entry.weight,
-    entry.unit,
     entry.note,
     entry.createdAt,
     entry.updatedAt,

@@ -7,7 +7,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button {
   border: 0;
   border-radius: 14px;
@@ -18,12 +18,16 @@ button {
 }
 button.secondary { background: #31526b; }
 button.ghost { background: transparent; color: #31526b; padding: 0.4rem 0.5rem; }
-input, select {
+input, select, textarea {
   width: 100%;
   border: 1px solid #d8dee6;
   border-radius: 12px;
   padding: 0.8rem;
   background: white;
+}
+textarea {
+  resize: vertical;
+  min-height: 7.2rem;
 }
 label { display: grid; gap: 0.35rem; font-weight: 700; }
 .shell { width: min(760px, 100%); margin: 0 auto; padding: 0.5rem 1rem 7rem; }
@@ -33,6 +37,20 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 .card h2 { margin-top: 0; }
 .form { display: grid; gap: 0.9rem; }
 .summary-placeholder p { margin: 0; }
+.testing-panel__section h3 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+}
+.testing-panel__actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+.testing-panel__button {
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+}
 .entry-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
 .entry-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 16px; background: #f8fafc; }
 .entry-list div { display: grid; gap: 0.15rem; }
@@ -44,8 +62,91 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 .storage-warning { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0.5rem 0 1rem; }
 .storage-warning p { margin: 0.25rem 0 0; }
 .storage-warning button { flex: none; background: #5d4b00; }
-.notice { background: #e9f8ef; border: 1px solid #b9e7c7; color: #214d2f; border-radius: 16px; padding: 0.9rem; }
 .backup-actions { display: grid; gap: 0.75rem; }
+.toast-viewport {
+  position: fixed;
+  top: max(0.85rem, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 30;
+  display: grid;
+  gap: 0.7rem;
+  width: min(calc(100% - 2rem), 34rem);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.toast {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid #c5d0df;
+  background: rgba(243, 246, 250, 0.97);
+  color: #1f3347;
+  box-shadow: 0 18px 36px rgba(23, 32, 51, 0.16);
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
+.toast__body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 0.95rem 0.7rem;
+}
+.toast__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-width: 0;
+}
+.toast__body p {
+  margin: 0;
+  font-weight: 700;
+}
+.toast__icon {
+  flex: none;
+  margin-top: 0.08rem;
+}
+.toast__close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  flex: none;
+  border-radius: 999px;
+  background: rgba(31, 51, 71, 0.08);
+  color: currentColor;
+}
+.toast__progress {
+  display: block;
+  height: 0.22rem;
+  background: currentColor;
+  transform-origin: left center;
+  animation: toast-progress var(--toast-duration) linear forwards;
+}
+.toast[data-variant="info"] {
+  border-color: #b9d5f3;
+  background: rgba(234, 244, 255, 0.97);
+  color: #14436c;
+}
+.toast[data-variant="success"] {
+  border-color: #b9e7c7;
+  background: rgba(233, 248, 239, 0.97);
+  color: #214d2f;
+}
+.toast[data-variant="warning"] {
+  border-color: #f1df9f;
+  background: rgba(255, 248, 223, 0.97);
+  color: #6a5300;
+}
+.toast[data-variant="error"] {
+  border-color: #f2b8bc;
+  background: rgba(253, 237, 238, 0.97);
+  color: #8a1f29;
+}
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
 .bottom-nav {
   position: fixed;
   right: 0;
@@ -121,19 +222,12 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   background: #fdfefe;
   box-shadow: 0 28px 80px rgba(23, 32, 51, 0.24);
 }
-.sheet__handle {
-  width: 3.2rem;
-  height: 0.32rem;
-  margin: 0.75rem auto 0;
-  border-radius: 999px;
-  background: #cbd5e1;
-}
 .sheet__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1rem 0;
+  padding: 1rem 1rem 0;
 }
 .sheet__header h1 {
   margin: 0;

@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import type { WeightUnit } from "../types/weight";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
 type Props = {
-  onSave: (input: { date: string; weight: number; unit: WeightUnit; note?: string }) => Promise<void>;
+  onSave: (input: { date: string; weight: number; note?: string }) => Promise<void>;
   autoFocusWeight?: boolean;
   selectWeightOnMount?: boolean;
 };
@@ -14,7 +13,6 @@ type Props = {
 export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnMount = false }: Props) {
   const [date, setDate] = useState(today());
   const [weight, setWeight] = useState("");
-  const [unit, setUnit] = useState<WeightUnit>("kg");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const weightInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +31,7 @@ export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnM
     if (!date || !Number.isFinite(parsedWeight) || parsedWeight <= 0) return;
     setBusy(true);
     try {
-      await onSave({ date, weight: parsedWeight, unit, note });
+      await onSave({ date, weight: parsedWeight, note });
       setWeight("");
       setNote("");
     } finally {
@@ -49,7 +47,7 @@ export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnM
         <input type="date" value={date} onChange={(event) => setDate(event.target.value)} required />
       </label>
       <label>
-        Weight
+        Weight (kg)
         <input
           ref={weightInputRef}
           inputMode="decimal"
@@ -60,15 +58,8 @@ export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnM
         />
       </label>
       <label>
-        Unit
-        <select value={unit} onChange={(event) => setUnit(event.target.value as WeightUnit)}>
-          <option value="kg">kg</option>
-          <option value="lb">lb</option>
-        </select>
-      </label>
-      <label>
         Note
-        <input value={note} onChange={(event) => setNote(event.target.value)} placeholder="optional" />
+        <textarea rows={3} value={note} onChange={(event) => setNote(event.target.value)} placeholder="optional" />
       </label>
       <button type="submit" disabled={busy}>{busy ? "Saving..." : "Save"}</button>
     </form>

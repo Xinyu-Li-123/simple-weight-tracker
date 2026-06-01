@@ -16,7 +16,7 @@ function isWeightEntry(value: unknown): value is WeightEntry {
     /^\d{4}-\d{2}-\d{2}$/.test(entry.date) &&
     typeof entry.weight === "number" &&
     Number.isFinite(entry.weight) &&
-    (entry.unit === "kg" || entry.unit === "lb") &&
+    !("unit" in entry) &&
     (entry.note === undefined || typeof entry.note === "string") &&
     typeof entry.createdAt === "string" &&
     typeof entry.updatedAt === "string"
@@ -26,7 +26,7 @@ function isWeightEntry(value: unknown): value is WeightEntry {
 export async function importJsonBackupText(text: string): Promise<number> {
   const parsed = JSON.parse(text) as BackupFile;
 
-  if (parsed.app !== "simple-weight-tracker" || parsed.schemaVersion !== 1 || !Array.isArray(parsed.entries)) {
+  if (parsed.app !== "simple-weight-tracker" || parsed.schemaVersion !== 2 || !Array.isArray(parsed.entries)) {
     throw new Error("Invalid backup file.");
   }
 

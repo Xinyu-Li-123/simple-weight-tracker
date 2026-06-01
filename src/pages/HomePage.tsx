@@ -1,5 +1,6 @@
 import { WeightList } from "../components/WeightList";
 import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
+import { useToast } from "../toast/useToast";
 import type { WeightEntry } from "../types/weight";
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
 };
 
 export function HomePage({ entries, status, onDelete, onRequestPersistentStorage }: Props) {
+  const { pushToast } = useToast();
+
   return (
     <>
       {status && !status.persisted ? (
@@ -26,6 +29,26 @@ export function HomePage({ entries, status, onDelete, onRequestPersistentStorage
         <p className="muted">Visualization placeholder. A chart or trend summary will live here in a later slice.</p>
       </section>
       <WeightList entries={entries} onDelete={onDelete} />
+      <section className="card testing-panel">
+        <h2>Testing</h2>
+        <section className="testing-panel__section" aria-labelledby="testing-toast-types">
+          <h3 id="testing-toast-types">Toast Types</h3>
+          <div className="testing-panel__actions">
+            <button type="button" className="secondary testing-panel__button" onClick={() => pushToast({ message: "Informational toast", variant: "info" })}>
+              Info
+            </button>
+            <button type="button" className="secondary testing-panel__button" onClick={() => pushToast({ message: "Success toast", variant: "success" })}>
+              Success
+            </button>
+            <button type="button" className="secondary testing-panel__button" onClick={() => pushToast({ message: "Warning toast", variant: "warning" })}>
+              Warning
+            </button>
+            <button type="button" className="secondary testing-panel__button" onClick={() => pushToast({ message: "Error toast", variant: "error" })}>
+              Error
+            </button>
+          </div>
+        </section>
+      </section>
     </>
   );
 }

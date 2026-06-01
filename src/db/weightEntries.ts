@@ -1,10 +1,9 @@
 import { db } from "./db";
-import type { WeightEntry, WeightUnit } from "../types/weight";
+import type { WeightEntry } from "../types/weight";
 
 export type WeightEntryInput = {
   date: string;
   weight: number;
-  unit: WeightUnit;
   note?: string;
 };
 
@@ -16,7 +15,6 @@ export async function upsertWeightEntry(input: WeightEntryInput): Promise<Weight
     id: existing?.id ?? crypto.randomUUID(),
     date: input.date,
     weight: input.weight,
-    unit: input.unit,
     note: input.note?.trim() || undefined,
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,

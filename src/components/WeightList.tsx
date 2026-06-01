@@ -17,7 +17,7 @@ export function WeightList({ entries, onDelete }: Props) {
             <li key={entry.id}>
               <div>
                 <strong>{entry.date}</strong>
-                <span>{entry.weight} {entry.unit}</span>
+                <span>{entry.weight} kg</span>
                 {entry.note ? <small>{entry.note}</small> : null}
               </div>
               <button className="ghost" onClick={() => onDelete(entry.id)}>Delete</button>

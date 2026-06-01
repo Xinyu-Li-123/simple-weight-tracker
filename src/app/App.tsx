@@ -12,7 +12,8 @@ import { HomePage } from "../pages/HomePage";
 import { MorePage } from "../pages/MorePage";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
-import type { WeightEntry, WeightUnit } from "../types/weight";
+import { useToast } from "../toast/useToast";
+import type { WeightEntry } from "../types/weight";
 import type { PageId } from "./pages";
 
 export function App() {
@@ -20,8 +21,8 @@ export function App() {
   const [recordOpen, setRecordOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
-  const [message, setMessage] = useState<string>("");
   const standalone = isStandalonePWA();
+  const { pushToast } = useToast();
 
   async function refresh() {
     const [nextEntries, nextStatus] = await Promise.all([listWeightEntries(), getStoragePersistenceStatus()]);
@@ -56,11 +57,11 @@ export function App() {
     };
   }, [recordOpen]);
 
-  async function handleSave(input: { date: string; weight: number; unit: WeightUnit; note?: string }) {
+  async function handleSave(input: { date: string; weight: number; note?: string }) {
     await upsertWeightEntry(input);
     setStatus(await requestPersistentStorage());
     await refresh();
-    setMessage("Saved locally.");
+    pushToast({ message: "Saved locally.", variant: "success" });
     setRecordOpen(false);
   }
 
@@ -71,13 +72,13 @@ export function App() {
     if (kind === "csv") downloadTextFile(`weight-log-${date}.csv`, createCsv(current), "text/csv");
     if (kind === "md") downloadTextFile(`weight-log-${date}.md`, createMarkdown(current), "text/markdown");
     if (kind === "txt") downloadTextFile(`weight-log-${date}.txt`, createTxt(current), "text/plain");
-    setMessage(`Exported ${kind.toUpperCase()}.`);
+    pushToast({ message: `Exported ${kind.toUpperCase()}.`, variant: "success" });
   }
 
   async function handleImport(text: string) {
     const count = await importJsonBackupText(text);
     await refresh();
-    setMessage(`Imported ${count} entries.`);
+    pushToast({ message: `Imported ${count} entries.`, variant: "success" });
   }
 
   async function handleRequestPersistentStorage() {
@@ -87,8 +88,6 @@ export function App() {
   return (
     <>
       <main className="shell">
-        {message ? <p className="notice">{message}</p> : null}
-
         {page === "home" ? (
           <HomePage
             entries={entries}
