@@ -23,11 +23,10 @@ export function BottomNav({ activePage, onNavigate, onRecord }: Props) {
           <span className="bottom-nav__label">{item.label}</span>
         </button>
       ))}
-      <button type="button" className="bottom-nav__action" onClick={onRecord} aria-label="Open record form">
+      <button type="button" className="bottom-nav__action" onClick={onRecord} aria-label={recordAction.label}>
         <span className="bottom-nav__action-badge">
           <RecordIcon className="bottom-nav__icon bottom-nav__icon--action" aria-hidden="true" strokeWidth={2.4} />
         </span>
-        <span className="bottom-nav__label">{recordAction.label}</span>
       </button>
       {navigationItems.slice(1).map((item) => (
         <button
