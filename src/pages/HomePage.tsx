@@ -1,27 +1,25 @@
 import { WeightList } from "../components/WeightList";
-import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
 import { useToast } from "../toast/useToast";
 import type { WeightEntry } from "../types/weight";
 
 type Props = {
   entries: WeightEntry[];
-  status: StoragePersistenceStatus | null;
+  standalone: boolean;
   onDelete: (id: string) => Promise<void>;
-  onRequestPersistentStorage: () => Promise<void>;
 };
 
-export function HomePage({ entries, status, onDelete, onRequestPersistentStorage }: Props) {
+export function HomePage({ entries, standalone, onDelete }: Props) {
   const { pushToast } = useToast();
 
   return (
     <>
-      {status && !status.persisted ? (
+      {!standalone ? (
         <section className="warning storage-warning">
           <div>
-            <strong>Persistent storage is not active.</strong>
-            <p>Export JSON backups before changing device, deleting the app, or clearing website data.</p>
+            <strong>Use this app from your Home Screen for real use.</strong>
+            <p>iPhone: open in Safari, tap Share, then Add to Home Screen.</p>
+            <p>Android: open the browser menu, then Install app or Add to Home screen.</p>
           </div>
-          {status.supported ? <button type="button" onClick={onRequestPersistentStorage}>Enable</button> : null}
         </section>
       ) : null}
       <section className="card summary-placeholder">

@@ -100,9 +100,8 @@ export function App() {
         {page === "home" ? (
           <HomePage
             entries={entries}
-            status={status}
+            standalone={standalone}
             onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
-            onRequestPersistentStorage={handleRequestPersistentStorage}
           />
         ) : (
           <MorePage
