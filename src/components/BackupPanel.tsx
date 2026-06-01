@@ -1,4 +1,5 @@
 import { ChangeEvent, useRef } from "react";
+import { BlockTitle, List, ListButton } from "framework7-react";
 
 type Props = {
   onExportJson: () => Promise<void>;
@@ -19,14 +20,16 @@ export function BackupPanel({ onExportJson, onExportCsv, onExportMarkdown, onExp
   }
 
   return (
-    <section className="card backup-actions">
-      <h2>Backup and export</h2>
-      <button onClick={onExportJson}>Export JSON backup</button>
-      <button onClick={onExportCsv}>Export CSV</button>
-      <button onClick={onExportMarkdown}>Export Markdown</button>
-      <button onClick={onExportTxt}>Export TXT</button>
-      <button className="secondary" onClick={() => inputRef.current?.click()}>Import JSON backup</button>
+    <>
+      <BlockTitle>Backup and export</BlockTitle>
+      <List strongIos dividersIos insetIos>
+        <ListButton title="Export JSON backup" onClick={onExportJson} />
+        <ListButton title="Export CSV" onClick={onExportCsv} />
+        <ListButton title="Export Markdown" onClick={onExportMarkdown} />
+        <ListButton title="Export TXT" onClick={onExportTxt} />
+        <ListButton title="Import JSON backup" onClick={() => inputRef.current?.click()} />
+      </List>
       <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={handleImport} />
-    </section>
+    </>
   );
 }

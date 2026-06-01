@@ -1,3 +1,4 @@
+import { Block, Button } from "framework7-react";
 import { AddWeightForm } from "../components/AddWeightForm";
 import { WeightList } from "../components/WeightList";
 import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
@@ -15,13 +16,13 @@ export function HomePage({ entries, status, onSave, onDelete, onRequestPersisten
   return (
     <>
       {status && !status.persisted ? (
-        <section className="warning storage-warning">
+        <Block strong inset className="warning-block storage-warning">
           <div>
             <strong>Persistent storage is not active.</strong>
             <p>Export JSON backups before changing device, deleting the app, or clearing website data.</p>
           </div>
-          {status.supported ? <button type="button" onClick={onRequestPersistentStorage}>Enable</button> : null}
-        </section>
+          {status.supported ? <Button fill small type="button" onClick={onRequestPersistentStorage}>Enable</Button> : null}
+        </Block>
       ) : null}
       <AddWeightForm onSave={onSave} />
       <WeightList entries={entries} onDelete={onDelete} />

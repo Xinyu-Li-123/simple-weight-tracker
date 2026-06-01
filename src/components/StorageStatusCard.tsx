@@ -1,3 +1,4 @@
+import { Block, BlockTitle, Button, List, ListItem } from "framework7-react";
 import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
 
 type Props = {
@@ -13,21 +14,19 @@ function formatBytes(value: number | null) {
 
 export function StorageStatusCard({ standalone, status, onRequest }: Props) {
   return (
-    <section className="card">
-      <h2>Data safety</h2>
-      <dl className="status-grid">
-        <dt>Run mode</dt>
-        <dd>{standalone ? "Home Screen PWA" : "Safari tab / browser"}</dd>
-        <dt>Persistent storage</dt>
-        <dd>{status?.persisted ? "Enabled" : status?.supported ? "Not enabled" : "Not supported"}</dd>
-        <dt>Usage</dt>
-        <dd>{formatBytes(status?.usage ?? null)}</dd>
-        <dt>Quota</dt>
-        <dd>{formatBytes(status?.quota ?? null)}</dd>
-      </dl>
-      {!standalone ? <p className="warning">For real use, add this app to the iPhone Home Screen and open it from there.</p> : null}
-      {!status?.persisted ? <p className="warning">Persistent storage is not active. Export JSON backups before changing device, deleting the app, or clearing website data.</p> : null}
-      <button type="button" onClick={onRequest}>Check / request persistent storage</button>
-    </section>
+    <>
+      <BlockTitle>Data safety</BlockTitle>
+      <List strongIos dividersIos insetIos>
+        <ListItem title="Run mode" after={standalone ? "Home Screen PWA" : "Safari tab / browser"} />
+        <ListItem title="Persistent storage" after={status?.persisted ? "Enabled" : status?.supported ? "Not enabled" : "Not supported"} />
+        <ListItem title="Usage" after={formatBytes(status?.usage ?? null)} />
+        <ListItem title="Quota" after={formatBytes(status?.quota ?? null)} />
+      </List>
+      {!standalone ? <Block strong inset className="warning-block">For real use, add this app to the iPhone Home Screen and open it from there.</Block> : null}
+      {!status?.persisted ? <Block strong inset className="warning-block">Persistent storage is not active. Export JSON backups before changing device, deleting the app, or clearing website data.</Block> : null}
+      <Block inset>
+        <Button fill large type="button" onClick={onRequest}>Check / request persistent storage</Button>
+      </Block>
+    </>
   );
 }

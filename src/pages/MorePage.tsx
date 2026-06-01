@@ -15,9 +15,6 @@ type Props = {
 export function MorePage({ standalone, status, onRequestPersistentStorage, onExport, onImportJson }: Props) {
   return (
     <>
-      <header className="page-header">
-        <h1>More</h1>
-      </header>
       <StorageStatusCard standalone={standalone} status={status} onRequest={onRequestPersistentStorage} />
       <BackupPanel
         onExportJson={() => onExport("json")}
