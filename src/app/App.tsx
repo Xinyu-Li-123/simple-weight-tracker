@@ -76,9 +76,18 @@ export function App() {
   }
 
   async function handleImport(text: string) {
-    const count = await importJsonBackupText(text);
-    await refresh();
-    pushToast({ message: `Imported ${count} entries.`, variant: "success" });
+    try {
+      const count = await importJsonBackupText(text);
+      await refresh();
+      pushToast({ message: `Imported ${count} entries.`, variant: "success" });
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Import failed.";
+
+      pushToast({ message, variant: "error" });
+    }
   }
 
   async function handleRequestPersistentStorage() {
