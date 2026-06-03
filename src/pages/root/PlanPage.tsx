@@ -7,17 +7,17 @@ type Props = {
   plan: WeightPlan | null;
   onOpenSidebar: () => void;
   onSavePlan: (input: WeightPlanInput) => Promise<void>;
-  onDeletePlan: () => Promise<void>;
+  onRequestDeletePlan: () => void;
 };
 
 const defaultActivityLevel: ActivityLevel = "sedentary";
 const defaultSex: Sex = "male";
 
-export function PlanPage({ plan, onOpenSidebar, onSavePlan, onDeletePlan }: Props) {
+export function PlanPage({ plan, onOpenSidebar, onSavePlan, onRequestDeletePlan }: Props) {
   return (
     <>
       <PageHeaderRow leftAction={{ kind: "menu", onClick: onOpenSidebar }} />
-      <PlanEditor plan={plan} onSavePlan={onSavePlan} onDeletePlan={onDeletePlan} />
+      <PlanEditor plan={plan} onSavePlan={onSavePlan} onRequestDeletePlan={onRequestDeletePlan} />
     </>
   );
 }
@@ -25,10 +25,10 @@ export function PlanPage({ plan, onOpenSidebar, onSavePlan, onDeletePlan }: Prop
 type PlanEditorProps = {
   plan: WeightPlan | null;
   onSavePlan: (input: WeightPlanInput) => Promise<void>;
-  onDeletePlan: () => Promise<void>;
+  onRequestDeletePlan: () => void;
 };
 
-function PlanEditor({ plan, onSavePlan, onDeletePlan }: PlanEditorProps) {
+function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) {
   const [startWeightKg, setStartWeightKg] = useState(() => plan?.startWeightKg.toString() ?? "");
   const [targetWeightKg, setTargetWeightKg] = useState(() => plan?.targetWeightKg.toString() ?? "");
   const [heightCm, setHeightCm] = useState(() => plan?.heightCm.toString() ?? "");
@@ -87,18 +87,6 @@ function PlanEditor({ plan, onSavePlan, onDeletePlan }: PlanEditorProps) {
       await onSavePlan(input);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Could not save plan.");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function handleDeletePlan() {
-    setBusy(true);
-    setError(null);
-    try {
-      await onDeletePlan();
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not delete plan.");
     } finally {
       setBusy(false);
     }
@@ -177,7 +165,7 @@ function PlanEditor({ plan, onSavePlan, onDeletePlan }: PlanEditorProps) {
             Use generated
           </button>
           {plan ? (
-            <button type="button" className="ghost plan-form__delete" onClick={handleDeletePlan} disabled={busy}>
+            <button type="button" className="ghost plan-form__delete" onClick={onRequestDeletePlan} disabled={busy}>
               Delete plan
             </button>
           ) : null}

@@ -5,7 +5,7 @@ type Props = {
   entries: WeightEntry[];
   onOpenEntry: (entry: WeightEntry) => void;
   onEditEntry: (entry: WeightEntry) => void;
-  onDeleteEntry: (id: string) => Promise<void>;
+  onRequestDeleteEntry: (entry: WeightEntry) => void;
   title?: string;
   emptyMessage?: string;
 };
@@ -14,7 +14,7 @@ export function WeightList({
   entries,
   onOpenEntry,
   onEditEntry,
-  onDeleteEntry,
+  onRequestDeleteEntry,
   title = "History",
   emptyMessage = "No entries yet.",
 }: Props) {
@@ -31,7 +31,7 @@ export function WeightList({
                 entry={entry}
                 onOpen={() => onOpenEntry(entry)}
                 onEdit={() => onEditEntry(entry)}
-                onDelete={() => void onDeleteEntry(entry.id)}
+                onDelete={() => onRequestDeleteEntry(entry)}
               />
             </li>
           ))}

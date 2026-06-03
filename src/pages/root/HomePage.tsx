@@ -21,7 +21,7 @@ type Props = {
   onOpenPlan: () => void;
   onOpenEntry: (entry: WeightEntry) => void;
   onEditEntry: (entry: WeightEntry) => void;
-  onDeleteEntry: (id: string) => Promise<void>;
+  onRequestDeleteEntry: (entry: WeightEntry) => void;
 };
 
 export function HomePage({
@@ -32,7 +32,7 @@ export function HomePage({
   onOpenPlan,
   onOpenEntry,
   onEditEntry,
-  onDeleteEntry,
+  onRequestDeleteEntry,
 }: Props) {
   const [activeTab, setActiveTab] = useState<HomeTabId>("dashboard");
 
@@ -44,7 +44,7 @@ export function HomePage({
       {activeTab === "dashboard" ? (
         <DashboardTab entries={entries} plan={plan} standalone={standalone} onOpenPlan={onOpenPlan} />
       ) : (
-        <HistoryTab entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onDeleteEntry={onDeleteEntry} />
+        <HistoryTab entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onRequestDeleteEntry={onRequestDeleteEntry} />
       )}
     </>
   );

@@ -5,9 +5,9 @@ type Props = {
   entries: WeightEntry[];
   onOpenEntry: (entry: WeightEntry) => void;
   onEditEntry: (entry: WeightEntry) => void;
-  onDeleteEntry: (id: string) => Promise<void>;
+  onRequestDeleteEntry: (entry: WeightEntry) => void;
 };
 
-export function HistoryTab({ entries, onOpenEntry, onEditEntry, onDeleteEntry }: Props) {
-  return <WeightList entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onDeleteEntry={onDeleteEntry} />;
+export function HistoryTab({ entries, onOpenEntry, onEditEntry, onRequestDeleteEntry }: Props) {
+  return <WeightList entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onRequestDeleteEntry={onRequestDeleteEntry} />;
 }

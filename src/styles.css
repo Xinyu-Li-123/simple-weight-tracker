@@ -18,6 +18,7 @@ button {
   color: white;
   font-weight: 700;
 }
+button.danger { background: #a12631; }
 button.secondary { background: #31526b; }
 button.ghost { background: transparent; color: #31526b; padding: 0.4rem 0.5rem; }
 input, select, textarea {
@@ -434,6 +435,41 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   box-shadow: none;
   overflow: hidden;
 }
+.confirm-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(23, 32, 51, 0.4);
+  backdrop-filter: blur(6px);
+}
+.confirm-dialog {
+  width: min(100%, 28rem);
+  border: 1px solid #d8dee6;
+  border-radius: 24px;
+  background: #fdfefe;
+  box-shadow: 0 28px 80px rgba(23, 32, 51, 0.24);
+}
+.confirm-dialog__body {
+  padding: 1.1rem 1.1rem 0.9rem;
+}
+.confirm-dialog__body h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+.confirm-dialog__body p {
+  margin: 0;
+  color: #5d6878;
+}
+.confirm-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  padding: 0 1.1rem 1.1rem;
+}
 @media (min-width: 680px) {
   .form { grid-template-columns: 1fr 1fr; }
   .form h2, .form .form__actions, .form label:last-of-type { grid-column: 1 / -1; }
@@ -704,5 +740,8 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   }
   .plan-form__delete {
     margin-left: 0;
+  }
+  .confirm-dialog__actions {
+    display: grid;
   }
 }

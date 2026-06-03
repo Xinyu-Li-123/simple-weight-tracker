@@ -11,11 +11,11 @@ type Props = {
   onCancelEdit: (entry: WeightEntry) => void;
   onCreate: (input: WeightEntryDraft) => Promise<void>;
   onUpdate: (input: WeightEntryDraft) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  onRequestDelete: (entry: WeightEntry) => void;
   onEdit: (entry: WeightEntry) => void;
 };
 
-export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onDelete, onEdit }: Props) {
+export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit }: Props) {
   if (!open) return null;
 
   const formValue = entry ? { date: entry.date, weight: entry.weight, note: entry.note } : undefined;
@@ -59,7 +59,7 @@ export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate
             showSummary={false}
             className="record-card--footer"
             onEdit={() => onEdit(entry)}
-            onDelete={() => void onDelete(entry.id)}
+            onDelete={() => onRequestDelete(entry)}
           />
         ) : null}
       </section>

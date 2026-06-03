@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { WeightEntryDraft, WeightEntryFormMode } from "../components/AddWeightForm";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { SidebarDrawer } from "../components/navigation/SidebarDrawer";
 import { BottomNav } from "../components/BottomNav";
 import { RecordSheet } from "../components/RecordSheet";
@@ -26,10 +27,21 @@ type RecordSheetState =
   | { mode: "create"; entry: null }
   | { mode: Exclude<WeightEntryFormMode, "create">; entry: WeightEntry };
 
+type ConfirmationRequest = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  cancelLabel?: string;
+  tone?: "default" | "danger";
+  onConfirm: () => Promise<boolean>;
+};
+
 export function App() {
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
   const [recordSheetState, setRecordSheetState] = useState<RecordSheetState | null>(null);
+  const [confirmation, setConfirmation] = useState<ConfirmationRequest | null>(null);
+  const [confirmBusy, setConfirmBusy] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
@@ -37,6 +49,7 @@ export function App() {
   const standalone = isStandalonePWA();
   const { pushToast } = useToast();
   const recordOpen = recordSheetState !== null;
+  const confirmOpen = confirmation !== null;
 
   async function refresh() {
     const [nextEntries, nextPlan, nextStatus] = await Promise.all([listWeightEntries(), getWeightPlan(), getStoragePersistenceStatus()]);
@@ -54,7 +67,7 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (!recordOpen && !sidebarOpen) return;
+    if (!recordOpen && !confirmOpen && !sidebarOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -63,6 +76,11 @@ export function App() {
       if (event.key === "Escape") {
         if (sidebarOpen) {
           setSidebarOpen(false);
+          return;
+        }
+
+        if (confirmOpen && !confirmBusy) {
+          setConfirmation(null);
           return;
         }
 
@@ -78,7 +96,7 @@ export function App() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [recordOpen, sidebarOpen]);
+  }, [confirmBusy, confirmOpen, recordOpen, sidebarOpen]);
 
   async function handleCreate(input: WeightEntryDraft) {
     try {
@@ -114,12 +132,13 @@ export function App() {
     }
   }
 
-  async function handleDeleteEntry(id: string) {
+  async function handleDeleteEntry(id: string): Promise<boolean> {
     try {
       await deleteWeightEntry(id);
       await refresh();
       pushToast({ message: "Record deleted.", variant: "success" });
       setRecordSheetState((current) => (current?.entry?.id === id ? null : current));
+      return true;
     } catch (error) {
       const message =
         error instanceof Error && error.message.trim()
@@ -127,6 +146,7 @@ export function App() {
           : "Could not delete record.";
 
       pushToast({ message, variant: "error" });
+      return false;
     }
   }
 
@@ -162,10 +182,21 @@ export function App() {
     pushToast({ message: "Plan saved.", variant: "success" });
   }
 
-  async function handleDeletePlan() {
-    await deleteWeightPlan();
-    await refresh();
-    pushToast({ message: "Plan deleted.", variant: "success" });
+  async function handleDeletePlan(): Promise<boolean> {
+    try {
+      await deleteWeightPlan();
+      await refresh();
+      pushToast({ message: "Plan deleted.", variant: "success" });
+      return true;
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Could not delete plan.";
+
+      pushToast({ message, variant: "error" });
+      return false;
+    }
   }
 
   async function handleRequestPersistentStorage() {
@@ -182,6 +213,39 @@ export function App() {
     setUtilityPage(page);
   }
 
+  function requestDeleteEntry(entry: WeightEntry) {
+    setConfirmation({
+      title: "Delete record?",
+      description: `Delete the record for ${entry.date} at ${entry.weight} kg? This cannot be undone.`,
+      confirmLabel: "Delete record",
+      tone: "danger",
+      onConfirm: () => handleDeleteEntry(entry.id),
+    });
+  }
+
+  function requestDeletePlan() {
+    setConfirmation({
+      title: "Delete plan?",
+      description: "Delete your current weight plan and milestones? This cannot be undone.",
+      confirmLabel: "Delete plan",
+      tone: "danger",
+      onConfirm: handleDeletePlan,
+    });
+  }
+
+  async function handleConfirmAction() {
+    if (!confirmation) return;
+    setConfirmBusy(true);
+    try {
+      const success = await confirmation.onConfirm();
+      if (success) {
+        setConfirmation(null);
+      }
+    } finally {
+      setConfirmBusy(false);
+    }
+  }
+
   return (
     <>
       <main className="shell">
@@ -194,7 +258,7 @@ export function App() {
             onOpenPlan={() => handleNavigate("plan")}
             onOpenEntry={(entry) => setRecordSheetState({ mode: "view", entry })}
             onEditEntry={(entry) => setRecordSheetState({ mode: "edit", entry })}
-            onDeleteEntry={handleDeleteEntry}
+            onRequestDeleteEntry={requestDeleteEntry}
           />
         ) : null}
         {utilityPage === null && rootPage === "plan" ? (
@@ -202,7 +266,7 @@ export function App() {
             plan={plan}
             onOpenSidebar={() => setSidebarOpen(true)}
             onSavePlan={handleSavePlan}
-            onDeletePlan={handleDeletePlan}
+            onRequestDeletePlan={requestDeletePlan}
           />
         ) : null}
         {utilityPage === "data-safety" ? (
@@ -238,8 +302,21 @@ export function App() {
         onCancelEdit={(entry) => setRecordSheetState({ mode: "view", entry })}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
-        onDelete={handleDeleteEntry}
+        onRequestDelete={requestDeleteEntry}
         onEdit={(entry) => setRecordSheetState({ mode: "edit", entry })}
+      />
+      <ConfirmDialog
+        open={confirmOpen}
+        title={confirmation?.title ?? ""}
+        description={confirmation?.description ?? ""}
+        confirmLabel={confirmation?.confirmLabel ?? "Confirm"}
+        cancelLabel={confirmation?.cancelLabel}
+        tone={confirmation?.tone}
+        busy={confirmBusy}
+        onCancel={() => {
+          if (!confirmBusy) setConfirmation(null);
+        }}
+        onConfirm={handleConfirmAction}
       />
     </>
   );
