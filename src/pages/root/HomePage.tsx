@@ -31,7 +31,7 @@ export function HomePage({ entries, plan, standalone, onOpenSidebar, onOpenPlan,
         <TopTabs tabs={homeTabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </PageHeaderRow>
       {activeTab === "dashboard" ? (
-        <DashboardTab entries={entries} plan={plan} standalone={standalone} onDelete={onDelete} onOpenPlan={onOpenPlan} />
+        <DashboardTab entries={entries} plan={plan} standalone={standalone} onOpenPlan={onOpenPlan} />
       ) : (
         <HistoryTab entries={entries} onDelete={onDelete} />
       )}
