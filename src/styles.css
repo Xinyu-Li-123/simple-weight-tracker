@@ -159,6 +159,12 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 .storage-warning p { margin: 0.25rem 0 0; }
 .storage-warning button { flex: none; background: #5d4b00; }
 .backup-actions { display: grid; gap: 0.75rem; }
+.backup-actions__import {
+  justify-content: center;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(161, 38, 49, 0.2);
+  font-weight: 700;
+}
 .page-header-row {
   position: sticky;
   top: 0;

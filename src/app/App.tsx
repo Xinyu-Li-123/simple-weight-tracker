@@ -36,12 +36,17 @@ type ConfirmationRequest = {
   onConfirm: () => Promise<boolean>;
 };
 
+type PendingImport = {
+  text: string;
+};
+
 export function App() {
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
   const [recordSheetState, setRecordSheetState] = useState<RecordSheetState | null>(null);
   const [confirmation, setConfirmation] = useState<ConfirmationRequest | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
+  const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
@@ -50,6 +55,11 @@ export function App() {
   const { pushToast } = useToast();
   const recordOpen = recordSheetState !== null;
   const confirmOpen = confirmation !== null;
+
+  function closeConfirmation() {
+    setConfirmation(null);
+    setPendingImport(null);
+  }
 
   async function refresh() {
     const [nextEntries, nextPlan, nextStatus] = await Promise.all([listWeightEntries(), getWeightPlan(), getStoragePersistenceStatus()]);
@@ -80,7 +90,7 @@ export function App() {
         }
 
         if (confirmOpen && !confirmBusy) {
-          setConfirmation(null);
+          closeConfirmation();
           return;
         }
 
@@ -161,10 +171,28 @@ export function App() {
   }
 
   async function handleImport(text: string) {
+    setPendingImport({ text });
+    setConfirmation({
+      title: "Import backup and replace current data?",
+      description: "This will permanently replace your current history and plan with the contents of the selected backup.",
+      confirmLabel: "Import and replace",
+      tone: "danger",
+      onConfirm: handleConfirmImport,
+    });
+  }
+
+  async function handleConfirmImport(): Promise<boolean> {
+    if (!pendingImport) return false;
+
     try {
-      const result = await importJsonBackupText(text);
+      const result = await importJsonBackupText(pendingImport.text);
       await refresh();
-      pushToast({ message: `Imported ${result.entriesCount} entries${result.importedPlan ? " and plan" : ""}.`, variant: "success" });
+      pushToast({
+        message: `Restored ${result.entriesCount} entries${result.importedPlan ? " and plan" : ""}.`,
+        variant: "success",
+      });
+      setPendingImport(null);
+      return true;
     } catch (error) {
       const message =
         error instanceof Error && error.message.trim()
@@ -172,6 +200,7 @@ export function App() {
           : "Import failed.";
 
       pushToast({ message, variant: "error" });
+      return false;
     }
   }
 
@@ -239,7 +268,7 @@ export function App() {
     try {
       const success = await confirmation.onConfirm();
       if (success) {
-        setConfirmation(null);
+        closeConfirmation();
       }
     } finally {
       setConfirmBusy(false);
@@ -314,7 +343,7 @@ export function App() {
         tone={confirmation?.tone}
         busy={confirmBusy}
         onCancel={() => {
-          if (!confirmBusy) setConfirmation(null);
+          if (!confirmBusy) closeConfirmation();
         }}
         onConfirm={handleConfirmAction}
       />

@@ -59,11 +59,15 @@ export async function importJsonBackupText(text: string): Promise<ImportJsonResu
   const plan = parsed.plan as WeightPlan | null;
 
   await db.transaction("rw", db.weightEntries, db.weightPlans, async () => {
-    await db.weightEntries.bulkPut(entries);
+    await db.weightEntries.clear();
+    await db.weightPlans.clear();
+
+    if (entries.length > 0) {
+      await db.weightEntries.bulkPut(entries);
+    }
+
     if (plan) {
       await db.weightPlans.put(plan);
-    } else {
-      await db.weightPlans.delete("default");
     }
   });
 
