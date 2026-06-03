@@ -73,6 +73,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
       ) : null}
 
       <section className="dashboard-mode-row" aria-label="Dashboard view mode">
+        <span className="dashboard-mode-row__label">View</span>
         <div className="dashboard-mode-toggle" role="tablist" aria-label="Dashboard scope">
           <button
             type="button"
@@ -99,7 +100,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
         <div className="dashboard-card__header">
           <div>
             <h2>Progress</h2>
-            <p className="muted">{mode === "phase" ? "Current milestone segment." : "Full route from start to target."}</p>
+            {/* <p className="muted">{mode === "phase" ? "Current milestone segment." : "Full route from start to target."}</p> */}
           </div>
         </div>
 
@@ -114,7 +115,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
             />
 
             <div className="dashboard-note" data-tone={plan ? summary.trend.label : undefined}>
-              <strong>{recommendation.title}</strong>
+              <strong><span>Advice:&nbsp;&nbsp;</span>{recommendation.title}</strong>
               <span>{recommendation.detail}</span>
             </div>
 
@@ -138,7 +139,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
             <p className="dashboard-secondary-text muted">{tdeeLine}</p>
           </>
         )}
-      </section>
+      </section >
 
       <section className={plan ? "card dashboard-card" : "card dashboard-card dashboard-card--disabled"}>
         <div className="dashboard-card__header">

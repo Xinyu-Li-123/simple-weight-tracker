@@ -360,29 +360,36 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 
 .dashboard-mode-row {
   display: flex;
-  justify-content: center;
-  margin: 0.85rem 0 0;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0.6rem 0 0;
+}
+.dashboard-mode-row__label {
+  color: #5d6878;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 .dashboard-mode-toggle {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 17rem);
-  padding: 0.24rem;
+  width: min(100%, 9.5rem);
+  padding: 0.14rem;
   border: 1px solid #d8dee6;
   border-radius: 999px;
-  background: rgba(23, 32, 51, 0.05);
+  background: rgba(23, 32, 51, 0.04);
 }
 .dashboard-mode-toggle__button {
-  padding: 0.72rem 1rem;
+  padding: 0.44rem 0.7rem;
   border-radius: 999px;
   background: transparent;
   color: #5d6878;
+  font-size: 0.88rem;
   font-weight: 700;
 }
 .dashboard-mode-toggle__button--active {
   background: white;
   color: #172033;
-  box-shadow: 0 8px 18px rgba(23, 32, 51, 0.08);
+  box-shadow: 0 4px 10px rgba(23, 32, 51, 0.06);
 }
 .dashboard-mode-toggle__button:disabled {
   color: #99a2af;
