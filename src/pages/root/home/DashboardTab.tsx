@@ -1,3 +1,4 @@
+import { format, subDays } from "date-fns";
 import { WeightList } from "../../../components/WeightList";
 import { useToast } from "../../../toast/useToast";
 import type { WeightEntry } from "../../../types/weight";
@@ -10,7 +11,9 @@ type Props = {
 
 export function DashboardTab({ entries, standalone, onDelete }: Props) {
   const { pushToast } = useToast();
-  const recentEntries = entries.slice(0, 3);
+  const today = format(new Date(), "yyyy-MM-dd");
+  const cutoffDate = format(subDays(new Date(), 2), "yyyy-MM-dd");
+  const recentEntries = entries.filter((entry) => entry.date >= cutoffDate && entry.date <= today);
 
   return (
     <>

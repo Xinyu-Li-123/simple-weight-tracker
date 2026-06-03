@@ -30,7 +30,7 @@ export function HomePage({ entries, standalone, onOpenSidebar, onDelete }: Props
       {activeTab === "dashboard" ? (
         <DashboardTab entries={entries} standalone={standalone} onDelete={onDelete} />
       ) : (
-        <HistoryTab />
+        <HistoryTab entries={entries} onDelete={onDelete} />
       )}
     </>
   );
