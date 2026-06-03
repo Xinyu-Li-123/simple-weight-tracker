@@ -3,9 +3,11 @@ import type { WeightEntry } from "../../../types/weight";
 
 type Props = {
   entries: WeightEntry[];
-  onDelete: (id: string) => Promise<void>;
+  onOpenEntry: (entry: WeightEntry) => void;
+  onEditEntry: (entry: WeightEntry) => void;
+  onDeleteEntry: (id: string) => Promise<void>;
 };
 
-export function HistoryTab({ entries, onDelete }: Props) {
-  return <WeightList entries={entries} onDelete={onDelete} />;
+export function HistoryTab({ entries, onOpenEntry, onEditEntry, onDeleteEntry }: Props) {
+  return <WeightList entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onDeleteEntry={onDeleteEntry} />;
 }

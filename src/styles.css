@@ -52,9 +52,84 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   text-align: center;
 }
 .entry-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
-.entry-list li { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.8rem; border-radius: 16px; background: #f8fafc; }
-.entry-list div { display: grid; gap: 0.15rem; }
+.entry-list li { margin: 0; }
 .entry-list span, .entry-list small, .muted { color: #5d6878; }
+.form-field { display: grid; gap: 0.35rem; }
+.form-field--readonly input,
+.form-field--readonly textarea,
+.form-field input:disabled {
+  border-color: #d9e1ea;
+  background: #f4f7fa;
+  color: #465467;
+}
+.form-field input:disabled {
+  opacity: 1;
+  -webkit-text-fill-color: #465467;
+}
+.form__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+.record-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #e3e7ed;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+.record-card__main {
+  display: grid;
+  gap: 0.18rem;
+  flex: 1;
+  min-width: 0;
+}
+.record-card__main--button {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: inherit;
+  text-align: left;
+}
+.record-card__date {
+  color: #172033;
+  font-weight: 700;
+}
+.record-card__weight {
+  color: #172033;
+}
+.record-card__note {
+  overflow: hidden;
+  color: #5d6878;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.record-card__note--expanded {
+  white-space: pre-wrap;
+}
+.record-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: auto;
+}
+.record-card__icon-button {
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  padding: 0;
+  border-radius: 999px;
+  color: #31526b;
+}
+.record-card--footer {
+  margin: 0 1rem 1rem;
+  justify-content: flex-end;
+  background: transparent;
+}
 .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
 .status-grid dt { color: #5d6878; }
 .status-grid dd { margin: 0; font-weight: 700; text-align: right; }
@@ -347,7 +422,7 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 }
 @media (min-width: 680px) {
   .form { grid-template-columns: 1fr 1fr; }
-  .form h2, .form button, .form label:last-of-type { grid-column: 1 / -1; }
+  .form h2, .form .form__actions, .form label:last-of-type { grid-column: 1 / -1; }
   .bottom-nav { width: min(760px, 100%); right: auto; left: 50%; transform: translateX(-50%); }
   .sheet-backdrop { padding-bottom: 1rem; }
   .page-header-row {

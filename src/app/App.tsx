@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { WeightEntryDraft, WeightEntryFormMode } from "../components/AddWeightForm";
 import { SidebarDrawer } from "../components/navigation/SidebarDrawer";
 import { BottomNav } from "../components/BottomNav";
 import { RecordSheet } from "../components/RecordSheet";
@@ -21,16 +22,21 @@ import type { WeightPlan, WeightPlanInput } from "../types/plan";
 import type { WeightEntry } from "../types/weight";
 import { sidebarItems, type RootPageId, type UtilityPageId } from "./pages";
 
+type RecordSheetState =
+  | { mode: "create"; entry: null }
+  | { mode: Exclude<WeightEntryFormMode, "create">; entry: WeightEntry };
+
 export function App() {
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
-  const [recordOpen, setRecordOpen] = useState(false);
+  const [recordSheetState, setRecordSheetState] = useState<RecordSheetState | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
   const standalone = isStandalonePWA();
   const { pushToast } = useToast();
+  const recordOpen = recordSheetState !== null;
 
   async function refresh() {
     const [nextEntries, nextPlan, nextStatus] = await Promise.all([listWeightEntries(), getWeightPlan(), getStoragePersistenceStatus()]);
@@ -61,7 +67,7 @@ export function App() {
         }
 
         if (recordOpen) {
-          setRecordOpen(false);
+          setRecordSheetState(null);
         }
       }
     }
@@ -74,18 +80,51 @@ export function App() {
     };
   }, [recordOpen, sidebarOpen]);
 
-  async function handleSave(input: { date: string; weight: number; note?: string }) {
+  async function handleCreate(input: WeightEntryDraft) {
     try {
       await upsertWeightEntry(input);
       setStatus(await requestPersistentStorage());
       await refresh();
       pushToast({ message: "Saved locally.", variant: "success" });
-      setRecordOpen(false);
+      setRecordSheetState(null);
     } catch (error) {
       const message =
         error instanceof Error && error.message.trim()
           ? error.message
           : "Could not save entry.";
+
+      pushToast({ message, variant: "error" });
+    }
+  }
+
+  async function handleUpdate(input: WeightEntryDraft) {
+    try {
+      await upsertWeightEntry(input);
+      setStatus(await requestPersistentStorage());
+      await refresh();
+      pushToast({ message: "Record updated.", variant: "success" });
+      setRecordSheetState(null);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Could not update record.";
+
+      pushToast({ message, variant: "error" });
+    }
+  }
+
+  async function handleDeleteEntry(id: string) {
+    try {
+      await deleteWeightEntry(id);
+      await refresh();
+      pushToast({ message: "Record deleted.", variant: "success" });
+      setRecordSheetState((current) => (current?.entry?.id === id ? null : current));
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Could not delete record.";
 
       pushToast({ message, variant: "error" });
     }
@@ -153,7 +192,9 @@ export function App() {
             standalone={standalone}
             onOpenSidebar={() => setSidebarOpen(true)}
             onOpenPlan={() => handleNavigate("plan")}
-            onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
+            onOpenEntry={(entry) => setRecordSheetState({ mode: "view", entry })}
+            onEditEntry={(entry) => setRecordSheetState({ mode: "edit", entry })}
+            onDeleteEntry={handleDeleteEntry}
           />
         ) : null}
         {utilityPage === null && rootPage === "plan" ? (
@@ -187,9 +228,18 @@ export function App() {
         onSelect={handleOpenUtilityPage}
       />
       {utilityPage === null ? (
-        <BottomNav activePage={rootPage} onNavigate={handleNavigate} onRecord={() => setRecordOpen(true)} />
+        <BottomNav activePage={rootPage} onNavigate={handleNavigate} onRecord={() => setRecordSheetState({ mode: "create", entry: null })} />
       ) : null}
-      <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} onSave={handleSave} />
+      <RecordSheet
+        open={recordOpen}
+        mode={recordSheetState?.mode ?? "create"}
+        entry={recordSheetState?.entry ?? null}
+        onClose={() => setRecordSheetState(null)}
+        onCreate={handleCreate}
+        onUpdate={handleUpdate}
+        onDelete={handleDeleteEntry}
+        onEdit={(entry) => setRecordSheetState({ mode: "edit", entry })}
+      />
     </>
   );
 }
