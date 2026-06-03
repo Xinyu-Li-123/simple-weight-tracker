@@ -150,43 +150,45 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
         <div className="dashboard-card__header">
           <h2>Trend</h2>
           {plan ? (
-            <div className="trend-controls">
-              <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
-                {trendPhaseAllowed ? (
-                  <button
-                    type="button"
-                    className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                    aria-pressed={trendMode === "phase"}
-                    onClick={() => setTrendModePreference("phase")}
-                  >
-                    Phase
-                  </button>
-                ) : null}
+            <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
+              {trendPhaseAllowed ? (
                 <button
                   type="button"
-                  className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                  aria-pressed={trendMode === "full"}
-                  onClick={() => setTrendModePreference("full")}
+                  className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                  aria-pressed={trendMode === "phase"}
+                  onClick={() => setTrendModePreference("phase")}
                 >
-                  Full
+                  Phase
                 </button>
-              </div>
-              <div className="trend-range-toggle" role="tablist" aria-label="Trend date range">
-                {trendRangeOptions.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    className={trendRange === option.id ? "trend-range-toggle__button trend-range-toggle__button--active" : "trend-range-toggle__button"}
-                    aria-pressed={trendRange === option.id}
-                    onClick={() => setTrendRange(option.id)}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+              ) : null}
+              <button
+                type="button"
+                className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                aria-pressed={trendMode === "full"}
+                onClick={() => setTrendModePreference("full")}
+              >
+                Full
+              </button>
             </div>
           ) : null}
         </div>
+        {plan ? (
+          <div className="trend-controls">
+            <div className="trend-range-toggle" role="tablist" aria-label="Trend date range">
+              {trendRangeOptions.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  className={trendRange === option.id ? "trend-range-toggle__button trend-range-toggle__button--active" : "trend-range-toggle__button"}
+                  aria-pressed={trendRange === option.id}
+                  onClick={() => setTrendRange(option.id)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {!plan ? (
           <div className="trend-placeholder">

@@ -698,9 +698,9 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-items: end;
+  justify-content: flex-end;
   gap: 0.4rem;
-  margin-left: auto;
+  margin-top: -0.2rem;
 }
 .trend-range-toggle {
   display: flex;
