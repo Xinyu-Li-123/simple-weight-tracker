@@ -165,7 +165,7 @@ function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) 
             Use generated
           </button>
           {plan ? (
-            <button type="button" className="ghost plan-form__delete" onClick={onRequestDeletePlan} disabled={busy}>
+            <button type="button" className="ghost ghost-danger plan-form__delete" onClick={onRequestDeletePlan} disabled={busy}>
               Delete plan
             </button>
           ) : null}

@@ -55,7 +55,12 @@ export function WeightRecordCard({
             </button>
           ) : null}
           {onDelete ? (
-            <button type="button" className="ghost record-card__icon-button" onClick={onDelete} aria-label={`Delete record for ${entry.date}`}>
+            <button
+              type="button"
+              className="ghost ghost-danger record-card__icon-button record-card__icon-button--danger"
+              onClick={onDelete}
+              aria-label={`Delete record for ${entry.date}`}
+            >
               <Trash2 aria-hidden="true" size={16} strokeWidth={2.2} />
             </button>
           ) : null}

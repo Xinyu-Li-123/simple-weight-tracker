@@ -21,6 +21,10 @@ button {
 button.danger { background: #a12631; }
 button.secondary { background: #31526b; }
 button.ghost { background: transparent; color: #31526b; padding: 0.4rem 0.5rem; }
+button.ghost-danger {
+  color: #a12631;
+  background: rgba(161, 38, 49, 0.08);
+}
 input, select, textarea {
   width: 100%;
   border: 1px solid #d8dee6;
@@ -130,6 +134,10 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   padding: 0;
   border-radius: 999px;
   color: #31526b;
+}
+.record-card__icon-button--danger {
+  color: #a12631;
+  background: rgba(161, 38, 49, 0.1);
 }
 .record-card--footer {
   width: auto;
@@ -468,6 +476,7 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   display: flex;
   justify-content: flex-end;
   gap: 0.7rem;
+  flex-wrap: nowrap;
   padding: 0 1.1rem 1.1rem;
 }
 @media (min-width: 680px) {
@@ -730,6 +739,7 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 }
 .plan-form__delete {
   margin-left: auto;
+  font-weight: 700;
 }
 @media (max-width: 560px) {
   .plan-form__grid {
@@ -740,8 +750,5 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   }
   .plan-form__delete {
     margin-left: 0;
-  }
-  .confirm-dialog__actions {
-    display: grid;
   }
 }
