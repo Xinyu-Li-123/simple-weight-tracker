@@ -72,7 +72,8 @@ export function AddWeightForm({
   }
 
   return (
-    <form className="card form" onSubmit={handleSubmit}>
+    // Set form bg color to transparent, b/c some weird Firefox quirk makes the bottom left corner not rounded like other corners
+    <form className="card form" style={{ backgroundColor: 'rgba(0,0,0,0)' }} onSubmit={handleSubmit}>
       <label className="form-field">
         Date
         <input
