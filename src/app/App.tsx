@@ -75,11 +75,20 @@ export function App() {
   }, [recordOpen, sidebarOpen]);
 
   async function handleSave(input: { date: string; weight: number; note?: string }) {
-    await upsertWeightEntry(input);
-    setStatus(await requestPersistentStorage());
-    await refresh();
-    pushToast({ message: "Saved locally.", variant: "success" });
-    setRecordOpen(false);
+    try {
+      await upsertWeightEntry(input);
+      setStatus(await requestPersistentStorage());
+      await refresh();
+      pushToast({ message: "Saved locally.", variant: "success" });
+      setRecordOpen(false);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message
+          : "Could not save entry.";
+
+      pushToast({ message, variant: "error" });
+    }
   }
 
   async function exportWith(kind: "json" | "csv" | "md" | "txt") {

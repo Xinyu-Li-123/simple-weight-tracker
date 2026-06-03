@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MAX_WEIGHT_ENTRY_NOTE_LENGTH } from "../db/weightEntryValidation";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -59,7 +60,13 @@ export function AddWeightForm({ onSave, autoFocusWeight = false, selectWeightOnM
       </label>
       <label>
         Note
-        <textarea rows={3} value={note} onChange={(event) => setNote(event.target.value)} placeholder="optional" />
+        <textarea
+          rows={3}
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="optional"
+          maxLength={MAX_WEIGHT_ENTRY_NOTE_LENGTH}
+        />
       </label>
       <button type="submit" disabled={busy}>{busy ? "Saving..." : "Save"}</button>
     </form>
