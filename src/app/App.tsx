@@ -3,6 +3,7 @@ import { SidebarDrawer } from "../components/navigation/SidebarDrawer";
 import { BottomNav } from "../components/BottomNav";
 import { RecordSheet } from "../components/RecordSheet";
 import { deleteWeightEntry, listWeightEntries, upsertWeightEntry } from "../db/weightEntries";
+import { deleteWeightPlan, getWeightPlan, saveWeightPlan } from "../db/weightPlan";
 import { downloadTextFile } from "../export/downloadFile";
 import { createCsv } from "../export/exportCsv";
 import { createJsonBackup } from "../export/exportJson";
@@ -16,6 +17,7 @@ import { DataSafetyPage } from "../pages/utility/DataSafetyPage";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import { useToast } from "../toast/useToast";
+import type { WeightPlan, WeightPlanInput } from "../types/plan";
 import type { WeightEntry } from "../types/weight";
 import { sidebarItems, type RootPageId, type UtilityPageId } from "./pages";
 
@@ -25,19 +27,22 @@ export function App() {
   const [recordOpen, setRecordOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
+  const [plan, setPlan] = useState<WeightPlan | null>(null);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
   const standalone = isStandalonePWA();
   const { pushToast } = useToast();
 
   async function refresh() {
-    const [nextEntries, nextStatus] = await Promise.all([listWeightEntries(), getStoragePersistenceStatus()]);
+    const [nextEntries, nextPlan, nextStatus] = await Promise.all([listWeightEntries(), getWeightPlan(), getStoragePersistenceStatus()]);
     setEntries(nextEntries);
+    setPlan(nextPlan);
     setStatus(nextStatus);
   }
 
   useEffect(() => {
-    void Promise.all([listWeightEntries(), getStoragePersistenceStatus()]).then(([nextEntries, nextStatus]) => {
+    void Promise.all([listWeightEntries(), getWeightPlan(), getStoragePersistenceStatus()]).then(([nextEntries, nextPlan, nextStatus]) => {
       setEntries(nextEntries);
+      setPlan(nextPlan);
       setStatus(nextStatus);
     });
   }, []);
@@ -78,9 +83,9 @@ export function App() {
   }
 
   async function exportWith(kind: "json" | "csv" | "md" | "txt") {
-    const current = await listWeightEntries();
+    const [current, currentPlan] = await Promise.all([listWeightEntries(), getWeightPlan()]);
     const date = new Date().toISOString().slice(0, 10);
-    if (kind === "json") downloadTextFile(`weight-backup-${date}.json`, createJsonBackup(current), "application/json");
+    if (kind === "json") downloadTextFile(`weight-backup-${date}.json`, createJsonBackup(current, currentPlan), "application/json");
     if (kind === "csv") downloadTextFile(`weight-log-${date}.csv`, createCsv(current), "text/csv");
     if (kind === "md") downloadTextFile(`weight-log-${date}.md`, createMarkdown(current), "text/markdown");
     if (kind === "txt") downloadTextFile(`weight-log-${date}.txt`, createTxt(current), "text/plain");
@@ -89,9 +94,9 @@ export function App() {
 
   async function handleImport(text: string) {
     try {
-      const count = await importJsonBackupText(text);
+      const result = await importJsonBackupText(text);
       await refresh();
-      pushToast({ message: `Imported ${count} entries.`, variant: "success" });
+      pushToast({ message: `Imported ${result.entriesCount} entries${result.importedPlan ? " and plan" : ""}.`, variant: "success" });
     } catch (error) {
       const message =
         error instanceof Error && error.message.trim()
@@ -100,6 +105,19 @@ export function App() {
 
       pushToast({ message, variant: "error" });
     }
+  }
+
+
+  async function handleSavePlan(input: WeightPlanInput) {
+    await saveWeightPlan(input);
+    await refresh();
+    pushToast({ message: "Plan saved.", variant: "success" });
+  }
+
+  async function handleDeletePlan() {
+    await deleteWeightPlan();
+    await refresh();
+    pushToast({ message: "Plan deleted.", variant: "success" });
   }
 
   async function handleRequestPersistentStorage() {
@@ -122,13 +140,20 @@ export function App() {
         {utilityPage === null && rootPage === "home" ? (
           <HomePage
             entries={entries}
+            plan={plan}
             standalone={standalone}
             onOpenSidebar={() => setSidebarOpen(true)}
+            onOpenPlan={() => handleNavigate("plan")}
             onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
           />
         ) : null}
         {utilityPage === null && rootPage === "plan" ? (
-          <PlanPage onOpenSidebar={() => setSidebarOpen(true)} />
+          <PlanPage
+            plan={plan}
+            onOpenSidebar={() => setSidebarOpen(true)}
+            onSavePlan={handleSavePlan}
+            onDeletePlan={handleDeletePlan}
+          />
         ) : null}
         {utilityPage === "data-safety" ? (
           <DataSafetyPage

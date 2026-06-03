@@ -3,14 +3,16 @@ import type { WeightEntry } from "../types/weight";
 type Props = {
   entries: WeightEntry[];
   onDelete: (id: string) => Promise<void>;
+  title?: string;
+  emptyMessage?: string;
 };
 
-export function WeightList({ entries, onDelete }: Props) {
+export function WeightList({ entries, onDelete, title = "History", emptyMessage = "No entries yet." }: Props) {
   return (
     <section className="card">
-      <h2>History</h2>
+      <h2>{title}</h2>
       {entries.length === 0 ? (
-        <p className="muted">No entries yet.</p>
+        <p className="muted">{emptyMessage}</p>
       ) : (
         <ul className="entry-list">
           {entries.map((entry) => (
