@@ -1,5 +1,5 @@
 import { StorageStatusCard } from "../../components/StorageStatusCard";
-import { TopBar } from "../../components/navigation/TopBar";
+import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
 import type { StoragePersistenceStatus } from "../../pwa/storagePersistence";
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 export function DataSafetyPage({ standalone, status, onBack, onRequestPersistentStorage }: Props) {
   return (
     <>
-      <TopBar title="Data Safety" leftAction={{ kind: "back", onClick: onBack }} />
+      <PageHeaderRow leftAction={{ kind: "back", onClick: onBack }} />
       <StorageStatusCard standalone={standalone} status={status} onRequest={onRequestPersistentStorage} />
     </>
   );

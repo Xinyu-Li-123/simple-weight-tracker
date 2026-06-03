@@ -17,12 +17,11 @@ import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import { useToast } from "../toast/useToast";
 import type { WeightEntry } from "../types/weight";
-import { sidebarItems, type HomeTabId, type RootPageId, type UtilityPageId } from "./pages";
+import { sidebarItems, type RootPageId, type UtilityPageId } from "./pages";
 
 export function App() {
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
-  const [homeTab, setHomeTab] = useState<HomeTabId>("dashboard");
   const [recordOpen, setRecordOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
@@ -122,11 +121,9 @@ export function App() {
       <main className="shell">
         {utilityPage === null && rootPage === "home" ? (
           <HomePage
-            activeTab={homeTab}
             entries={entries}
             standalone={standalone}
             onOpenSidebar={() => setSidebarOpen(true)}
-            onTabChange={setHomeTab}
             onDelete={async (id) => { await deleteWeightEntry(id); await refresh(); }}
           />
         ) : null}

@@ -63,23 +63,21 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 .storage-warning p { margin: 0.25rem 0 0; }
 .storage-warning button { flex: none; background: #5d4b00; }
 .backup-actions { display: grid; gap: 0.75rem; }
-.top-bar {
+.page-header-row {
   position: sticky;
   top: 0;
   z-index: 10;
   margin: 0 -1rem 0.75rem;
-  padding: max(0.6rem, env(safe-area-inset-top)) 1rem 0.75rem;
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  padding: max(0.6rem, env(safe-area-inset-top)) 1rem 0.6rem;
   border-bottom: 1px solid #d8dee6;
   background: rgba(244, 246, 248, 0.94);
   backdrop-filter: blur(18px);
 }
-.top-bar__main {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr 2.5rem;
-  align-items: center;
-  min-height: 2.5rem;
-}
-.top-bar__icon-button {
+.page-header-row__icon-button {
   display: grid;
   place-items: center;
   width: 2.5rem;
@@ -89,36 +87,25 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   background: #eef3f8;
   color: #172033;
 }
-.top-bar__spacer {
-  width: 2.5rem;
-  height: 2.5rem;
+.page-header-row__content {
+  min-width: 0;
 }
-.top-bar__title {
-  margin: 0;
-  text-align: center;
-  font-size: 1.1rem;
-  letter-spacing: -0.02em;
-}
-.top-bar__title--empty {
-  display: block;
-}
-.top-bar__tabs {
+.top-tabs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.45rem;
-  margin-top: 0.75rem;
   padding: 0.3rem;
   border-radius: 18px;
   background: rgba(23, 32, 51, 0.05);
 }
-.top-bar__tab {
+.top-tabs__tab {
   padding: 0.72rem 0.85rem;
   border-radius: 14px;
   background: transparent;
   color: #5d6878;
   font-weight: 700;
 }
-.top-bar__tab--active {
+.top-tabs__tab--active {
   background: white;
   color: #172033;
   box-shadow: 0 8px 18px rgba(23, 32, 51, 0.08);
@@ -363,7 +350,7 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   .form h2, .form button, .form label:last-of-type { grid-column: 1 / -1; }
   .bottom-nav { width: min(760px, 100%); right: auto; left: 50%; transform: translateX(-50%); }
   .sheet-backdrop { padding-bottom: 1rem; }
-  .top-bar {
+  .page-header-row {
     margin-right: 0;
     margin-left: 0;
     border: 1px solid #d8dee6;

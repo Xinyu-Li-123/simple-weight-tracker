@@ -1,5 +1,5 @@
 import { BackupPanel } from "../../components/BackupPanel";
-import { TopBar } from "../../components/navigation/TopBar";
+import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
 
 type ExportKind = "json" | "csv" | "md" | "txt";
 
@@ -12,7 +12,7 @@ type Props = {
 export function BackupExportPage({ onBack, onExport, onImportJson }: Props) {
   return (
     <>
-      <TopBar title="Backup and export" leftAction={{ kind: "back", onClick: onBack }} />
+      <PageHeaderRow leftAction={{ kind: "back", onClick: onBack }} />
       <BackupPanel
         onExportJson={() => onExport("json")}
         onExportCsv={() => onExport("csv")}
