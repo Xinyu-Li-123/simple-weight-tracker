@@ -158,22 +158,22 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
             <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
               {trendPhaseAllowed ? (
                 <button
-                    type="button"
-                    className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                    aria-pressed={trendMode === "phase"}
-                    onClick={() => updatePreferences({ trendModePreference: "phase" })}
-                  >
-                    Phase
-                  </button>
+                  type="button"
+                  className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                  aria-pressed={trendMode === "phase"}
+                  onClick={() => updatePreferences({ trendModePreference: "phase" })}
+                >
+                  Phase
+                </button>
               ) : null}
               <button
-                  type="button"
-                  className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                  aria-pressed={trendMode === "full"}
-                  onClick={() => updatePreferences({ trendModePreference: "full" })}
-                >
-                  Full
-                </button>
+                type="button"
+                className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                aria-pressed={trendMode === "full"}
+                onClick={() => updatePreferences({ trendModePreference: "full" })}
+              >
+                Full
+              </button>
             </div>
           ) : null}
         </div>
@@ -305,7 +305,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
 
   function x(timestamp: number) {
     if (rangeEnd <= rangeStart) return padLeft;
-    return padLeft + ((timestamp - rangeStart) / (rangeEnd - rangeStart)) * plotWidth;
+    return 70 + padLeft + ((timestamp - rangeStart) / (rangeEnd - rangeStart)) * plotWidth * 0.9;
   }
 
   function y(value: number) {

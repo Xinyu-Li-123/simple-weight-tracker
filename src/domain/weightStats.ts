@@ -181,7 +181,7 @@ function buildTrendTicks(range: TrendRange, rangeStart: number, rangeEnd: number
   }
 
   if (range === "10d" || range === "1m") {
-    const desiredTicks = range === "10d" ? 3 : 4;
+    const desiredTicks: number = range === "10d" ? 3 : 4;
     return dedupeTicks(
       Array.from({ length: desiredTicks }, (_, index) => {
         const ratio = desiredTicks === 1 ? 0 : index / (desiredTicks - 1);
