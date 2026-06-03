@@ -177,7 +177,9 @@ export function App() {
         onClose={() => setSidebarOpen(false)}
         onSelect={handleOpenUtilityPage}
       />
-      <BottomNav activePage={rootPage} onNavigate={handleNavigate} onRecord={() => setRecordOpen(true)} />
+      {utilityPage === null ? (
+        <BottomNav activePage={rootPage} onNavigate={handleNavigate} onRecord={() => setRecordOpen(true)} />
+      ) : null}
       <RecordSheet open={recordOpen} onClose={() => setRecordOpen(false)} onSave={handleSave} />
     </>
   );
