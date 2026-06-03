@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getPlanSummary } from "../../../domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "../../../domain/trend";
-import { getChartPoints } from "../../../domain/weightStats";
+import { getTrendChartData, type TrendChartData, type TrendRange } from "../../../domain/weightStats";
 import type { WeightPlan } from "../../../types/plan";
 import type { WeightEntry } from "../../../types/weight";
 
@@ -19,23 +19,35 @@ type ActiveRange = {
   toKg: number;
 };
 
-type ChartPoint = {
-  date: string;
-  weightKg: number;
-  movingAverageKg: number | null;
-};
+const trendRangeOptions: Array<{ id: TrendRange; label: string }> = [
+  { id: "10d", label: "10D" },
+  { id: "1m", label: "1M" },
+  { id: "3m", label: "3M" },
+  { id: "6m", label: "6M" },
+  { id: "1y", label: "1Y" },
+  { id: "all", label: "All" },
+];
 
 export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
-  const [mode, setMode] = useState<DashboardMode>("phase");
+  const [progressMode, setProgressMode] = useState<DashboardMode>("phase");
+  const [trendRange, setTrendRange] = useState<TrendRange>("1m");
+  const [trendModePreference, setTrendModePreference] = useState<DashboardMode>("phase");
   const summary = getPlanSummary({ entries, plan });
-  const chartPoints = getChartPoints(entries, 30);
-  const activeRange = getActiveRange({
-    mode,
+  const chartData = getTrendChartData(entries, trendRange);
+  const progressRange = getActiveRange({
+    mode: progressMode,
+    plan,
+    currentPhase: summary.currentPhase,
+  });
+  const trendPhaseAllowed = isShortTrendRange(trendRange);
+  const trendMode = trendPhaseAllowed ? trendModePreference : "full";
+  const trendRangeBand = getActiveRange({
+    mode: trendMode,
     plan,
     currentPhase: summary.currentPhase,
   });
   const progressMeter = getProgressMeter({
-    mode,
+    mode: progressMode,
     plan,
     latestWeightKg: summary.latestWeightKg,
     currentPhase: summary.currentPhase,
@@ -72,46 +84,39 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
         </section>
       ) : null}
 
-      <section className="dashboard-mode-row" aria-label="Dashboard view mode">
-        <span className="dashboard-mode-row__label">View</span>
-        <div className="dashboard-mode-toggle" role="tablist" aria-label="Dashboard scope">
-          <button
-            type="button"
-            className={mode === "phase" ? "dashboard-mode-toggle__button dashboard-mode-toggle__button--active" : "dashboard-mode-toggle__button"}
-            aria-pressed={mode === "phase"}
-            onClick={() => setMode("phase")}
-            disabled={!plan}
-          >
-            Phase
-          </button>
-          <button
-            type="button"
-            className={mode === "full" ? "dashboard-mode-toggle__button dashboard-mode-toggle__button--active" : "dashboard-mode-toggle__button"}
-            aria-pressed={mode === "full"}
-            onClick={() => setMode("full")}
-            disabled={!plan}
-          >
-            Full
-          </button>
-        </div>
-      </section>
-
       <section className={plan ? "card dashboard-card" : "card dashboard-card dashboard-card--disabled"}>
         <div className="dashboard-card__header">
-          <div>
-            <h2>Progress</h2>
-            {/* <p className="muted">{mode === "phase" ? "Current milestone segment." : "Full route from start to target."}</p> */}
-          </div>
+          <h2>Progress</h2>
+          {plan ? (
+            <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Progress scope">
+              <button
+                type="button"
+                className={progressMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                aria-pressed={progressMode === "phase"}
+                onClick={() => setProgressMode("phase")}
+              >
+                Phase
+              </button>
+              <button
+                type="button"
+                className={progressMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                aria-pressed={progressMode === "full"}
+                onClick={() => setProgressMode("full")}
+              >
+                Full
+              </button>
+            </div>
+          ) : null}
         </div>
 
-        {activeRange ? (
+        {progressRange ? (
           <>
             <HalfCircleGauge
-              range={activeRange}
+              range={progressRange}
               currentWeightKg={summary.latestWeightKg}
               progressPct={progressMeter?.progressPct ?? null}
               totalLossKg={summary.metrics.totalLossKg}
-              ariaLabel={`${mode === "phase" ? "Current phase" : "Full plan"} progress`}
+              ariaLabel={`${progressMode === "phase" ? "Current phase" : "Full plan"} progress`}
             />
 
             <div className="dashboard-note" data-tone={plan ? summary.trend.label : undefined}>
@@ -143,19 +148,54 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
 
       <section className={plan ? "card dashboard-card" : "card dashboard-card dashboard-card--disabled"}>
         <div className="dashboard-card__header">
-          <div>
-            <h2>Trend</h2>
-          </div>
+          <h2>Trend</h2>
+          {plan ? (
+            <div className="trend-controls">
+              <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
+                {trendPhaseAllowed ? (
+                  <button
+                    type="button"
+                    className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                    aria-pressed={trendMode === "phase"}
+                    onClick={() => setTrendModePreference("phase")}
+                  >
+                    Phase
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                  aria-pressed={trendMode === "full"}
+                  onClick={() => setTrendModePreference("full")}
+                >
+                  Full
+                </button>
+              </div>
+              <div className="trend-range-toggle" role="tablist" aria-label="Trend date range">
+                {trendRangeOptions.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={trendRange === option.id ? "trend-range-toggle__button trend-range-toggle__button--active" : "trend-range-toggle__button"}
+                    aria-pressed={trendRange === option.id}
+                    onClick={() => setTrendRange(option.id)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         {!plan ? (
           <div className="trend-placeholder">
             <p className="muted">Set up a plan to unlock the phase and full trend views.</p>
           </div>
-        ) : activeRange && chartPoints.length >= 2 ? (
-          <WeightTrendChart points={chartPoints} range={activeRange} />
+        ) : trendRangeBand && chartData.points.length >= 2 ? (
+          <WeightTrendChart data={chartData} range={trendRangeBand} mode={trendMode} />
         ) : (
-          <p className="muted">Record at least two weights to draw a trend.</p>
+          <p className="muted">Record at least two weights in this range to draw a trend.</p>
         )}
       </section>
     </>
@@ -240,8 +280,10 @@ function HalfCircleGauge(input: {
   );
 }
 
-function WeightTrendChart({ points, range }: { points: ChartPoint[]; range: ActiveRange }) {
-  const padding = Math.max(0.5, (range.fromKg - range.toKg) * 0.08);
+function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: ActiveRange; mode: DashboardMode }) {
+  const { points, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
+  const paddingMultiplier = mode === "phase" ? 0.14 : 0.08;
+  const padding = Math.max(0.5, (range.fromKg - range.toKg) * paddingMultiplier);
   const minY = range.toKg - padding;
   const maxY = range.fromKg + padding;
   const width = 720;
@@ -252,38 +294,50 @@ function WeightTrendChart({ points, range }: { points: ChartPoint[]; range: Acti
   const padBottom = 36;
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
+  const clipId = `trend-clip-${rangeStart}-${rangeEnd}-${Math.round(range.fromKg * 10)}-${Math.round(range.toKg * 10)}`;
 
-  function x(index: number) {
-    if (points.length <= 1) return padLeft;
-    return padLeft + (index / (points.length - 1)) * plotWidth;
+  function x(timestamp: number) {
+    if (rangeEnd <= rangeStart) return padLeft;
+    return padLeft + ((timestamp - rangeStart) / (rangeEnd - rangeStart)) * plotWidth;
   }
 
   function y(value: number) {
     return padTop + ((maxY - value) / (maxY - minY)) * plotHeight;
   }
 
-  const weightPath = toPath(points.map((point, index) => [x(index), y(point.weightKg)]));
+  const weightPath = toPath(points.map((point) => [x(point.timestamp), y(point.weightKg)]));
   const averagePath = toPath(
     points
-      .map((point, index) => (point.movingAverageKg === null ? null : [x(index), y(point.movingAverageKg)] as [number, number]))
+      .map((point) => (point.movingAverageKg === null ? null : [x(point.timestamp), y(point.movingAverageKg)] as [number, number]))
       .filter((point): point is [number, number] => point !== null),
   );
 
   return (
     <div className="chart-wrap" role="img" aria-label="Weight trend chart">
       <svg viewBox={`0 0 ${width} ${height}`} className="weight-chart">
+        <defs>
+          <clipPath id={clipId}>
+            <rect x={padLeft} y={padTop} width={plotWidth} height={plotHeight} />
+          </clipPath>
+        </defs>
         <line x1={padLeft} x2={width - padRight} y1={padTop} y2={padTop} className="chart-grid-line" />
         <line x1={padLeft} x2={width - padRight} y1={padTop + plotHeight / 2} y2={padTop + plotHeight / 2} className="chart-grid-line" />
         <line x1={padLeft} x2={width - padRight} y1={height - padBottom} y2={height - padBottom} className="chart-grid-line" />
         <text x={4} y={padTop + 4} className="chart-label">{formatKg(maxY)}</text>
         <text x={4} y={height - padBottom + 4} className="chart-label">{formatKg(minY)}</text>
-        <path d={weightPath} className="chart-line chart-line--weight" />
-        {averagePath ? <path d={averagePath} className="chart-line chart-line--average" /> : null}
-        {points.map((point, index) => (
-          <circle key={point.date} cx={x(index)} cy={y(point.weightKg)} r="3.2" className="chart-point" />
+        <g clipPath={`url(#${clipId})`}>
+          <path d={weightPath} className="chart-line chart-line--weight" />
+          {!usesWeeklyAverage && averagePath ? <path d={averagePath} className="chart-line chart-line--average" /> : null}
+          {points.map((point) => (
+            <circle key={`${point.date}-${point.timestamp}`} cx={x(point.timestamp)} cy={y(point.weightKg)} r="3.2" className="chart-point" />
+          ))}
+        </g>
+        {ticks.map((tick) => (
+          <g key={tick.timestamp}>
+            <line x1={x(tick.timestamp)} x2={x(tick.timestamp)} y1={height - padBottom} y2={height - padBottom + 6} className="chart-tick-line" />
+            <text x={x(tick.timestamp)} y={height - 9} textAnchor="middle" className="chart-label">{tick.label}</text>
+          </g>
         ))}
-        <text x={padLeft} y={height - 9} className="chart-label">{points[0]?.date}</text>
-        <text x={width - padRight} y={height - 9} textAnchor="end" className="chart-label">{points[points.length - 1]?.date}</text>
       </svg>
     </div>
   );
@@ -434,4 +488,8 @@ function formatKcal(value: number | null): string {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
+}
+
+function isShortTrendRange(range: TrendRange): boolean {
+  return range === "10d" || range === "1m";
 }

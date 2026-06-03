@@ -498,42 +498,6 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   }
 }
 
-.dashboard-mode-row {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  margin: 0.6rem 0 0;
-}
-.dashboard-mode-row__label {
-  color: #5d6878;
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-.dashboard-mode-toggle {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 9.5rem);
-  padding: 0.14rem;
-  border: 1px solid #d8dee6;
-  border-radius: 999px;
-  background: rgba(23, 32, 51, 0.04);
-}
-.dashboard-mode-toggle__button {
-  padding: 0.44rem 0.7rem;
-  border-radius: 999px;
-  background: transparent;
-  color: #5d6878;
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-.dashboard-mode-toggle__button--active {
-  background: white;
-  color: #172033;
-  box-shadow: 0 4px 10px rgba(23, 32, 51, 0.06);
-}
-.dashboard-mode-toggle__button:disabled {
-  color: #99a2af;
-}
 .dashboard-card {
   display: grid;
   gap: 0.8rem;
@@ -543,12 +507,37 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
 }
 .dashboard-card__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.8rem;
+  flex-wrap: wrap;
 }
 .dashboard-card__header h2 {
-  margin: 0 0 0.25rem;
+  margin: 0;
+}
+.dashboard-card__mode-toggle {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  min-width: 0;
+  padding: 0.1rem;
+  border: 1px solid #d8dee6;
+  border-radius: 999px;
+  background: rgba(23, 32, 51, 0.04);
+}
+.dashboard-card__mode-button {
+  padding: 0.3rem 0.56rem;
+  border-radius: 999px;
+  background: transparent;
+  color: #5d6878;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.dashboard-card__mode-button--active {
+  background: white;
+  color: #172033;
+  box-shadow: 0 4px 10px rgba(23, 32, 51, 0.06);
 }
 .dashboard-card__header p {
   margin: 0;
@@ -696,10 +685,40 @@ label { display: grid; gap: 0.35rem; font-weight: 700; }
   stroke: #5d6878;
   stroke-width: 2;
 }
+.chart-tick-line {
+  stroke: #c4ccda;
+  stroke-width: 1;
+}
 .chart-label {
   fill: #5d6878;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
+}
+.trend-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: end;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+.trend-range-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+.trend-range-toggle__button {
+  padding: 0.34rem 0.52rem;
+  border-radius: 999px;
+  background: rgba(23, 32, 51, 0.05);
+  color: #5d6878;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+.trend-range-toggle__button--active {
+  background: #172033;
+  color: white;
 }
 .trend-placeholder {
   display: grid;
