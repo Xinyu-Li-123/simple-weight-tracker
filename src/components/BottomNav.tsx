@@ -1,8 +1,8 @@
-import { recordAction, navigationItems, type PageId } from "../app/pages";
+import { bottomNavItems, recordAction, type RootPageId } from "../app/pages";
 
 type Props = {
-  activePage: PageId;
-  onNavigate: (page: PageId) => void;
+  activePage: RootPageId;
+  onNavigate: (page: RootPageId) => void;
   onRecord: () => void;
 };
 
@@ -11,7 +11,7 @@ export function BottomNav({ activePage, onNavigate, onRecord }: Props) {
 
   return (
     <nav className="bottom-nav" aria-label="Primary navigation">
-      {navigationItems.slice(0, 1).map((item) => (
+      {bottomNavItems.slice(0, 1).map((item) => (
         <button
           key={item.id}
           type="button"
@@ -28,7 +28,7 @@ export function BottomNav({ activePage, onNavigate, onRecord }: Props) {
           <RecordIcon className="bottom-nav__icon bottom-nav__icon--action" aria-hidden="true" strokeWidth={2.4} />
         </span>
       </button>
-      {navigationItems.slice(1).map((item) => (
+      {bottomNavItems.slice(1).map((item) => (
         <button
           key={item.id}
           type="button"

@@ -1,6 +1,6 @@
-import { WeightList } from "../components/WeightList";
-import { useToast } from "../toast/useToast";
-import type { WeightEntry } from "../types/weight";
+import { WeightList } from "../../../components/WeightList";
+import { useToast } from "../../../toast/useToast";
+import type { WeightEntry } from "../../../types/weight";
 
 type Props = {
   entries: WeightEntry[];
@@ -8,8 +8,9 @@ type Props = {
   onDelete: (id: string) => Promise<void>;
 };
 
-export function HomePage({ entries, standalone, onDelete }: Props) {
+export function DashboardTab({ entries, standalone, onDelete }: Props) {
   const { pushToast } = useToast();
+  const recentEntries = entries.slice(0, 3);
 
   return (
     <>
@@ -26,7 +27,7 @@ export function HomePage({ entries, standalone, onDelete }: Props) {
         <h2>Summary</h2>
         <p className="muted">Visualization placeholder. A chart or trend summary will live here in a later slice.</p>
       </section>
-      <WeightList entries={entries} onDelete={onDelete} />
+      <WeightList entries={recentEntries} onDelete={onDelete} />
       <section className="card testing-panel">
         <h2>Testing</h2>
         <section className="testing-panel__section" aria-labelledby="testing-toast-types">
