@@ -20,7 +20,8 @@ export function TopTabs<T extends string>({ tabs, activeTab, onTabChange }: Prop
           aria-pressed={tab.id === activeTab}
           onClick={() => onTabChange(tab.id)}
         >
-          {tab.label}
+          <span className="top-tabs__label">{tab.label}</span>
+          <span className="top-tabs__indicator" aria-hidden="true" />
         </button>
       ))}
     </nav>
