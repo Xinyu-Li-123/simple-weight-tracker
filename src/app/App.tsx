@@ -36,17 +36,12 @@ type ConfirmationRequest = {
   onConfirm: () => Promise<boolean>;
 };
 
-type PendingImport = {
-  text: string;
-};
-
 export function App() {
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
   const [recordSheetState, setRecordSheetState] = useState<RecordSheetState | null>(null);
   const [confirmation, setConfirmation] = useState<ConfirmationRequest | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
-  const [pendingImport, setPendingImport] = useState<PendingImport | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
@@ -58,7 +53,6 @@ export function App() {
 
   function closeConfirmation() {
     setConfirmation(null);
-    setPendingImport(null);
   }
 
   async function refresh() {
@@ -171,27 +165,23 @@ export function App() {
   }
 
   async function handleImport(text: string) {
-    setPendingImport({ text });
     setConfirmation({
       title: "Import backup and replace current data?",
       description: "This will permanently replace your current history and plan with the contents of the selected backup.",
       confirmLabel: "Import and replace",
       tone: "danger",
-      onConfirm: handleConfirmImport,
+      onConfirm: () => handleConfirmImport(text),
     });
   }
 
-  async function handleConfirmImport(): Promise<boolean> {
-    if (!pendingImport) return false;
-
+  async function handleConfirmImport(text: string): Promise<boolean> {
     try {
-      const result = await importJsonBackupText(pendingImport.text);
+      const result = await importJsonBackupText(text);
       await refresh();
       pushToast({
         message: `Restored ${result.entriesCount} entries${result.importedPlan ? " and plan" : ""}.`,
         variant: "success",
       });
-      setPendingImport(null);
       return true;
     } catch (error) {
       const message =
