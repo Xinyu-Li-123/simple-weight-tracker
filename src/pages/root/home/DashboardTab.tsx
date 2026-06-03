@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { getPlanSummary } from "../../../domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "../../../domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "../../../domain/weightStats";
+import type { DashboardMode, DashboardPreferences } from "../../../preferences/types";
 import type { WeightPlan } from "../../../types/plan";
 import type { WeightEntry } from "../../../types/weight";
 
@@ -10,9 +10,9 @@ type Props = {
   plan: WeightPlan | null;
   standalone: boolean;
   onOpenPlan: () => void;
+  preferences: DashboardPreferences;
+  onChangePreferences: (preferences: DashboardPreferences) => void;
 };
-
-type DashboardMode = "phase" | "full";
 
 type ActiveRange = {
   fromKg: number;
@@ -28,10 +28,8 @@ const trendRangeOptions: Array<{ id: TrendRange; label: string }> = [
   { id: "all", label: "All" },
 ];
 
-export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
-  const [progressMode, setProgressMode] = useState<DashboardMode>("phase");
-  const [trendRange, setTrendRange] = useState<TrendRange>("1m");
-  const [trendModePreference, setTrendModePreference] = useState<DashboardMode>("phase");
+export function DashboardTab({ entries, plan, standalone, onOpenPlan, preferences, onChangePreferences }: Props) {
+  const { progressMode, trendModePreference, trendRange } = preferences;
   const summary = getPlanSummary({ entries, plan });
   const chartData = getTrendChartData(entries, trendRange);
   const progressRange = getActiveRange({
@@ -61,6 +59,13 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
     hasPlan: Boolean(plan),
     tdeeKcal: summary.metrics.tdeeKcal,
   });
+
+  function updatePreferences(next: Partial<DashboardPreferences>) {
+    onChangePreferences({
+      ...preferences,
+      ...next,
+    });
+  }
 
   return (
     <>
@@ -93,7 +98,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
                 type="button"
                 className={progressMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
                 aria-pressed={progressMode === "phase"}
-                onClick={() => setProgressMode("phase")}
+                onClick={() => updatePreferences({ progressMode: "phase" })}
               >
                 Phase
               </button>
@@ -101,7 +106,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
                 type="button"
                 className={progressMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
                 aria-pressed={progressMode === "full"}
-                onClick={() => setProgressMode("full")}
+                onClick={() => updatePreferences({ progressMode: "full" })}
               >
                 Full
               </button>
@@ -153,22 +158,22 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
             <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
               {trendPhaseAllowed ? (
                 <button
-                  type="button"
-                  className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                  aria-pressed={trendMode === "phase"}
-                  onClick={() => setTrendModePreference("phase")}
-                >
-                  Phase
-                </button>
+                    type="button"
+                    className={trendMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                    aria-pressed={trendMode === "phase"}
+                    onClick={() => updatePreferences({ trendModePreference: "phase" })}
+                  >
+                    Phase
+                  </button>
               ) : null}
               <button
-                type="button"
-                className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
-                aria-pressed={trendMode === "full"}
-                onClick={() => setTrendModePreference("full")}
-              >
-                Full
-              </button>
+                  type="button"
+                  className={trendMode === "full" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
+                  aria-pressed={trendMode === "full"}
+                  onClick={() => updatePreferences({ trendModePreference: "full" })}
+                >
+                  Full
+                </button>
             </div>
           ) : null}
         </div>
@@ -181,7 +186,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
                   type="button"
                   className={trendRange === option.id ? "trend-range-toggle__button trend-range-toggle__button--active" : "trend-range-toggle__button"}
                   aria-pressed={trendRange === option.id}
-                  onClick={() => setTrendRange(option.id)}
+                  onClick={() => updatePreferences({ trendRange: option.id })}
                 >
                   {option.label}
                 </button>

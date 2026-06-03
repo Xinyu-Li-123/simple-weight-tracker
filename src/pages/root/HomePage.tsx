@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
 import { TopTabs } from "../../components/navigation/TopTabs";
+import type { DashboardPreferences } from "../../preferences/types";
 import type { WeightPlan } from "../../types/plan";
 import type { WeightEntry } from "../../types/weight";
 import { DashboardTab } from "./home/DashboardTab";
@@ -17,6 +18,8 @@ type Props = {
   entries: WeightEntry[];
   plan: WeightPlan | null;
   standalone: boolean;
+  dashboardPreferences: DashboardPreferences;
+  onChangeDashboardPreferences: (preferences: DashboardPreferences) => void;
   onOpenSidebar: () => void;
   onOpenPlan: () => void;
   onOpenEntry: (entry: WeightEntry) => void;
@@ -28,6 +31,8 @@ export function HomePage({
   entries,
   plan,
   standalone,
+  dashboardPreferences,
+  onChangeDashboardPreferences,
   onOpenSidebar,
   onOpenPlan,
   onOpenEntry,
@@ -42,7 +47,14 @@ export function HomePage({
         <TopTabs tabs={homeTabs} activeTab={activeTab} onTabChange={setActiveTab} />
       </PageHeaderRow>
       {activeTab === "dashboard" ? (
-        <DashboardTab entries={entries} plan={plan} standalone={standalone} onOpenPlan={onOpenPlan} />
+        <DashboardTab
+          entries={entries}
+          plan={plan}
+          standalone={standalone}
+          preferences={dashboardPreferences}
+          onChangePreferences={onChangeDashboardPreferences}
+          onOpenPlan={onOpenPlan}
+        />
       ) : (
         <HistoryTab entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onRequestDeleteEntry={onRequestDeleteEntry} />
       )}

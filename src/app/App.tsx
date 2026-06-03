@@ -16,6 +16,8 @@ import { HomePage } from "../pages/root/HomePage";
 import { PlanPage } from "../pages/root/PlanPage";
 import { BackupExportPage } from "../pages/utility/BackupExportPage";
 import { DataSafetyPage } from "../pages/utility/DataSafetyPage";
+import { loadDashboardPreferences, saveDashboardPreferences } from "../preferences/dashboardStorage";
+import type { DashboardPreferences } from "../preferences/types";
 import { isStandalonePWA } from "../pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "../pwa/storagePersistence";
 import { useToast } from "../toast/useToast";
@@ -46,6 +48,7 @@ export function App() {
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
+  const [dashboardPreferences, setDashboardPreferences] = useState<DashboardPreferences>(() => loadDashboardPreferences());
   const standalone = isStandalonePWA();
   const { pushToast } = useToast();
   const recordOpen = recordSheetState !== null;
@@ -69,6 +72,10 @@ export function App() {
       setStatus(nextStatus);
     });
   }, []);
+
+  useEffect(() => {
+    saveDashboardPreferences(dashboardPreferences);
+  }, [dashboardPreferences]);
 
   useEffect(() => {
     if (!recordOpen && !confirmOpen && !sidebarOpen) return;
@@ -273,6 +280,8 @@ export function App() {
             entries={entries}
             plan={plan}
             standalone={standalone}
+            dashboardPreferences={dashboardPreferences}
+            onChangeDashboardPreferences={setDashboardPreferences}
             onOpenSidebar={() => setSidebarOpen(true)}
             onOpenPlan={() => handleNavigate("plan")}
             onOpenEntry={(entry) => setRecordSheetState({ mode: "view", entry })}
