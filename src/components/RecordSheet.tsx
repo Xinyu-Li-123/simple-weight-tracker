@@ -8,17 +8,18 @@ type Props = {
   mode: WeightEntryFormMode;
   entry?: WeightEntry | null;
   onClose: () => void;
+  onCancelEdit: (entry: WeightEntry) => void;
   onCreate: (input: WeightEntryDraft) => Promise<void>;
   onUpdate: (input: WeightEntryDraft) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
   onEdit: (entry: WeightEntry) => void;
 };
 
-export function RecordSheet({ open, mode, entry, onClose, onCreate, onUpdate, onDelete, onEdit }: Props) {
+export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onDelete, onEdit }: Props) {
   if (!open) return null;
 
   const formValue = entry ? { date: entry.date, weight: entry.weight, note: entry.note } : undefined;
-  const title = mode === "create" ? "Record" : mode === "edit" ? "Edit record" : "Record details";
+  const title = mode === "create" ? "Create record" : mode === "edit" ? "Edit record" : "Record details";
 
   async function handleSave(input: WeightEntryDraft) {
     if (mode === "edit") {
@@ -48,15 +49,16 @@ export function RecordSheet({ open, mode, entry, onClose, onCreate, onUpdate, on
           mode={mode}
           initialValue={formValue}
           onSave={handleSave}
+          onCancel={mode === "edit" && entry ? () => onCancelEdit(entry) : undefined}
           autoFocusWeight={mode !== "view"}
           selectWeightOnMount={mode !== "view"}
         />
-        {entry ? (
+        {entry && mode === "view" ? (
           <WeightRecordCard
             entry={entry}
             showSummary={false}
             className="record-card--footer"
-            onEdit={mode === "view" ? () => onEdit(entry) : undefined}
+            onEdit={() => onEdit(entry)}
             onDelete={() => void onDelete(entry.id)}
           />
         ) : null}

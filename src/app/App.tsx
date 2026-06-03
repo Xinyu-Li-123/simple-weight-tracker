@@ -235,6 +235,7 @@ export function App() {
         mode={recordSheetState?.mode ?? "create"}
         entry={recordSheetState?.entry ?? null}
         onClose={() => setRecordSheetState(null)}
+        onCancelEdit={(entry) => setRecordSheetState({ mode: "view", entry })}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDeleteEntry}

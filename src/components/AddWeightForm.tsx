@@ -17,6 +17,7 @@ type Props = {
   mode?: WeightEntryFormMode;
   initialValue?: Partial<WeightEntryDraft>;
   onSave?: (input: WeightEntryDraft) => Promise<void>;
+  onCancel?: () => void;
   autoFocusWeight?: boolean;
   selectWeightOnMount?: boolean;
 };
@@ -25,6 +26,7 @@ export function AddWeightForm({
   mode = "create",
   initialValue,
   onSave,
+  onCancel,
   autoFocusWeight = false,
   selectWeightOnMount = false,
 }: Props) {
@@ -71,7 +73,6 @@ export function AddWeightForm({
 
   return (
     <form className="card form" onSubmit={handleSubmit}>
-      <h2>{isCreate ? "Add weight" : isView ? "Record details" : "Edit record"}</h2>
       <label className="form-field">
         Date
         <input
@@ -109,7 +110,10 @@ export function AddWeightForm({
       </label>
       {!isView ? (
         <div className="form__actions">
-          <button type="submit" disabled={busy}>{busy ? "Saving..." : isCreate ? "Save" : "Save changes"}</button>
+          <button type="submit" disabled={busy}>{busy ? "Saving..." : isCreate ? "Save" : "Save"}</button>
+          {!isCreate && onCancel ? (
+            <button type="button" className="secondary" onClick={onCancel} disabled={busy}>Cancel</button>
+          ) : null}
         </div>
       ) : null}
     </form>
