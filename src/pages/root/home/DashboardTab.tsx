@@ -145,7 +145,6 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan }: Props) {
         <div className="dashboard-card__header">
           <div>
             <h2>Trend</h2>
-            <p className="muted">{mode === "phase" ? "Same records, zoomed to the current phase range." : "Same records across the full plan range."}</p>
           </div>
         </div>
 
