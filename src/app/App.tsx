@@ -16,8 +16,10 @@ import { HomePage } from "@/pages/root/HomePage";
 import { PlanPage } from "@/pages/root/PlanPage";
 import { BackupExportPage } from "@/pages/utility/BackupExportPage";
 import { DataSafetyPage } from "@/pages/utility/DataSafetyPage";
-import { loadDashboardPreferences, saveDashboardPreferences } from "@/preferences/dashboardStorage";
-import type { DashboardPreferences } from "@/preferences/types";
+import { SettingsPage } from "@/pages/utility/SettingsPage";
+import { loadAppPreferences, saveAppPreferences } from "@/preferences/appStorage";
+import { getEffectiveTimezone, getLocalDateInTimezone } from "@/preferences/timezone";
+import type { AppPreferences, DashboardPreferences, TimezonePreference } from "@/preferences/types";
 import { isStandalonePWA } from "@/pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "@/pwa/storagePersistence";
 import { useToast } from "@/toast/useToast";
@@ -48,11 +50,14 @@ export function App() {
   const [entries, setEntries] = useState<WeightEntry[]>([]);
   const [plan, setPlan] = useState<WeightPlan | null>(null);
   const [status, setStatus] = useState<StoragePersistenceStatus | null>(null);
-  const [dashboardPreferences, setDashboardPreferences] = useState<DashboardPreferences>(() => loadDashboardPreferences());
+  const [appPreferences, setAppPreferences] = useState<AppPreferences>(() => loadAppPreferences());
   const standalone = isStandalonePWA();
   const { pushToast } = useToast();
   const recordOpen = recordSheetState !== null;
   const confirmOpen = confirmation !== null;
+  const dashboardPreferences = appPreferences.dashboard;
+  const effectiveTimezone = getEffectiveTimezone(appPreferences.timezone);
+  const defaultDate = getLocalDateInTimezone(effectiveTimezone);
 
   function closeConfirmation() {
     setConfirmation(null);
@@ -74,8 +79,8 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    saveDashboardPreferences(dashboardPreferences);
-  }, [dashboardPreferences]);
+    saveAppPreferences(appPreferences);
+  }, [appPreferences]);
 
   useEffect(() => {
     if (!recordOpen && !confirmOpen && !sidebarOpen) return;
@@ -163,7 +168,7 @@ export function App() {
 
   async function exportWith(kind: "json" | "csv" | "md" | "txt") {
     const [current, currentPlan] = await Promise.all([listWeightEntries(), getWeightPlan()]);
-    const date = new Date().toISOString().slice(0, 10);
+    const date = getLocalDateInTimezone(effectiveTimezone);
     if (kind === "json") downloadTextFile(`weight-backup-${date}.json`, createJsonBackup(current, currentPlan), "application/json");
     if (kind === "csv") downloadTextFile(`weight-log-${date}.csv`, createCsv(current), "text/csv");
     if (kind === "md") downloadTextFile(`weight-log-${date}.md`, createMarkdown(current), "text/markdown");
@@ -229,6 +234,20 @@ export function App() {
     setStatus(await requestPersistentStorage());
   }
 
+  function handleChangeDashboardPreferences(preferences: DashboardPreferences) {
+    setAppPreferences((current) => ({
+      ...current,
+      dashboard: preferences,
+    }));
+  }
+
+  function handleChangeTimezonePreference(preference: TimezonePreference) {
+    setAppPreferences((current) => ({
+      ...current,
+      timezone: preference,
+    }));
+  }
+
   function handleNavigate(page: RootPageId) {
     setRootPage(page);
     setUtilityPage(null);
@@ -281,7 +300,7 @@ export function App() {
             plan={plan}
             standalone={standalone}
             dashboardPreferences={dashboardPreferences}
-            onChangeDashboardPreferences={setDashboardPreferences}
+            onChangeDashboardPreferences={handleChangeDashboardPreferences}
             onOpenSidebar={() => setSidebarOpen(true)}
             onOpenPlan={() => handleNavigate("plan")}
             onOpenEntry={(entry) => setRecordSheetState({ mode: "view", entry })}
@@ -303,6 +322,13 @@ export function App() {
             status={status}
             onBack={() => setUtilityPage(null)}
             onRequestPersistentStorage={handleRequestPersistentStorage}
+          />
+        ) : null}
+        {utilityPage === "settings" ? (
+          <SettingsPage
+            timezonePreference={appPreferences.timezone}
+            onBack={() => setUtilityPage(null)}
+            onChangeTimezonePreference={handleChangeTimezonePreference}
           />
         ) : null}
         {utilityPage === "backup-export" ? (
@@ -332,6 +358,7 @@ export function App() {
         onUpdate={handleUpdate}
         onRequestDelete={requestDeleteEntry}
         onEdit={(entry) => setRecordSheetState({ mode: "edit", entry })}
+        defaultDate={defaultDate}
       />
       <ConfirmDialog
         open={confirmOpen}

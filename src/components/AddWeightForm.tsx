@@ -1,9 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { MAX_WEIGHT_ENTRY_NOTE_LENGTH } from "@/db/weightEntryValidation";
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
 
 export type WeightEntryDraft = {
   date: string;
@@ -20,6 +16,7 @@ type Props = {
   onCancel?: () => void;
   autoFocusWeight?: boolean;
   selectWeightOnMount?: boolean;
+  defaultDate: string;
 };
 
 export function AddWeightForm({
@@ -29,21 +26,15 @@ export function AddWeightForm({
   onCancel,
   autoFocusWeight = false,
   selectWeightOnMount = false,
+  defaultDate,
 }: Props) {
-  const [date, setDate] = useState(initialValue?.date ?? today());
+  const [date, setDate] = useState(initialValue?.date ?? defaultDate);
   const [weight, setWeight] = useState(initialValue?.weight?.toString() ?? "");
   const [note, setNote] = useState(initialValue?.note ?? "");
   const [busy, setBusy] = useState(false);
   const weightInputRef = useRef<HTMLInputElement>(null);
   const isCreate = mode === "create";
   const isView = mode === "view";
-
-  useEffect(() => {
-    setDate(initialValue?.date ?? today());
-    setWeight(initialValue?.weight?.toString() ?? "");
-    setNote(initialValue?.note ?? "");
-    setBusy(false);
-  }, [initialValue?.date, initialValue?.note, initialValue?.weight, mode]);
 
   useEffect(() => {
     if (!autoFocusWeight || isView) return;
@@ -62,7 +53,7 @@ export function AddWeightForm({
     try {
       await onSave({ date, weight: parsedWeight, note });
       if (isCreate) {
-        setDate(today());
+        setDate(defaultDate);
         setWeight("");
         setNote("");
       }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 import { generateMilestones } from "@/domain/milestones";
 import { activityLevelDescriptions, activityLevelLabels, type ActivityLevel, type Sex, type WeightPlan, type WeightPlanInput } from "@/types/plan";
@@ -17,7 +17,7 @@ export function PlanPage({ plan, onOpenSidebar, onSavePlan, onRequestDeletePlan 
   return (
     <>
       <PageHeaderRow leftAction={{ kind: "menu", onClick: onOpenSidebar }} />
-      <PlanEditor plan={plan} onSavePlan={onSavePlan} onRequestDeletePlan={onRequestDeletePlan} />
+      <PlanEditor key={plan?.updatedAt ?? "new"} plan={plan} onSavePlan={onSavePlan} onRequestDeletePlan={onRequestDeletePlan} />
     </>
   );
 }
@@ -38,16 +38,6 @@ function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) 
   const [milestonesText, setMilestonesText] = useState(() => plan?.milestonesKg.join(", ") ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setStartWeightKg(plan?.startWeightKg.toString() ?? "");
-    setTargetWeightKg(plan?.targetWeightKg.toString() ?? "");
-    setHeightCm(plan?.heightCm.toString() ?? "");
-    setSex(plan?.sex ?? defaultSex);
-    setAge(plan?.age.toString() ?? "");
-    setActivityLevel(plan?.activityLevel ?? defaultActivityLevel);
-    setMilestonesText(plan?.milestonesKg.join(", ") ?? "");
-  }, [plan]);
 
   const generatedMilestones = useMemo(() => {
     const start = Number(startWeightKg);

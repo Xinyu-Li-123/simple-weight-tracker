@@ -13,12 +13,14 @@ type Props = {
   onUpdate: (input: WeightEntryDraft) => Promise<void>;
   onRequestDelete: (entry: WeightEntry) => void;
   onEdit: (entry: WeightEntry) => void;
+  defaultDate: string;
 };
 
-export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit }: Props) {
+export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit, defaultDate }: Props) {
   if (!open) return null;
 
   const formValue = entry ? { date: entry.date, weight: entry.weight, note: entry.note } : undefined;
+  const formKey = entry ? `${mode}:${entry.id}:${entry.updatedAt}` : `${mode}:${defaultDate}`;
   const title = mode === "create" ? "Create record" : mode === "edit" ? "Edit record" : "Record details";
 
   async function handleSave(input: WeightEntryDraft) {
@@ -46,8 +48,10 @@ export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate
           </button>
         </div>
         <AddWeightForm
+          key={formKey}
           mode={mode}
           initialValue={formValue}
+          defaultDate={defaultDate}
           onSave={handleSave}
           onCancel={mode === "edit" && entry ? () => onCancelEdit(entry) : undefined}
           autoFocusWeight={mode !== "view"}

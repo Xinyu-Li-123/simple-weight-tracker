@@ -44,11 +44,13 @@ export function ToastProvider({ children }: Props) {
   }
 
   useEffect(() => {
+    const timers = timersRef.current;
+
     return () => {
-      for (const timer of timersRef.current.values()) {
+      for (const timer of timers.values()) {
         window.clearTimeout(timer);
       }
-      timersRef.current.clear();
+      timers.clear();
     };
   }, []);
 

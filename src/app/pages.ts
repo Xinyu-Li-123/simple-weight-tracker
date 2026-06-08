@@ -1,7 +1,7 @@
 import { House, SquarePen, Target, type LucideIcon } from "lucide-react";
 
 export type RootPageId = "home" | "plan";
-export type UtilityPageId = "data-safety" | "backup-export";
+export type UtilityPageId = "settings" | "data-safety" | "backup-export";
 
 export type BottomNavItem = {
   id: RootPageId;
@@ -21,6 +21,11 @@ export const bottomNavItems: BottomNavItem[] = [
 ];
 
 export const sidebarItems: SidebarItem[] = [
+  {
+    id: "settings",
+    label: "Settings",
+    description: "Date, time, and app behavior preferences.",
+  },
   {
     id: "data-safety",
     label: "Data Safety",

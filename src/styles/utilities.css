@@ -24,3 +24,15 @@
   border: 1px solid rgba(161, 38, 49, 0.2);
   font-weight: 700;
 }
+.settings-card {
+  display: grid;
+  gap: 1rem;
+}
+.settings-card h2,
+.settings-card h3 {
+  margin: 0;
+}
+.settings-section {
+  display: grid;
+  gap: 1rem;
+}
