@@ -54,3 +54,7 @@ Then configure GitHub Pages to publish from the `gh-pages` branch.
 ## Important data boundary
 
 The app code is hosted by GitHub Pages. Weight data stays in the user's local IndexedDB. Export JSON backups before changing device, deleting the app, clearing website data, or changing the deployment URL.
+
+## Credit
+
+- App Icon: <a href="https://www.flaticon.com/free-icons/mint" title="mint icons">Mint icons created by LAFS - Flaticon</a>
