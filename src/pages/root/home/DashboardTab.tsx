@@ -1,9 +1,9 @@
-import { getPlanSummary } from "../../../domain/planSummary";
-import { trendLabelDescription, trendLabelText, type TrendLabel } from "../../../domain/trend";
-import { getTrendChartData, type TrendChartData, type TrendRange } from "../../../domain/weightStats";
-import type { DashboardMode, DashboardPreferences } from "../../../preferences/types";
-import type { WeightPlan } from "../../../types/plan";
-import type { WeightEntry } from "../../../types/weight";
+import { getPlanSummary } from "@/domain/planSummary";
+import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
+import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
+import type { DashboardMode, DashboardPreferences } from "@/preferences/types";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
 
 type Props = {
   entries: WeightEntry[];

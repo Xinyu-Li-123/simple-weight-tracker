@@ -1,5 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
-import type { WeightEntry } from "../types/weight";
+import type { WeightEntry } from "@/types/weight";
 
 type Props = {
   entry: WeightEntry;

@@ -1,5 +1,5 @@
-import { BackupPanel } from "../../components/BackupPanel";
-import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
+import { BackupPanel } from "@/components/BackupPanel";
+import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 
 type ExportKind = "json" | "csv" | "md" | "txt";
 

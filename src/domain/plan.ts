@@ -1,4 +1,4 @@
-import type { WeightPlan } from "../types/plan";
+import type { WeightPlan } from "@/types/plan";
 
 export type WeightPhase = {
   index: number;

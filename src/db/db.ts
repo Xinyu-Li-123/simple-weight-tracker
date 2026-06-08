@@ -1,7 +1,7 @@
 import Dexie, { type Table } from "dexie";
-import type { WeightPlan } from "../types/plan";
-import type { WeightEntry } from "../types/weight";
-import { validateWeightEntryNote } from "./weightEntryValidation";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
+import { validateWeightEntryNote } from "@/db/weightEntryValidation";
 
 class WeightTrackerDatabase extends Dexie {
   weightEntries!: Table<WeightEntry, string>;

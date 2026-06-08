@@ -1,6 +1,6 @@
-import { StorageStatusCard } from "../../components/StorageStatusCard";
-import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
-import type { StoragePersistenceStatus } from "../../pwa/storagePersistence";
+import { StorageStatusCard } from "@/components/StorageStatusCard";
+import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
+import type { StoragePersistenceStatus } from "@/pwa/storagePersistence";
 
 type Props = {
   standalone: boolean;

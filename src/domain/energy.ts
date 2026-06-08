@@ -1,4 +1,4 @@
-import type { ActivityLevel, Sex } from "../types/plan";
+import type { ActivityLevel, Sex } from "@/types/plan";
 
 export const conservativeActivityMultipliers: Record<ActivityLevel, number> = {
   sedentary: 1.2,

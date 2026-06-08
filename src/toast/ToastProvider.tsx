@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { ToastViewport } from "./ToastViewport";
-import type { Toast, ToastInput } from "./toastTypes";
-import { ToastContext } from "./useToast";
+import { ToastViewport } from "@/toast/ToastViewport";
+import type { Toast, ToastInput } from "@/toast/toastTypes";
+import { ToastContext } from "@/toast/useToast";
 
 const DEFAULT_TOAST_DURATION_MS = 3000;
 const DEFAULT_TOAST_VARIANT = "info";

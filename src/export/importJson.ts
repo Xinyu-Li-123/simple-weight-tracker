@@ -1,8 +1,8 @@
-import { db } from "../db/db";
-import { isWeightPlan } from "../db/weightPlan";
-import type { WeightPlan } from "../types/plan";
-import type { WeightEntry } from "../types/weight";
-import { CURRENT_BACKUP_SCHEMA_VERSION } from "./exportJson";
+import { db } from "@/db/db";
+import { isWeightPlan } from "@/db/weightPlan";
+import { CURRENT_BACKUP_SCHEMA_VERSION } from "@/export/exportJson";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
 
 type BackupFile = {
   app?: unknown;

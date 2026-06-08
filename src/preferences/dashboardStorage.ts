@@ -1,10 +1,10 @@
-import type { TrendRange } from "../domain/weightStats";
+import type { TrendRange } from "@/domain/weightStats";
 import {
   defaultDashboardPreferences,
   type DashboardMode,
   type DashboardPreferences,
   type PersistedPreferenceSection,
-} from "./types";
+} from "@/preferences/types";
 
 const DASHBOARD_PREFERENCES_KEY = "swt.pref.dashboard";
 

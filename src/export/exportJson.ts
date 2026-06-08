@@ -1,5 +1,5 @@
-import type { WeightPlan } from "../types/plan";
-import type { WeightEntry } from "../types/weight";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
 
 export const CURRENT_BACKUP_SCHEMA_VERSION = 3 as const;
 

@@ -1,4 +1,4 @@
-import { bottomNavItems, recordAction, type RootPageId } from "../app/pages";
+import { bottomNavItems, recordAction, type RootPageId } from "@/app/pages";
 
 type Props = {
   activePage: RootPageId;

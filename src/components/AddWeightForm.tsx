@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MAX_WEIGHT_ENTRY_NOTE_LENGTH } from "../db/weightEntryValidation";
+import { MAX_WEIGHT_ENTRY_NOTE_LENGTH } from "@/db/weightEntryValidation";
 
 function today() {
   return new Date().toISOString().slice(0, 10);

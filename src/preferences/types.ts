@@ -1,4 +1,4 @@
-import type { TrendRange } from "../domain/weightStats";
+import type { TrendRange } from "@/domain/weightStats";
 
 export type DashboardMode = "phase" | "full";
 

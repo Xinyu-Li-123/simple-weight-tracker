@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
-import { AddWeightForm, type WeightEntryDraft, type WeightEntryFormMode } from "./AddWeightForm";
-import { WeightRecordCard } from "./WeightRecordCard";
-import type { WeightEntry } from "../types/weight";
+import { AddWeightForm, type WeightEntryDraft, type WeightEntryFormMode } from "@/components/AddWeightForm";
+import { WeightRecordCard } from "@/components/WeightRecordCard";
+import type { WeightEntry } from "@/types/weight";
 
 type Props = {
   open: boolean;

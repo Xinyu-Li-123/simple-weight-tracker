@@ -1,5 +1,5 @@
-import type { WeightPhase } from "./plan";
-import type { WeeklyWeightStats } from "./weightStats";
+import type { WeightPhase } from "@/domain/plan";
+import type { WeeklyWeightStats } from "@/domain/weightStats";
 
 export type TrendLabel = "continue_logging" | "continue" | "adjust" | "ease_up";
 

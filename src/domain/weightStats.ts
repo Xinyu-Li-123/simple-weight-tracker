@@ -1,4 +1,4 @@
-import type { WeightEntry } from "../types/weight";
+import type { WeightEntry } from "@/types/weight";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

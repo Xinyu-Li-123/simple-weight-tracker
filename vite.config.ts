@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
@@ -34,12 +35,9 @@ export default defineConfig({
       }
     })
   ],
-  // Source - https://stackoverflow.com/a/66777245
-  // Posted by Non404
-  // Retrieved 2026-06-08, License - CC BY-SA 4.0
   resolve: {
     alias: {
-      '@': require('path').resolve(__dirname, 'src')
-    }
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
 });

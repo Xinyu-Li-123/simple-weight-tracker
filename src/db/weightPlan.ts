@@ -1,6 +1,6 @@
-import { generateMilestones, normalizeMilestones } from "../domain/milestones";
-import type { WeightPlan, WeightPlanInput } from "../types/plan";
-import { db } from "./db";
+import { db } from "@/db/db";
+import { generateMilestones, normalizeMilestones } from "@/domain/milestones";
+import type { WeightPlan, WeightPlanInput } from "@/types/plan";
 
 export async function getWeightPlan(): Promise<WeightPlan | null> {
   return (await db.weightPlans.get("default")) ?? null;

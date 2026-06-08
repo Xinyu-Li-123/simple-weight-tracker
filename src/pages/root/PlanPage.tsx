@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { generateMilestones } from "../../domain/milestones";
-import { PageHeaderRow } from "../../components/navigation/PageHeaderRow";
-import { activityLevelDescriptions, activityLevelLabels, type ActivityLevel, type Sex, type WeightPlan, type WeightPlanInput } from "../../types/plan";
+import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
+import { generateMilestones } from "@/domain/milestones";
+import { activityLevelDescriptions, activityLevelLabels, type ActivityLevel, type Sex, type WeightPlan, type WeightPlanInput } from "@/types/plan";
 
 type Props = {
   plan: WeightPlan | null;

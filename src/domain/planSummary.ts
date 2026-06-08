@@ -1,9 +1,9 @@
-import type { WeightPlan } from "../types/plan";
-import type { WeightEntry } from "../types/weight";
-import { calculateBmi, calculateConservativeTdee } from "./energy";
-import { getCurrentPhase, getPlanPoints } from "./plan";
-import { getTrendResult, type TrendResult } from "./trend";
-import { getLatestEntry, getWeeklyWeightStats } from "./weightStats";
+import { calculateBmi, calculateConservativeTdee } from "@/domain/energy";
+import { getCurrentPhase, getPlanPoints } from "@/domain/plan";
+import { getTrendResult, type TrendResult } from "@/domain/trend";
+import { getLatestEntry, getWeeklyWeightStats } from "@/domain/weightStats";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
 
 export type PlanSummary = {
   hasPlan: boolean;

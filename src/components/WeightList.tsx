@@ -1,5 +1,5 @@
-import type { WeightEntry } from "../types/weight";
-import { WeightRecordCard } from "./WeightRecordCard";
+import { WeightRecordCard } from "@/components/WeightRecordCard";
+import type { WeightEntry } from "@/types/weight";
 
 type Props = {
   entries: WeightEntry[];

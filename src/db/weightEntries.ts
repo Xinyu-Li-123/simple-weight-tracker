@@ -1,5 +1,5 @@
-import { db } from "./db";
-import type { WeightEntry } from "../types/weight";
+import { db } from "@/db/db";
+import type { WeightEntry } from "@/types/weight";
 
 export type WeightEntryInput = {
   date: string;

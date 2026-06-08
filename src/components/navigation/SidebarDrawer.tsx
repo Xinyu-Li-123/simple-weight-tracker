@@ -1,4 +1,4 @@
-import type { SidebarItem, UtilityPageId } from "../../app/pages";
+import type { SidebarItem, UtilityPageId } from "@/app/pages";
 
 type Props = {
   open: boolean;

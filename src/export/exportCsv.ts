@@ -1,4 +1,4 @@
-import type { WeightEntry } from "../types/weight";
+import type { WeightEntry } from "@/types/weight";
 
 function escapeCsv(value: string | number | undefined): string {
   const text = value === undefined ? "" : String(value);

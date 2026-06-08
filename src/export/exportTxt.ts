@@ -1,4 +1,4 @@
-import type { WeightEntry } from "../types/weight";
+import type { WeightEntry } from "@/types/weight";
 
 export function createTxt(entries: WeightEntry[]): string {
   return entries
