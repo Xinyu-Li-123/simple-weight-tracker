@@ -25,6 +25,7 @@ export type TrendRange = "10d" | "1m" | "3m" | "6m" | "1y" | "all";
 export type TrendChartTick = {
   timestamp: number;
   label: string;
+  kind?: "day" | "month" | "quarter" | "year";
 };
 
 export type TrendChartData = {
@@ -177,7 +178,7 @@ function buildWeeklyAveragePoints(entries: WeightEntry[]): ChartPoint[] {
 
 function buildTrendTicks(range: TrendRange, rangeStart: number, rangeEnd: number): TrendChartTick[] {
   if (rangeEnd <= rangeStart) {
-    return [{ timestamp: rangeStart, label: formatTickLabel(rangeStart, range) }];
+    return [{ timestamp: rangeStart, label: formatMonth(rangeStart) }];
   }
 
   if (range === "10d" || range === "1m") {
@@ -186,31 +187,68 @@ function buildTrendTicks(range: TrendRange, rangeStart: number, rangeEnd: number
       Array.from({ length: desiredTicks }, (_, index) => {
         const ratio = desiredTicks === 1 ? 0 : index / (desiredTicks - 1);
         const timestamp = startOfUtcDay(rangeStart + ratio * (rangeEnd - rangeStart));
-        return { timestamp, label: formatTickLabel(timestamp, range) };
+        return { timestamp, label: formatShortDate(timestamp) };
       }),
     );
   }
 
+  const spanDays = (rangeEnd - rangeStart) / DAY_MS;
   const monthStep = getMonthTickStep(range, rangeStart, rangeEnd);
   const ticks: TrendChartTick[] = [];
-  let cursor = startOfUtcMonth(rangeStart);
-  if (cursor < rangeStart) {
-    cursor = addUtcMonths(cursor, 1);
+
+  let cursor: number;
+  if (range === "all" && spanDays >= 365 && spanDays < 365 * 3) {
+    cursor = startOfUtcQuarter(rangeStart);
+  } else if (range === "all" && spanDays >= 365 * 3) {
+    cursor = startOfUtcYear(rangeStart);
+  } else {
+    cursor = startOfUtcMonth(rangeStart);
   }
 
   while (cursor <= rangeEnd) {
-    ticks.push({
-      timestamp: cursor,
-      label: formatTickLabel(cursor, range),
-    });
+    ticks.push({ timestamp: cursor, label: "" });
     cursor = addUtcMonths(cursor, monthStep);
   }
 
-  return dedupeTicks([
-    { timestamp: rangeStart, label: formatTickLabel(rangeStart, range) },
-    ...ticks,
-    { timestamp: rangeEnd, label: formatTickLabel(rangeEnd, range) },
-  ]);
+  applyTickLabels(ticks, range, spanDays);
+
+  return ticks;
+}
+
+function applyTickLabels(ticks: TrendChartTick[], range: TrendRange, spanDays: number): void {
+  if (range === "10d" || range === "1m") {
+    for (const tick of ticks) {
+      tick.label = formatShortDate(tick.timestamp);
+      tick.kind = "day";
+    }
+    return;
+  }
+
+  if (range === "3m" || range === "6m" || range === "1y") {
+    for (const tick of ticks) {
+      tick.label = formatMonth(tick.timestamp);
+      tick.kind = "month";
+    }
+    return;
+  }
+
+  // range === "all"
+  if (spanDays < 365) {
+    for (const tick of ticks) {
+      tick.label = formatMonth(tick.timestamp);
+      tick.kind = "month";
+    }
+  } else if (spanDays < 365 * 3) {
+    for (const tick of ticks) {
+      tick.label = formatQuarter(tick.timestamp);
+      tick.kind = "quarter";
+    }
+  } else {
+    for (const tick of ticks) {
+      tick.label = String(new Date(tick.timestamp).getUTCFullYear());
+      tick.kind = "year";
+    }
+  }
 }
 
 function dedupeTicks(ticks: TrendChartTick[]): TrendChartTick[] {
@@ -232,21 +270,19 @@ function getMonthTickStep(range: TrendRange, rangeStart: number, rangeEnd: numbe
   if (range === "6m") return 1;
   if (range === "1y") return 2;
 
-  const months = Math.max(1, diffUtcMonths(rangeStart, rangeEnd));
-  return Math.max(1, Math.ceil(months / 5));
+  const spanDays = (rangeEnd - rangeStart) / DAY_MS;
+  if (spanDays < 365) return 1;
+  if (spanDays < 365 * 3) return 3;
+  return 12;
 }
 
-function formatTickLabel(timestamp: number, range: TrendRange): string {
+function formatMonth(timestamp: number): string {
+  return new Date(timestamp).toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+}
+
+function formatShortDate(timestamp: number): string {
   const date = new Date(timestamp);
-  if (range === "10d" || range === "1m") {
-    return `${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
-  }
-
-  if (range === "3m" || range === "6m") {
-    return date.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
-  }
-
-  return date.toLocaleString("en-US", { month: "short", year: "2-digit", timeZone: "UTC" });
+  return `${date.getUTCMonth() + 1}/${date.getUTCDate()}`;
 }
 
 function startOfUtcDay(timestamp: number): number {
@@ -271,10 +307,17 @@ function addUtcMonths(timestamp: number, months: number): number {
   return Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, 1);
 }
 
-function diffUtcMonths(startTimestamp: number, endTimestamp: number): number {
-  const start = new Date(startTimestamp);
-  const end = new Date(endTimestamp);
-  return (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + (end.getUTCMonth() - start.getUTCMonth());
+function startOfUtcQuarter(timestamp: number): number {
+  const date = new Date(timestamp);
+  return Date.UTC(date.getUTCFullYear(), Math.floor(date.getUTCMonth() / 3) * 3, 1);
+}
+
+function startOfUtcYear(timestamp: number): number {
+  return Date.UTC(new Date(timestamp).getUTCFullYear(), 0, 1);
+}
+
+function formatQuarter(timestamp: number): string {
+  return `Q${Math.floor(new Date(timestamp).getUTCMonth() / 3) + 1}`;
 }
 
 function toUtcTimestamp(date: string): number {

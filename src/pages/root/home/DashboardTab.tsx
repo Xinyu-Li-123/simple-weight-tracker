@@ -1,4 +1,4 @@
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis, type LegendPayload } from "recharts";
 import { getPlanSummary } from "@/domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
@@ -314,10 +314,35 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
   const sortLegendItem = (item: LegendPayload) =>
     legendOrder.get(String(item.value)) ?? Number.MAX_SAFE_INTEGER;
 
+  function CustomXAxisTick(props: Record<string, unknown>) {
+    const x = props.x as number;
+    const y = props.y as number;
+    const payload = props.payload as { value: number };
+    const tick = ticks.find((t) => t.timestamp === payload.value);
+    if (!tick) return null;
+
+    const showYear = tick.kind && tick.kind !== "day" && tick.kind !== "year"
+      ? new Date(tick.timestamp).getUTCMonth() === 0
+      : false;
+
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={0} y={0} textAnchor="middle" fill="#5d6878" fontSize={13} fontWeight={700}>
+          {tick.label}
+        </text>
+        {showYear && (
+          <text x={0} y={16} textAnchor="middle" fill="#5d6878" fontSize={11} fontWeight={700}>
+            {new Date(tick.timestamp).getUTCFullYear()}
+          </text>
+        )}
+      </g>
+    );
+  }
+
   return (
     <div className="chart-wrap" role="img" aria-label="Weight trend chart">
       <ResponsiveContainer width="100%" height={260}>
-        <LineChart data={points} margin={{ top: 18, right: 18, bottom: 18, left: 0 }}>
+        <LineChart data={points} margin={{ top: 18, right: 18, bottom: 36, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e3e7ed" />
           <XAxis
             dataKey="timestamp"
@@ -325,8 +350,8 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             domain={[rangeStart, rangeEnd]}
             padding={{ left: 10, right: 5 }}
             ticks={ticks.map((t) => t.timestamp)}
-            tickFormatter={(ts) => ticks.find((t) => t.timestamp === ts)?.label ?? ""}
-            tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
+            interval={0}
+            tick={CustomXAxisTick}
             axisLine={false}
             tickLine={{ stroke: "#c4ccda" }}
           />
