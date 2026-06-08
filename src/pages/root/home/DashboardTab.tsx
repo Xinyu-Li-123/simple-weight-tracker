@@ -1,3 +1,4 @@
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { getPlanSummary } from "@/domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
@@ -289,63 +290,64 @@ function HalfCircleGauge(input: {
 
 function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: ActiveRange; mode: DashboardMode }) {
   const { points, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
-  const paddingMultiplier = mode === "phase" ? 0.14 : 0.08;
-  const padding = Math.max(0.5, (range.fromKg - range.toKg) * paddingMultiplier);
-  const minY = range.toKg - padding;
-  const maxY = range.fromKg + padding;
-  const width = 720;
-  const height = 260;
-  const padLeft = 46;
-  const padRight = 18;
-  const padTop = 18;
-  const padBottom = 36;
-  const plotWidth = width - padLeft - padRight;
-  const plotHeight = height - padTop - padBottom;
-  const clipId = `trend-clip-${rangeStart}-${rangeEnd}-${Math.round(range.fromKg * 10)}-${Math.round(range.toKg * 10)}`;
 
-  function x(timestamp: number) {
-    if (rangeEnd <= rangeStart) return padLeft;
-    return 70 + padLeft + ((timestamp - rangeStart) / (rangeEnd - rangeStart)) * plotWidth * 0.9;
-  }
+  if (points.length === 0) return null;
 
-  function y(value: number) {
-    return padTop + ((maxY - value) / (maxY - minY)) * plotHeight;
-  }
-
-  const weightPath = toPath(points.map((point) => [x(point.timestamp), y(point.weightKg)]));
-  const averagePath = toPath(
-    points
-      .map((point) => (point.movingAverageKg === null ? null : [x(point.timestamp), y(point.movingAverageKg)] as [number, number]))
-      .filter((point): point is [number, number] => point !== null),
-  );
+  const isPhaseMode = mode === "phase";
+  const phaseRange = range.fromKg - range.toKg;
+  const padding = Math.max(0.5, phaseRange / 2);
+  const yDomain: [number, number] = isPhaseMode
+    ? [range.toKg - padding, range.fromKg + padding]
+    : [range.toKg, range.fromKg];
+  const yTicks = isPhaseMode ? [range.toKg, range.fromKg] : undefined;
+  const formatWeight = (v: number) => `${v.toFixed(1)} kg`;
 
   return (
     <div className="chart-wrap" role="img" aria-label="Weight trend chart">
-      <svg viewBox={`0 0 ${width} ${height}`} className="weight-chart">
-        <defs>
-          <clipPath id={clipId}>
-            <rect x={padLeft} y={padTop} width={plotWidth} height={plotHeight} />
-          </clipPath>
-        </defs>
-        <line x1={padLeft} x2={width - padRight} y1={padTop} y2={padTop} className="chart-grid-line" />
-        <line x1={padLeft} x2={width - padRight} y1={padTop + plotHeight / 2} y2={padTop + plotHeight / 2} className="chart-grid-line" />
-        <line x1={padLeft} x2={width - padRight} y1={height - padBottom} y2={height - padBottom} className="chart-grid-line" />
-        <text x={4} y={padTop + 4} className="chart-label">{formatKg(maxY)}</text>
-        <text x={4} y={height - padBottom + 4} className="chart-label">{formatKg(minY)}</text>
-        <g clipPath={`url(#${clipId})`}>
-          <path d={weightPath} className="chart-line chart-line--weight" />
-          {!usesWeeklyAverage && averagePath ? <path d={averagePath} className="chart-line chart-line--average" /> : null}
-          {points.map((point) => (
-            <circle key={`${point.date}-${point.timestamp}`} cx={x(point.timestamp)} cy={y(point.weightKg)} r="3.2" className="chart-point" />
-          ))}
-        </g>
-        {ticks.map((tick) => (
-          <g key={tick.timestamp}>
-            <line x1={x(tick.timestamp)} x2={x(tick.timestamp)} y1={height - padBottom} y2={height - padBottom + 6} className="chart-tick-line" />
-            <text x={x(tick.timestamp)} y={height - 9} textAnchor="middle" className="chart-label">{tick.label}</text>
-          </g>
-        ))}
-      </svg>
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={points} margin={{ top: 18, right: 18, bottom: 18, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e3e7ed" />
+          <XAxis
+            dataKey="timestamp"
+            type="number"
+            domain={[rangeStart, rangeEnd]}
+            ticks={ticks.map((t) => t.timestamp)}
+            tickFormatter={(ts) => ticks.find((t) => t.timestamp === ts)?.label ?? ""}
+            tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
+            axisLine={false}
+            tickLine={{ stroke: "#c4ccda" }}
+          />
+          <YAxis
+            domain={yDomain}
+            ticks={yTicks}
+            tickFormatter={formatWeight}
+            tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
+            axisLine={false}
+            tickLine={false}
+            width={52}
+          />
+          <Line
+            type="monotone"
+            dataKey="weightKg"
+            stroke="#5d6878"
+            strokeWidth={2.2}
+            dot={{ r: 3.2, fill: "#fdfefe", stroke: "#5d6878", strokeWidth: 2 }}
+            isAnimationActive={false}
+            connectNulls={false}
+          />
+          {!usesWeeklyAverage && (
+            <Line
+              type="monotone"
+              dataKey="movingAverageKg"
+              stroke="#172033"
+              strokeWidth={3.2}
+              dot={false}
+              isAnimationActive={false}
+              connectNulls={false}
+            />
+          )}
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
