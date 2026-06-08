@@ -323,6 +323,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             dataKey="timestamp"
             type="number"
             domain={[rangeStart, rangeEnd]}
+            padding={{ left: 10, right: 5 }}
             ticks={ticks.map((t) => t.timestamp)}
             tickFormatter={(ts) => ticks.find((t) => t.timestamp === ts)?.label ?? ""}
             tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
@@ -336,7 +337,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
             axisLine={false}
             tickLine={false}
-            width={52}
+            width={64}
           />
           <Line
             name={usesWeeklyAverage ? lineName.weekly : lineName.daily}
