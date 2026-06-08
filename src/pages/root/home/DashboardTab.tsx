@@ -302,6 +302,18 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
   const yTicks = isPhaseMode ? [range.toKg, range.fromKg] : undefined;
   const formatWeight = (v: number) => `${v.toFixed(1)} kg`;
 
+  const lineName = {
+    daily: "Weight",
+    movingAvg: "Moving Average",
+    weekly: "Weekly Average"
+  } as const;
+
+  const legendOrder = new Map(
+    Object.values(lineName).map((name, index) => [name, index]),
+  );
+  const sortLegendItem = (item: LegendPayload) =>
+    legendOrder.get(String(item.value)) ?? Number.MAX_SAFE_INTEGER;
+
   return (
     <div className="chart-wrap" role="img" aria-label="Weight trend chart">
       <ResponsiveContainer width="100%" height={260}>
@@ -327,28 +339,30 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             width={52}
           />
           <Line
-            name={usesWeeklyAverage ? "Weekly avg" : "Weight"}
+            name={usesWeeklyAverage ? lineName.weekly : lineName.daily}
             type="monotone"
             dataKey="weightKg"
-            stroke="#5d6878"
+            stroke="#172033"
             strokeWidth={2.2}
             dot={{ r: 3.2, fill: "#fdfefe", stroke: "#5d6878", strokeWidth: 2 }}
             isAnimationActive={false}
             connectNulls={false}
+            zIndex={5}
           />
           {!usesWeeklyAverage && (
             <Line
-              name="Moving avg"
+              name={lineName.movingAvg}
               type="monotone"
               dataKey="movingAverageKg"
-              stroke="#172033"
+              stroke="#5d6878"
               strokeWidth={3.2}
               dot={false}
               isAnimationActive={false}
               connectNulls={false}
+              zIndex={4}
             />
           )}
-          <Legend verticalAlign="bottom" height={30} wrapperStyle={{ fontSize: 12, fontWeight: 700 }} />
+          <Legend verticalAlign="bottom" height={30} wrapperStyle={{ fontSize: 12, fontWeight: 700 }} itemSorter={sortLegendItem} />
         </LineChart>
       </ResponsiveContainer>
     </div>
