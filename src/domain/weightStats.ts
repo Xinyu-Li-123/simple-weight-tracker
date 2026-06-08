@@ -126,7 +126,7 @@ export function getTrendChartData(entries: WeightEntry[], range: TrendRange): Tr
     const timestamp = toUtcTimestamp(entry.date);
     return timestamp >= rangeStart && timestamp <= rangeEnd;
   });
-  const usesWeeklyAverage = range === "6m" || range === "1y" || range === "all";
+  const usesWeeklyAverage = range === "3m" || range === "6m" || range === "1y" || range === "all";
   const points = usesWeeklyAverage ? buildWeeklyAveragePoints(visibleEntries) : buildRawPoints(visibleEntries);
 
   return {

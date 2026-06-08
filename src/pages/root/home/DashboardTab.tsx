@@ -1,4 +1,4 @@
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { getPlanSummary } from "@/domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
@@ -327,6 +327,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             width={52}
           />
           <Line
+            name={usesWeeklyAverage ? "Weekly avg" : "Weight"}
             type="monotone"
             dataKey="weightKg"
             stroke="#5d6878"
@@ -337,6 +338,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
           />
           {!usesWeeklyAverage && (
             <Line
+              name="Moving avg"
               type="monotone"
               dataKey="movingAverageKg"
               stroke="#172033"
@@ -346,6 +348,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
               connectNulls={false}
             />
           )}
+          <Legend verticalAlign="bottom" height={30} wrapperStyle={{ fontSize: 12, fontWeight: 700 }} />
         </LineChart>
       </ResponsiveContainer>
     </div>
