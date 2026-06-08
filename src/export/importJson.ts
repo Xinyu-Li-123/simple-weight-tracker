@@ -1,10 +1,19 @@
-import { db } from "../db/db";
-import type { WeightEntry } from "../types/weight";
+import { db } from "@/db/db";
+import { isWeightPlan } from "@/db/weightPlan";
+import { CURRENT_BACKUP_SCHEMA_VERSION } from "@/export/exportJson";
+import type { WeightPlan } from "@/types/plan";
+import type { WeightEntry } from "@/types/weight";
 
 type BackupFile = {
   app?: unknown;
   schemaVersion?: unknown;
   entries?: unknown;
+  plan?: unknown;
+};
+
+export type ImportJsonResult = {
+  entriesCount: number;
+  importedPlan: boolean;
 };
 
 function isWeightEntry(value: unknown): value is WeightEntry {
@@ -23,20 +32,47 @@ function isWeightEntry(value: unknown): value is WeightEntry {
   );
 }
 
-export async function importJsonBackupText(text: string): Promise<number> {
+export async function importJsonBackupText(text: string): Promise<ImportJsonResult> {
   const parsed = JSON.parse(text) as BackupFile;
 
-  if (parsed.app !== "simple-weight-tracker" || parsed.schemaVersion !== 2 || !Array.isArray(parsed.entries)) {
-    throw new Error("Invalid backup file.");
+  if (parsed.app !== "simple-weight-tracker" || parsed.schemaVersion !== CURRENT_BACKUP_SCHEMA_VERSION) {
+    throw new Error("Unsupported backup file. Export a new backup from the latest app version.");
+  }
+
+  if (!Array.isArray(parsed.entries)) {
+    throw new Error("Backup entries are missing or invalid.");
   }
 
   if (!parsed.entries.every(isWeightEntry)) {
     throw new Error("Backup contains invalid entries.");
   }
 
-  await db.transaction("rw", db.weightEntries, async () => {
-    await db.weightEntries.bulkPut(parsed.entries as WeightEntry[]);
+  if (!("plan" in parsed)) {
+    throw new Error("Backup plan field is missing.");
+  }
+
+  if (parsed.plan !== null && !isWeightPlan(parsed.plan)) {
+    throw new Error("Backup contains an invalid plan.");
+  }
+
+  const entries = parsed.entries as WeightEntry[];
+  const plan = parsed.plan as WeightPlan | null;
+
+  await db.transaction("rw", db.weightEntries, db.weightPlans, async () => {
+    await db.weightEntries.clear();
+    await db.weightPlans.clear();
+
+    if (entries.length > 0) {
+      await db.weightEntries.bulkPut(entries);
+    }
+
+    if (plan) {
+      await db.weightPlans.put(plan);
+    }
   });
 
-  return parsed.entries.length;
+  return {
+    entriesCount: entries.length,
+    importedPlan: Boolean(plan),
+  };
 }

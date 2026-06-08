@@ -1,4 +1,4 @@
-import type { WeightEntry } from "../types/weight";
+import type { WeightEntry } from "@/types/weight";
 
 export function createMarkdown(entries: WeightEntry[]): string {
   const rows = entries.map((entry) =>

@@ -1,4 +1,4 @@
-import type { StoragePersistenceStatus } from "../pwa/storagePersistence";
+import type { StoragePersistenceStatus } from "@/pwa/storagePersistence";
 
 type Props = {
   standalone: boolean;

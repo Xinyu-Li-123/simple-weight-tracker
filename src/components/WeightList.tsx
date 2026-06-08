@@ -1,26 +1,36 @@
-import type { WeightEntry } from "../types/weight";
+import { WeightRecordCard } from "@/components/WeightRecordCard";
+import type { WeightEntry } from "@/types/weight";
 
 type Props = {
   entries: WeightEntry[];
-  onDelete: (id: string) => Promise<void>;
+  onOpenEntry: (entry: WeightEntry) => void;
+  onEditEntry: (entry: WeightEntry) => void;
+  onRequestDeleteEntry: (entry: WeightEntry) => void;
+  title?: string;
+  emptyMessage?: string;
 };
 
-export function WeightList({ entries, onDelete }: Props) {
+export function WeightList({
+  entries,
+  onOpenEntry,
+  onEditEntry,
+  onRequestDeleteEntry,
+  emptyMessage = "No entries yet.",
+}: Props) {
   return (
     <section className="card">
-      <h2>History</h2>
       {entries.length === 0 ? (
-        <p className="muted">No entries yet.</p>
+        <p className="muted">{emptyMessage}</p>
       ) : (
         <ul className="entry-list">
           {entries.map((entry) => (
             <li key={entry.id}>
-              <div>
-                <strong>{entry.date}</strong>
-                <span>{entry.weight} kg</span>
-                {entry.note ? <small>{entry.note}</small> : null}
-              </div>
-              <button className="ghost" onClick={() => onDelete(entry.id)}>Delete</button>
+              <WeightRecordCard
+                entry={entry}
+                onOpen={() => onOpenEntry(entry)}
+                onEdit={() => onEditEntry(entry)}
+                onDelete={() => onRequestDeleteEntry(entry)}
+              />
             </li>
           ))}
         </ul>

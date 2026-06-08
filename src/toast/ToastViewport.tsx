@@ -1,6 +1,6 @@
 import { CheckCircle2, Info, OctagonAlert, TriangleAlert, X } from "lucide-react";
 import type { CSSProperties } from "react";
-import type { Toast } from "./toastTypes";
+import type { Toast } from "@/toast/toastTypes";
 
 type Props = {
   toasts: Toast[];

@@ -25,7 +25,9 @@ export function BackupPanel({ onExportJson, onExportCsv, onExportMarkdown, onExp
       <button onClick={onExportCsv}>Export CSV</button>
       <button onClick={onExportMarkdown}>Export Markdown</button>
       <button onClick={onExportTxt}>Export TXT</button>
-      <button className="secondary" onClick={() => inputRef.current?.click()}>Import JSON backup</button>
+      <button className="ghost-danger backup-actions__import" onClick={() => inputRef.current?.click()}>
+        Import and replace from JSON backup
+      </button>
       <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={handleImport} />
     </section>
   );
