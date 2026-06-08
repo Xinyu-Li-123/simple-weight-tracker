@@ -15,12 +15,10 @@ export function WeightList({
   onOpenEntry,
   onEditEntry,
   onRequestDeleteEntry,
-  title = "History",
   emptyMessage = "No entries yet.",
 }: Props) {
   return (
     <section className="card">
-      <h2>{title}</h2>
       {entries.length === 0 ? (
         <p className="muted">{emptyMessage}</p>
       ) : (

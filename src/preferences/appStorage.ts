@@ -2,9 +2,12 @@ import type { TrendRange } from "@/domain/weightStats";
 import {
   defaultAppPreferences,
   defaultDashboardPreferences,
+  defaultHistoryPreferences,
   type AppPreferences,
   type DashboardMode,
   type DashboardPreferences,
+  type HistoryViewId,
+  type HistoryPreferences,
   type PersistedPreferenceSection,
 } from "@/preferences/types";
 import { normalizeTimezonePreference } from "@/preferences/timezone";
@@ -31,6 +34,10 @@ export function loadAppPreferences(): AppPreferences {
             ...defaultDashboardPreferences,
             ...parsed.data.dashboard,
           },
+          history: {
+            ...defaultHistoryPreferences,
+            ...parsed.data.history,
+          },
           timezone,
         };
       }
@@ -47,6 +54,7 @@ export function loadAppPreferences(): AppPreferences {
         ...defaultDashboardPreferences,
         ...legacyParsed.data,
       },
+      history: defaultHistoryPreferences,
       timezone: defaultAppPreferences.timezone,
     };
   } catch {
@@ -83,7 +91,7 @@ function isAppPreferences(value: unknown): value is AppPreferences {
   if (!value || typeof value !== "object") return false;
 
   const preferences = value as Record<string, unknown>;
-  return isDashboardPreferences(preferences.dashboard) && normalizeTimezonePreference(preferences.timezone) !== null;
+  return isDashboardPreferences(preferences.dashboard) && isHistoryPreferences(preferences.history) && normalizeTimezonePreference(preferences.timezone) !== null;
 }
 
 function isDashboardPreferences(value: unknown): value is DashboardPreferences {
@@ -103,4 +111,15 @@ function isDashboardMode(value: unknown): value is DashboardMode {
 
 function isTrendRange(value: unknown): value is TrendRange {
   return value === "10d" || value === "1m" || value === "3m" || value === "6m" || value === "1y" || value === "all";
+}
+
+function isHistoryViewId(value: unknown): value is HistoryViewId {
+  return value === "list-compact" || value === "list-expanded" || value === "calendar-week" || value === "calendar-month";
+}
+
+function isHistoryPreferences(value: unknown): value is HistoryPreferences {
+  if (!value || typeof value !== "object") return false;
+
+  const preferences = value as Record<string, unknown>;
+  return isHistoryViewId(preferences.historyView);
 }

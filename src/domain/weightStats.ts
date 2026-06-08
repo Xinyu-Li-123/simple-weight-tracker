@@ -25,7 +25,7 @@ export type TrendRange = "10d" | "1m" | "3m" | "6m" | "1y" | "all";
 export type TrendChartTick = {
   timestamp: number;
   label: string;
-  kind?: "day" | "month" | "quarter" | "year";
+  kind?: "day" | "month" | "quarter" | "year" | "year_separator";
 };
 
 export type TrendChartData = {
@@ -211,6 +211,7 @@ function buildTrendTicks(range: TrendRange, rangeStart: number, rangeEnd: number
   }
 
   applyTickLabels(ticks, range, spanDays);
+  insertYearSeparators(ticks);
 
   return ticks;
 }
@@ -248,6 +249,30 @@ function applyTickLabels(ticks: TrendChartTick[], range: TrendRange, spanDays: n
       tick.label = String(new Date(tick.timestamp).getUTCFullYear());
       tick.kind = "year";
     }
+  }
+}
+
+function insertYearSeparators(ticks: TrendChartTick[]): void {
+  for (let i = ticks.length - 2; i >= 0; i -= 1) {
+    const prev = ticks[i];
+    const next = ticks[i + 1];
+    const prevKind = prev.kind;
+    const nextKind = next.kind;
+    if (
+      !prevKind || !nextKind ||
+      (prevKind !== "month" && prevKind !== "quarter") ||
+      (nextKind !== "month" && nextKind !== "quarter")
+    ) continue;
+
+    const prevYear = new Date(prev.timestamp).getUTCFullYear();
+    const nextYear = new Date(next.timestamp).getUTCFullYear();
+    if (prevYear === nextYear) continue;
+
+    ticks.splice(i + 1, 0, {
+      timestamp: Math.round((prev.timestamp + next.timestamp) / 2),
+      label: String(nextYear),
+      kind: "year_separator",
+    });
   }
 }
 

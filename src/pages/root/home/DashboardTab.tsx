@@ -321,20 +321,23 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
     const tick = ticks.find((t) => t.timestamp === payload.value);
     if (!tick) return null;
 
-    const showYear = tick.kind && tick.kind !== "day" && tick.kind !== "year"
-      ? new Date(tick.timestamp).getUTCMonth() === 0
-      : false;
+    if (tick.kind === "year_separator") {
+      return (
+        <g transform={`translate(${x},${y})`}>
+          <line x1={0} y1={-200} x2={0} y2={30} stroke="#5d6878" strokeWidth={1} strokeDasharray="2 3" />
+          <text x={15} y={18} textAnchor="middle" fill="#5d6878" fontSize={11} fontWeight={700}>
+            {tick.label}
+          </text>
+        </g>
+      );
+    }
 
     return (
       <g transform={`translate(${x},${y})`}>
+        <line x1={0} y1={-6} x2={0} y2={0} stroke="#c4ccda" />
         <text x={0} y={0} textAnchor="middle" fill="#5d6878" fontSize={13} fontWeight={700}>
           {tick.label}
         </text>
-        {showYear && (
-          <text x={0} y={16} textAnchor="middle" fill="#5d6878" fontSize={11} fontWeight={700}>
-            {new Date(tick.timestamp).getUTCFullYear()}
-          </text>
-        )}
       </g>
     );
   }
@@ -348,12 +351,12 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             dataKey="timestamp"
             type="number"
             domain={[rangeStart, rangeEnd]}
-            padding={{ left: 10, right: 5 }}
+            padding={{ left: 15, right: 5 }}
             ticks={ticks.map((t) => t.timestamp)}
             interval={0}
             tick={CustomXAxisTick}
             axisLine={false}
-            tickLine={{ stroke: "#c4ccda" }}
+            tickLine={false}
           />
           <YAxis
             domain={yDomain}
@@ -372,6 +375,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             strokeWidth={2.2}
             dot={{ r: 3.2, fill: "#fdfefe", stroke: "#5d6878", strokeWidth: 2 }}
             isAnimationActive={false}
+            activeDot={false}
             connectNulls={false}
             zIndex={5}
           />
@@ -384,6 +388,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
               strokeWidth={3.2}
               dot={false}
               isAnimationActive={false}
+              activeDot={false}
               connectNulls={false}
               zIndex={4}
             />

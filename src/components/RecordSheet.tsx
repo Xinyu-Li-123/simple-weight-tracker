@@ -7,6 +7,7 @@ type Props = {
   open: boolean;
   mode: WeightEntryFormMode;
   entry?: WeightEntry | null;
+  prefillDate?: string;
   onClose: () => void;
   onCancelEdit: (entry: WeightEntry) => void;
   onCreate: (input: WeightEntryDraft) => Promise<void>;
@@ -16,11 +17,15 @@ type Props = {
   defaultDate: string;
 };
 
-export function RecordSheet({ open, mode, entry, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit, defaultDate }: Props) {
+export function RecordSheet({ open, mode, entry, prefillDate, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit, defaultDate }: Props) {
   if (!open) return null;
 
-  const formValue = entry ? { date: entry.date, weight: entry.weight, note: entry.note } : undefined;
-  const formKey = entry ? `${mode}:${entry.id}:${entry.updatedAt}` : `${mode}:${defaultDate}`;
+  const formValue = entry
+    ? { date: entry.date, weight: entry.weight, note: entry.note }
+    : prefillDate
+      ? { date: prefillDate, weight: undefined as unknown as number, note: undefined }
+      : undefined;
+  const formKey = entry ? `${mode}:${entry.id}:${entry.updatedAt}` : `${mode}:${prefillDate ?? defaultDate}`;
   const title = mode === "create" ? "Create record" : mode === "edit" ? "Edit record" : "Record details";
 
   async function handleSave(input: WeightEntryDraft) {

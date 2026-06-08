@@ -19,7 +19,7 @@ import { DataSafetyPage } from "@/pages/utility/DataSafetyPage";
 import { SettingsPage } from "@/pages/utility/SettingsPage";
 import { loadAppPreferences, saveAppPreferences } from "@/preferences/appStorage";
 import { getLocalDateForTimezonePreference } from "@/preferences/timezone";
-import type { AppPreferences, DashboardPreferences, TimezonePreference } from "@/preferences/types";
+import type { AppPreferences, DashboardPreferences, HistoryPreferences, TimezonePreference } from "@/preferences/types";
 import { isStandalonePWA } from "@/pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "@/pwa/storagePersistence";
 import { useToast } from "@/toast/useToast";
@@ -28,7 +28,7 @@ import type { WeightEntry } from "@/types/weight";
 import { sidebarItems, type RootPageId, type UtilityPageId } from "@/app/pages";
 
 type RecordSheetState =
-  | { mode: "create"; entry: null }
+  | { mode: "create"; entry: null; prefillDate?: string }
   | { mode: Exclude<WeightEntryFormMode, "create">; entry: WeightEntry };
 
 type ConfirmationRequest = {
@@ -56,6 +56,7 @@ export function App() {
   const recordOpen = recordSheetState !== null;
   const confirmOpen = confirmation !== null;
   const dashboardPreferences = appPreferences.dashboard;
+  const historyPreferences = appPreferences.history;
   const defaultDate = getLocalDateForTimezonePreference(appPreferences.timezone);
 
   function closeConfirmation() {
@@ -240,6 +241,13 @@ export function App() {
     }));
   }
 
+  function handleChangeHistoryPreferences(preferences: HistoryPreferences) {
+    setAppPreferences((current) => ({
+      ...current,
+      history: preferences,
+    }));
+  }
+
   function handleChangeTimezonePreference(preference: TimezonePreference) {
     setAppPreferences((current) => ({
       ...current,
@@ -299,12 +307,15 @@ export function App() {
             plan={plan}
             standalone={standalone}
             dashboardPreferences={dashboardPreferences}
+            historyPreferences={historyPreferences}
             onChangeDashboardPreferences={handleChangeDashboardPreferences}
+            onChangeHistoryPreferences={handleChangeHistoryPreferences}
             onOpenSidebar={() => setSidebarOpen(true)}
             onOpenPlan={() => handleNavigate("plan")}
             onOpenEntry={(entry) => setRecordSheetState({ mode: "view", entry })}
             onEditEntry={(entry) => setRecordSheetState({ mode: "edit", entry })}
             onRequestDeleteEntry={requestDeleteEntry}
+            onCreateForDate={(date) => setRecordSheetState({ mode: "create", entry: null, prefillDate: date })}
           />
         ) : null}
         {utilityPage === null && rootPage === "plan" ? (
@@ -351,6 +362,7 @@ export function App() {
         open={recordOpen}
         mode={recordSheetState?.mode ?? "create"}
         entry={recordSheetState?.entry ?? null}
+        prefillDate={recordSheetState?.prefillDate}
         onClose={() => setRecordSheetState(null)}
         onCancelEdit={(entry) => setRecordSheetState({ mode: "view", entry })}
         onCreate={handleCreate}

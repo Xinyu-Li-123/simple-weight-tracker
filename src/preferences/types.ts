@@ -8,6 +8,12 @@ export type DashboardPreferences = {
   trendRange: TrendRange;
 };
 
+export type HistoryViewId = "list-compact" | "list-expanded" | "calendar-week" | "calendar-month";
+
+export type HistoryPreferences = {
+  historyView: HistoryViewId;
+};
+
 export type PersistedPreferenceSection<T> = {
   version: 1;
   data: T;
@@ -34,6 +40,7 @@ export type TimezonePreference =
 
 export type AppPreferences = {
   dashboard: DashboardPreferences;
+  history: HistoryPreferences;
   timezone: TimezonePreference;
 };
 
@@ -43,11 +50,16 @@ export const defaultDashboardPreferences: DashboardPreferences = {
   trendRange: "1m",
 };
 
+export const defaultHistoryPreferences: HistoryPreferences = {
+  historyView: "list-expanded",
+};
+
 export const defaultTimezonePreference: TimezonePreference = {
   mode: "auto",
 };
 
 export const defaultAppPreferences: AppPreferences = {
   dashboard: defaultDashboardPreferences,
+  history: defaultHistoryPreferences,
   timezone: defaultTimezonePreference,
 };

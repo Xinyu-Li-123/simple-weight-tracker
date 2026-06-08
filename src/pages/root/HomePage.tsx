@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 import { TopTabs } from "@/components/navigation/TopTabs";
-import type { DashboardPreferences } from "@/preferences/types";
+import type { DashboardPreferences, HistoryPreferences } from "@/preferences/types";
 import type { WeightPlan } from "@/types/plan";
 import type { WeightEntry } from "@/types/weight";
 import { DashboardTab } from "@/pages/root/home/DashboardTab";
@@ -19,12 +19,15 @@ type Props = {
   plan: WeightPlan | null;
   standalone: boolean;
   dashboardPreferences: DashboardPreferences;
+  historyPreferences: HistoryPreferences;
   onChangeDashboardPreferences: (preferences: DashboardPreferences) => void;
+  onChangeHistoryPreferences: (preferences: HistoryPreferences) => void;
   onOpenSidebar: () => void;
   onOpenPlan: () => void;
   onOpenEntry: (entry: WeightEntry) => void;
   onEditEntry: (entry: WeightEntry) => void;
   onRequestDeleteEntry: (entry: WeightEntry) => void;
+  onCreateForDate: (date: string) => void;
 };
 
 export function HomePage({
@@ -32,12 +35,15 @@ export function HomePage({
   plan,
   standalone,
   dashboardPreferences,
+  historyPreferences,
   onChangeDashboardPreferences,
+  onChangeHistoryPreferences,
   onOpenSidebar,
   onOpenPlan,
   onOpenEntry,
   onEditEntry,
   onRequestDeleteEntry,
+  onCreateForDate,
 }: Props) {
   const [activeTab, setActiveTab] = useState<HomeTabId>("dashboard");
 
@@ -56,7 +62,15 @@ export function HomePage({
           onOpenPlan={onOpenPlan}
         />
       ) : (
-        <HistoryTab entries={entries} onOpenEntry={onOpenEntry} onEditEntry={onEditEntry} onRequestDeleteEntry={onRequestDeleteEntry} />
+        <HistoryTab
+          entries={entries}
+          historyPreferences={historyPreferences}
+          onChangeHistoryPreferences={onChangeHistoryPreferences}
+          onOpenEntry={onOpenEntry}
+          onEditEntry={onEditEntry}
+          onRequestDeleteEntry={onRequestDeleteEntry}
+          onCreateForDate={onCreateForDate}
+        />
       )}
     </>
   );
