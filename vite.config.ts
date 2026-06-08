@@ -33,5 +33,13 @@ export default defineConfig({
         enabled: false
       }
     })
-  ]
+  ],
+  // Source - https://stackoverflow.com/a/66777245
+  // Posted by Non404
+  // Retrieved 2026-06-08, License - CC BY-SA 4.0
+  resolve: {
+    alias: {
+      '@': require('path').resolve(__dirname, 'src')
+    }
+  },
 });
