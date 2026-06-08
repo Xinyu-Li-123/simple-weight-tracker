@@ -18,7 +18,7 @@ import { BackupExportPage } from "@/pages/utility/BackupExportPage";
 import { DataSafetyPage } from "@/pages/utility/DataSafetyPage";
 import { SettingsPage } from "@/pages/utility/SettingsPage";
 import { loadAppPreferences, saveAppPreferences } from "@/preferences/appStorage";
-import { getEffectiveTimezone, getLocalDateInTimezone } from "@/preferences/timezone";
+import { getLocalDateForTimezonePreference } from "@/preferences/timezone";
 import type { AppPreferences, DashboardPreferences, TimezonePreference } from "@/preferences/types";
 import { isStandalonePWA } from "@/pwa/displayMode";
 import { getStoragePersistenceStatus, requestPersistentStorage, type StoragePersistenceStatus } from "@/pwa/storagePersistence";
@@ -56,8 +56,7 @@ export function App() {
   const recordOpen = recordSheetState !== null;
   const confirmOpen = confirmation !== null;
   const dashboardPreferences = appPreferences.dashboard;
-  const effectiveTimezone = getEffectiveTimezone(appPreferences.timezone);
-  const defaultDate = getLocalDateInTimezone(effectiveTimezone);
+  const defaultDate = getLocalDateForTimezonePreference(appPreferences.timezone);
 
   function closeConfirmation() {
     setConfirmation(null);
@@ -168,7 +167,7 @@ export function App() {
 
   async function exportWith(kind: "json" | "csv" | "md" | "txt") {
     const [current, currentPlan] = await Promise.all([listWeightEntries(), getWeightPlan()]);
-    const date = getLocalDateInTimezone(effectiveTimezone);
+    const date = getLocalDateForTimezonePreference(appPreferences.timezone);
     if (kind === "json") downloadTextFile(`weight-backup-${date}.json`, createJsonBackup(current, currentPlan), "application/json");
     if (kind === "csv") downloadTextFile(`weight-log-${date}.csv`, createCsv(current), "text/csv");
     if (kind === "md") downloadTextFile(`weight-log-${date}.md`, createMarkdown(current), "text/markdown");

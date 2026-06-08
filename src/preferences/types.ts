@@ -13,9 +13,24 @@ export type PersistedPreferenceSection<T> = {
   data: T;
 };
 
+export type FixedIanaTimezonePreference = {
+  mode: "fixed";
+  kind: "iana";
+  timezone: string;
+};
+
+export type FixedUtcOffsetTimezonePreference = {
+  mode: "fixed";
+  kind: "utc_offset";
+  offsetMinutes: number;
+  label: string;
+};
+
+export type FixedTimezonePreference = FixedIanaTimezonePreference | FixedUtcOffsetTimezonePreference;
+
 export type TimezonePreference =
   | { mode: "auto" }
-  | { mode: "fixed"; timezone: string };
+  | FixedTimezonePreference;
 
 export type AppPreferences = {
   dashboard: DashboardPreferences;

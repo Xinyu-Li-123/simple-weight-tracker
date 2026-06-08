@@ -6,9 +6,8 @@ import {
   type DashboardMode,
   type DashboardPreferences,
   type PersistedPreferenceSection,
-  type TimezonePreference,
 } from "@/preferences/types";
-import { isValidTimezone } from "@/preferences/timezone";
+import { normalizeTimezonePreference } from "@/preferences/timezone";
 
 const APP_PREFERENCES_KEY = "swt.pref.app";
 const LEGACY_DASHBOARD_PREFERENCES_KEY = "swt.pref.dashboard";
@@ -24,12 +23,15 @@ export function loadAppPreferences(): AppPreferences {
     if (raw) {
       const parsed = JSON.parse(raw) as unknown;
       if (isAppPreferencesFile(parsed)) {
+        const timezone = normalizeTimezonePreference(parsed.data.timezone);
+        if (!timezone) return defaultAppPreferences;
+
         return {
           dashboard: {
             ...defaultDashboardPreferences,
             ...parsed.data.dashboard,
           },
-          timezone: parsed.data.timezone,
+          timezone,
         };
       }
     }
@@ -81,7 +83,7 @@ function isAppPreferences(value: unknown): value is AppPreferences {
   if (!value || typeof value !== "object") return false;
 
   const preferences = value as Record<string, unknown>;
-  return isDashboardPreferences(preferences.dashboard) && isTimezonePreference(preferences.timezone);
+  return isDashboardPreferences(preferences.dashboard) && normalizeTimezonePreference(preferences.timezone) !== null;
 }
 
 function isDashboardPreferences(value: unknown): value is DashboardPreferences {
@@ -92,20 +94,6 @@ function isDashboardPreferences(value: unknown): value is DashboardPreferences {
     isDashboardMode(preferences.progressMode) &&
     isDashboardMode(preferences.trendModePreference) &&
     isTrendRange(preferences.trendRange)
-  );
-}
-
-function isTimezonePreference(value: unknown): value is TimezonePreference {
-  if (!value || typeof value !== "object") return false;
-
-  const preference = value as Record<string, unknown>;
-  if (preference.mode === "auto") return true;
-
-  return (
-    preference.mode === "fixed" &&
-    typeof preference.timezone === "string" &&
-    preference.timezone.length > 0 &&
-    isValidTimezone(preference.timezone)
   );
 }
 
