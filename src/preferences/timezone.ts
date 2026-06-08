@@ -1,5 +1,5 @@
 import { rawTimeZones } from "@vvo/tzdb";
-import type { FixedTimezonePreference, TimezonePreference } from "@/preferences/types";
+import type { FixedTimezonePreference, FixedUtcOffsetTimezonePreference, TimezonePreference } from "@/preferences/types";
 
 type ParsedTimezoneInput =
   | {
@@ -208,7 +208,7 @@ function getLocalDateInUtcOffset(offsetMinutes: number, date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function parseUtcOffsetInput(input: string): FixedTimezonePreference | null {
+function parseUtcOffsetInput(input: string): FixedUtcOffsetTimezonePreference | null {
   const match = input.trim().match(UTC_OFFSET_PATTERN);
   if (!match?.groups) return null;
 
@@ -281,13 +281,16 @@ function buildLookup(entries: ReadonlyArray<readonly [string, string]>): ExactLo
 function resolveLookupMatch(
   lookup: ExactLookup,
   key: string,
-): { ok: true; timezone: string } | { ok: false; description?: string } {
+): { ok: true; timezone: string } | { ok: false; description: string } {
   if (!lookup.has(key)) {
-    return { ok: false };
+    return { ok: false, description: "" };
   }
 
-  const match = lookup.get(key);
-  if (match === null) {
+  const match = lookup.get(key) as string | undefined;
+  if (match === undefined || match === null) {
+    if (match === undefined) {
+      return { ok: false, description: "" };
+    }
     return {
       ok: false,
       description: "That input matches multiple timezones. Please use a more specific city or an IANA timezone name.",

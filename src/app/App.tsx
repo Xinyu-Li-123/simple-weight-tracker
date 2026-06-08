@@ -362,7 +362,7 @@ export function App() {
         open={recordOpen}
         mode={recordSheetState?.mode ?? "create"}
         entry={recordSheetState?.entry ?? null}
-        prefillDate={recordSheetState?.prefillDate}
+        prefillDate={recordSheetState?.mode === "create" ? recordSheetState.prefillDate : undefined}
         onClose={() => setRecordSheetState(null)}
         onCancelEdit={(entry) => setRecordSheetState({ mode: "view", entry })}
         onCreate={handleCreate}

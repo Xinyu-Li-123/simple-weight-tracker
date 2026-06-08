@@ -29,12 +29,12 @@ export const sidebarItems: SidebarItem[] = [
   {
     id: "backup-export",
     label: "Backup and export",
-    // description: "Import backups and export records.",
+    description: "Import backups and export records.",
   },
   {
     id: "settings",
     label: "Settings",
-    // description: "Date, time, and app behavior preferences.",
+    description: "Date, time, and app behavior preferences.",
   },
 
 ];

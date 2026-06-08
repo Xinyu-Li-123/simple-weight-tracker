@@ -308,7 +308,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
     weekly: "Weekly Average"
   } as const;
 
-  const legendOrder = new Map(
+  const legendOrder = new Map<string, number>(
     Object.values(lineName).map((name, index) => [name, index]),
   );
   const sortLegendItem = (item: LegendPayload) =>
