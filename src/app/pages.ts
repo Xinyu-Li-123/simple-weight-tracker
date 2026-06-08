@@ -22,11 +22,6 @@ export const bottomNavItems: BottomNavItem[] = [
 
 export const sidebarItems: SidebarItem[] = [
   {
-    id: "settings",
-    label: "Settings",
-    description: "Date, time, and app behavior preferences.",
-  },
-  {
     id: "data-safety",
     label: "Data Safety",
     description: "Storage mode and persistence details.",
@@ -34,8 +29,14 @@ export const sidebarItems: SidebarItem[] = [
   {
     id: "backup-export",
     label: "Backup and export",
-    description: "Import backups and export records.",
+    // description: "Import backups and export records.",
   },
+  {
+    id: "settings",
+    label: "Settings",
+    // description: "Date, time, and app behavior preferences.",
+  },
+
 ];
 
 export const recordAction = {
