@@ -1,4 +1,5 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis, type LegendPayload } from "recharts";
+import { getBmiCategory } from "@/domain/energy";
 import { getPlanSummary } from "@/domain/planSummary";
 import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
@@ -56,10 +57,17 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
     latestWeightKg: summary.latestWeightKg,
     trendLabel: summary.trend.label,
   });
+  const bmiLine = getBmiLine({
+    hasPlan: Boolean(plan),
+    bmi: summary.metrics.bmi,
+  });
   const tdeeLine = getTdeeLine({
     hasPlan: Boolean(plan),
     tdeeKcal: summary.metrics.tdeeKcal,
   });
+  const calDeficitLine = getCalDeficitLine({
+    tdeeKcal: summary.metrics.tdeeKcal
+  })
 
   function updatePreferences(next: Partial<DashboardPreferences>) {
     onChangePreferences({
@@ -130,7 +138,12 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               <span>{recommendation.detail}</span>
             </div>
 
-            <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+            <div className="dashboard-metrics-group">
+              <p className="dashboard-secondary-text muted">{bmiLine}</p>
+              <p className="dashboard-secondary-text muted">Normal BMI is 18.5–25.0.</p>
+              <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
+            </div>
           </>
         ) : (
           <>
@@ -147,7 +160,12 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               <span>{recommendation.detail}</span>
             </div>
 
-            <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+            <div className="dashboard-metrics-group">
+              <p className="dashboard-secondary-text muted">{bmiLine}</p>
+              <p className="dashboard-secondary-text muted">Normal BMI is 18.5–25.0.</p>
+              <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
+            </div>
           </>
         )}
       </section >
@@ -479,16 +497,44 @@ function getRecommendationCopy(input: {
   };
 }
 
+function getBmiLine(input: { hasPlan: boolean; bmi: number | null }): string {
+  if (!input.hasPlan) {
+    return "BMI will appear after you save a plan.";
+  }
+
+  if (input.bmi === null) {
+    return "BMI will appear after you log a weight.";
+  }
+
+  const category = getBmiCategory(input.bmi);
+  return `Current BMI is ${input.bmi.toFixed(1)} - ${category.label}.`;
+}
+
 function getTdeeLine(input: { hasPlan: boolean; tdeeKcal: number | null }): string {
   if (!input.hasPlan) {
-    return "Daily expenditure will appear after you save a plan.";
+    return "Daily burn will appear after you save a plan.";
   }
 
   if (input.tdeeKcal === null) {
-    return "Daily expenditure appears after you log a weight.";
+    return "Daily burn appears after you log a weight.";
   }
 
-  return `Estimated daily expenditure: ${formatKcal(input.tdeeKcal)}.`;
+  const minCalDeficit = 200;
+  const maxCalDeficit = 500;
+  const estiCalDeficit = input.tdeeKcal * 0.15;
+  const recCalDeficit = clamp(estiCalDeficit, minCalDeficit, maxCalDeficit);
+
+  return `Daily Burn is about ${formatKcal(input.tdeeKcal)}.`;
+}
+
+
+function getCalDeficitLine(input: { tdeeKcal: number | null }): string {
+  const minCalDeficit = 200;
+  const maxCalDeficit = 500;
+  const estiCalDeficit = input.tdeeKcal * 0.15;
+  const recCalDeficit = clamp(estiCalDeficit, minCalDeficit, maxCalDeficit);
+
+  return `Daily Calories Deficit should be ${recCalDeficit} kcal`;
 }
 
 function toPath(points: Array<[number, number]>): string {
@@ -540,7 +586,7 @@ function formatKg(value: number | null): string {
 
 function formatKcal(value: number | null): string {
   if (value === null || !Number.isFinite(value)) return "—";
-  return `≈ ${Math.round(value)} kcal/day`;
+  return `${Math.round(value)} kcal/day`;
 }
 
 function clamp(value: number, min: number, max: number): number {

@@ -152,6 +152,10 @@
   margin: 0;
   font-size: 0.84rem;
 }
+.dashboard-metrics-group {
+  display: grid;
+  gap: 0.15rem;
+}
 .chart-wrap {
   display: grid;
   gap: 0.35rem;
