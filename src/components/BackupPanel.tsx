@@ -24,9 +24,9 @@ export function BackupPanel({ onExportJson, onExportCsv, onExportMarkdown, onExp
     <section className="card backup-actions">
       <h2>{t("backup.title")}</h2>
       <button onClick={onExportJson}>{t("backup.exportJson")}</button>
-      <button onClick={onExportCsv}>{t("backup.exportCsv")}</button>
-      <button onClick={onExportMarkdown}>{t("backup.exportMarkdown")}</button>
-      <button onClick={onExportTxt}>{t("backup.exportTxt")}</button>
+      <button className="secondary" onClick={onExportCsv}>{t("backup.exportCsv")}</button>
+      <button className="secondary" onClick={onExportMarkdown}>{t("backup.exportMarkdown")}</button>
+      <button className="secondary" onClick={onExportTxt}>{t("backup.exportTxt")}</button>
       <button className="ghost-danger backup-actions__import" onClick={() => inputRef.current?.click()}>
         {t("backup.import")}
       </button>

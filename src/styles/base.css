@@ -14,12 +14,16 @@ button {
   border: 0;
   border-radius: 14px;
   padding: 0.8rem 1rem;
-  background: var(--color-action-primary);
+  background: var(--color-action-secondary);
   color: var(--color-fg-on-primary);
   font-weight: 700;
 }
 button.danger { background: var(--color-action-danger); }
-button.secondary { background: var(--color-action-secondary); }
+/* button.secondary { background: var(--color-action-secondary); } */
+button.secondary {
+  background: color-mix(in srgb, var(--palette-ink) 6%, var(--palette-surface));
+  color: var(--color-fg-primary);
+}
 button.ghost { background: transparent; color: var(--color-action-secondary); padding: 0.4rem 0.5rem; }
 button.ghost-danger {
   color: var(--color-action-danger);

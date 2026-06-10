@@ -4,6 +4,7 @@ import { getPlanSummary } from "@/domain/planSummary";
 import { getTrendLabelDescription, getTrendLabelText } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
 import { useTranslation } from "@/i18n";
+import { useToast } from "@/toast/useToast";
 import type { DashboardMode, DashboardPreferences } from "@/preferences/types";
 import type { WeightPlan } from "@/types/plan";
 import type { WeightEntry } from "@/types/weight";
@@ -25,6 +26,7 @@ type ActiveRange = {
 
 export function DashboardTab({ entries, plan, standalone, onOpenPlan, preferences, onChangePreferences }: Props) {
   const { t } = useTranslation();
+  const { pushToast } = useToast();
   const { progressMode, trendModePreference, trendRange } = preferences;
   const summary = getPlanSummary({ entries, plan });
   const chartData = getTrendChartData(entries, trendRange);
@@ -216,6 +218,43 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
         ) : (
           <p className="muted">{t("dashboard.needTwoWeights")}</p>
         )}
+      </section>
+
+      <section className="card">
+        <h2>Testing</h2>
+        <div className="testing-panel__section">
+          <h3>Toast variants</h3>
+          <div className="testing-panel__actions">
+            <button
+              type="button"
+              className="testing-panel__button"
+              onClick={() => pushToast({ message: "Info notification", variant: "info" })}
+            >
+              Info
+            </button>
+            <button
+              type="button"
+              className="testing-panel__button"
+              onClick={() => pushToast({ message: "Success notification", variant: "success" })}
+            >
+              Success
+            </button>
+            <button
+              type="button"
+              className="testing-panel__button"
+              onClick={() => pushToast({ message: "Warning notification", variant: "warning" })}
+            >
+              Warning
+            </button>
+            <button
+              type="button"
+              className="testing-panel__button"
+              onClick={() => pushToast({ message: "Error notification", variant: "error" })}
+            >
+              Error
+            </button>
+          </div>
+        </div>
       </section>
     </>
   );

@@ -187,7 +187,7 @@ export function SettingsPage({
                 ) : null}
               </div>
               <span className="muted">{t("settings.fixedHint")}</span>
-              <button type="button" className="secondary" onClick={commitDraftTimezone} disabled={draftTimezone.trim().length === 0}>
+              <button type="button" onClick={commitDraftTimezone} disabled={draftTimezone.trim().length === 0}>
                 {t("settings.applyTimezone")}
               </button>
             </label>
