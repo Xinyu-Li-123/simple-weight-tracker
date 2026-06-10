@@ -21,7 +21,7 @@
 .backup-actions__import {
   justify-content: center;
   padding: 0.8rem 1rem;
-  border: 1px solid rgb(161 38 49 / 0.20);
+  border: 1px solid var(--color-danger-border-alpha);
   font-weight: 700;
 }
 .settings-card {
@@ -40,8 +40,6 @@
   position: relative;
 }
 .settings-combobox__menu {
-  --combobox-shadow: 0 16px 28px rgb(23 32 51 / 0.10);
-
   position: absolute;
   top: calc(100% + 0.35rem);
   right: 0;
@@ -55,7 +53,7 @@
   border: 1px solid var(--color-border-default);
   border-radius: 16px;
   background: var(--color-bg-surface);
-  box-shadow: var(--combobox-shadow);
+  box-shadow: var(--shadow-combobox);
 }
 .settings-combobox__option {
   display: grid;

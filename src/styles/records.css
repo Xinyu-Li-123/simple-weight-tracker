@@ -58,7 +58,7 @@
 }
 .record-card__icon-button--danger {
   color: var(--color-action-danger);
-  background: rgb(161 38 49 / 0.10);
+  background: var(--color-danger-bg-icon);
 }
 .record-card--footer {
   width: auto;
