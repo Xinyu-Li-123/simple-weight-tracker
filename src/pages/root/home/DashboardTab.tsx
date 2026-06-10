@@ -136,10 +136,8 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
             </div>
 
             <div className="dashboard-metrics-group">
-              <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">{bmiNormalLine}</p>
-              <p className="dashboard-secondary-text muted">{tdeeLine}</p>
-              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
+              <p className="dashboard-secondary-text muted">{bmiLine} {bmiNormalLine}</p>
+              <p className="dashboard-secondary-text muted">{tdeeLine} {calDeficitLine}</p>
             </div>
           </>
         ) : (
@@ -159,9 +157,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
 
             <div className="dashboard-metrics-group">
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">{bmiNormalLine}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
-              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
           </>
         )}
