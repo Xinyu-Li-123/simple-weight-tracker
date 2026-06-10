@@ -21,8 +21,6 @@ export function SidebarDrawer({ open, items, onClose, onSelect }: Props) {
         onClick={(event) => event.stopPropagation()}
       >
         <div className="drawer__header">
-          <h2>{t("sidebar.title")}</h2>
-          <p>{t("sidebar.description")}</p>
         </div>
         <nav className="drawer__nav" aria-label="Utility pages">
           {items.map((item) => {

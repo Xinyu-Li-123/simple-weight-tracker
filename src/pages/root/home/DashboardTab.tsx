@@ -53,6 +53,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
     t,
   });
   const bmiLine = getBmiLine({ hasPlan: Boolean(plan), bmi: summary.metrics.bmi, t });
+  const bmiNormalLine = plan ? t("dashboard.bmiCategory_normal") : null;
   const tdeeLine = getTdeeLine({ hasPlan: Boolean(plan), tdeeKcal: summary.metrics.tdeeKcal, t });
   const calDeficitLine = getCalDeficitLine({ tdeeKcal: summary.metrics.tdeeKcal, t });
 
@@ -136,7 +137,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
 
             <div className="dashboard-metrics-group">
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
+              <p className="dashboard-secondary-text muted">{bmiNormalLine}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
               <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
@@ -158,7 +159,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
 
             <div className="dashboard-metrics-group">
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
+              <p className="dashboard-secondary-text muted">{bmiNormalLine}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
               <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
@@ -283,20 +284,17 @@ function HalfCircleGauge(input: {
             </text>
           </>
         )}
-        <text x={centerX} y="17" className="progress-gauge__current-caption" textAnchor="middle">
+        <text x={centerX} y="12" className="progress-gauge__current-caption" textAnchor="middle">
           {t("dashboard.current")}
         </text>
-        <text x={centerX} y="37" className="progress-gauge__current-value" textAnchor="middle">
+        <text x={centerX} y="34" className="progress-gauge__current-value" textAnchor="middle">
           {formatKg(input.currentWeightKg)}
         </text>
-        <text x={centerX} y={centerY - 36} className="progress-gauge__center-caption" textAnchor="middle">
+        <text x={centerX} y={centerY - 34} className="progress-gauge__center-caption" textAnchor="middle">
           {t("dashboard.totalLoss")}
         </text>
-        <text x={centerX} y={centerY - 14} className="progress-gauge__center-value" textAnchor="middle">
+        <text x={centerX} y={centerY - 4} className="progress-gauge__center-value" textAnchor="middle">
           {formatKg(input.totalLossKg)}
-        </text>
-        <text x={centerX} y={centerY + 4} className="progress-gauge__center-detail" textAnchor="middle">
-          {t("dashboard.lostSoFar")}
         </text>
       </svg>
     </div>

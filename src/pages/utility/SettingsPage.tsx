@@ -101,7 +101,6 @@ export function SettingsPage({
             <h3>{t("settings.language")}</h3>
           </div>
           <label>
-            {t("settings.language")}
             <select
               value={language}
               onChange={(event) => handleLanguageChange(event.target.value)}

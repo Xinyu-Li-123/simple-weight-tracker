@@ -8,13 +8,11 @@
     "backAriaLabel": "Back"
   },
   "tabs": {
-    "dashboard": "Dashboard",
+    "dashboard": "Progress",
     "history": "History",
     "pageSectionsAriaLabel": "Page sections"
   },
   "sidebar": {
-    "title": "More",
-    "description": "Utilities and data controls.",
     "dataSafety": "Data Safety",
     "dataSafetyDesc": "Storage mode and persistence details.",
     "backupExport": "Backup and export",
@@ -53,18 +51,16 @@
     "target": "Target",
     "current": "Current",
     "totalLoss": "Total loss",
-    "lostSoFar": "lost so far",
     "advice": "Advice",
     "setUpPlanTitle": "Set up your plan",
-    "setUpPlanDesc": "Add your start weight, target weight, height, sex, age, and activity level to unlock milestone progress and zoomed trend views.",
+    "setUpPlanDesc": "Add your start weight, target weight, height, sex, age, and activity level to generate milestone progress.",
     "setUpPlanButton": "Set up plan",
     "addPlanTitle": "Add a plan",
-    "addPlanDesc": "Set up your plan to unlock phase progress and zoomed trend ranges.",
+    "addPlanDesc": "Set up your plan to generate phase progress.",
     "recordFirstWeight": "Record your first weight",
-    "recordFirstWeightDesc": "The dashboard will start tracking progress as soon as you log an entry.",
+    "recordFirstWeightDesc": "The app will start tracking progress as soon as you log an entry.",
     "needTwoWeights": "Record at least two weights in this range to draw a trend.",
-    "setUpPlanToUnlock": "Set up a plan to unlock the phase and full trend views.",
-    "estimatedDaily": "Estimated daily expenditure: ≈ {{kcal}} kcal/day.",
+    "setUpPlanToUnlock": "Set up a plan to unlock the phase views.",
     "dailyExpenditureAppears": "Daily expenditure will appear after you save a plan.",
     "dailyExpenditureAfterLog": "Daily expenditure appears after you log a weight.",
     "dailyBurnAppears": "Daily burn will appear after you save a plan.",
@@ -110,7 +106,7 @@
   "plan": {
     "title": "Weight plan",
     "setUpTitle": "Set up your plan",
-    "intro": "The plan stores your route, milestones, and conservative energy reference. Daily use still only requires body weight.",
+    "intro": "The plan is used to generate milestones and conservative energy reference.",
     "startWeight": "Start weight (kg)",
     "targetWeight": "Target weight (kg)",
     "height": "Height (cm)",
@@ -135,10 +131,10 @@
     "activity_lightDesc": "Some walking or light exercise.",
     "activity_moderateDesc": "Regular walking or light exercise most weeks.",
     "activity_activeDesc": "Physical work or frequent structured exercise.",
-    "startWeightPlaceholder": "121",
-    "targetWeightPlaceholder": "80",
-    "heightPlaceholder": "175",
-    "agePlaceholder": "25"
+    "startWeightPlaceholder": "0",
+    "targetWeightPlaceholder": "0",
+    "heightPlaceholder": "0",
+    "agePlaceholder": "0"
   },
   "history": {
     "title": "History",
@@ -173,7 +169,7 @@
     "recordDeleted": "Record deleted.",
     "planSaved": "Plan saved.",
     "planDeleted": "Plan deleted.",
-    "exported": "Exported {{format}}.",
+    "exported": "Exported as {{format}}.",
     "restored": "Restored {{count}} entries{{plan}}.",
     "restoredPlan": " and plan",
     "saveFailed": "Could not save entry.",
@@ -197,8 +193,8 @@
   "settings": {
     "title": "Settings",
     "dateTime": "Date and Time",
-    "dateTimeDesc": "This controls when the app considers a new local day to begin. It stays on this browser/device and is not included in backup import or export.",
-    "timezoneMode": "Timezone mode",
+    "dateTimeDesc": "This controls when the app considers a new day to begin.",
+    "timezoneMode": "Timezone",
     "useDevice": "Use device timezone",
     "useFixed": "Use fixed timezone",
     "currentDevice": "Current device timezone",
@@ -235,7 +231,7 @@
     "import": "Import and replace from JSON backup"
   },
   "standalone": {
-    "warning": "Use this app from your Home Screen for real use.",
+    "warning": "To properly use this app, add it to your Home Screen.",
     "iphone": "iPhone: open in Safari, tap Share, then Add to Home Screen.",
     "android": "Android: open the browser menu, then Install app or Add to Home screen."
   },
