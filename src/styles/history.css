@@ -11,34 +11,36 @@
 }
 
 .history-view-switcher {
+  --history-switcher-bg: rgb(23 32 51 / 0.04);
+
   display: inline-grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
   min-width: 0;
   padding: 0.1rem;
-  border: 1px solid #d8dee6;
+  border: 1px solid var(--color-border-default);
   border-radius: 999px;
-  background: rgba(23, 32, 51, 0.04);
+  background: var(--history-switcher-bg);
 }
 
 .history-view-switcher__button {
   padding: 0.3rem 0.48rem;
   border-radius: 999px;
   background: transparent;
-  color: #5d6878;
+  color: var(--color-fg-secondary);
   font-size: 0.74rem;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .history-view-switcher__button--active {
-  background: white;
-  color: #172033;
-  box-shadow: 0 4px 10px rgba(23, 32, 51, 0.06);
+  background: var(--color-bg-surface);
+  color: var(--color-fg-primary);
+  box-shadow: var(--shadow-card);
 }
 
 .history-empty {
-  color: #5d6878;
+  color: var(--color-fg-secondary);
   padding: 0.5rem 0 0;
   margin: 0;
 }
@@ -60,13 +62,13 @@
   padding: 0.5rem 0.8rem;
   border-radius: 12px;
   background: transparent;
-  color: #172033;
+  color: var(--color-fg-primary);
   text-align: left;
   font-weight: 500;
 }
 
 .compact-list__row:hover {
-  background: #f4f6f8;
+  background: var(--color-bg-canvas);
 }
 
 .compact-list__row-date {
@@ -75,7 +77,7 @@
 
 .compact-list__row-weight {
   font-variant-numeric: tabular-nums;
-  color: #31526b;
+  color: var(--color-action-secondary);
 }
 
 .calendar {
@@ -109,15 +111,15 @@
   height: 2.2rem;
   padding: 0;
   border-radius: 999px;
-  background: #eef3f8;
-  color: #172033;
+  background: var(--color-bg-selected);
+  color: var(--color-fg-primary);
 }
 
 .calendar-month__today-button {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
-  background: #eef3f8;
-  color: #172033;
+  background: var(--color-bg-selected);
+  color: var(--color-fg-primary);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -131,7 +133,7 @@
 .calendar-month__day-header {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #5d6878;
+  color: var(--color-fg-secondary);
   text-align: center;
   padding: 0.3rem 0;
   text-transform: uppercase;
@@ -146,32 +148,32 @@
   padding: 0.2rem;
   border-radius: 10px;
   background: transparent;
-  color: #172033;
+  color: var(--color-fg-primary);
   font-size: 0.82rem;
   font-weight: 500;
   line-height: 1.2;
 }
 
 .calendar-month__cell:not(.calendar-month__cell--outside):hover {
-  background: #f4f6f8;
+  background: var(--color-bg-canvas);
 }
 
 .calendar-month__cell--outside {
-  color: #c4ccd6;
+  color: var(--color-fg-placeholder);
 }
 
 .calendar-month__cell--today {
-  box-shadow: inset 0 0 0 2px #172033;
+  box-shadow: inset 0 0 0 2px var(--color-fg-primary);
 }
 
 .calendar-month__cell--has-entry {
-  background: #eef3f8;
+  background: var(--color-bg-selected);
   font-weight: 700;
 }
 
 .calendar-month__cell-weight {
   font-size: 0.68rem;
-  color: #31526b;
+  color: var(--color-action-secondary);
   font-weight: 700;
   margin-top: -0.1rem;
 }
@@ -207,15 +209,15 @@
   height: 2.2rem;
   padding: 0;
   border-radius: 999px;
-  background: #eef3f8;
-  color: #172033;
+  background: var(--color-bg-selected);
+  color: var(--color-fg-primary);
 }
 
 .calendar-week__today-button {
   padding: 0.4rem 0.8rem;
   border-radius: 999px;
-  background: #eef3f8;
-  color: #172033;
+  background: var(--color-bg-selected);
+  color: var(--color-fg-primary);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -234,26 +236,26 @@
   padding: 0.6rem 0.2rem;
   border-radius: 14px;
   background: transparent;
-  color: #172033;
+  color: var(--color-fg-primary);
   text-align: center;
 }
 
 .calendar-week__day:not(.calendar-week__day--empty):hover {
-  background: #f4f6f8;
+  background: var(--color-bg-canvas);
 }
 
 .calendar-week__day--today {
-  box-shadow: inset 0 0 0 2px #172033;
+  box-shadow: inset 0 0 0 2px var(--color-fg-primary);
 }
 
 .calendar-week__day--has-entry {
-  background: #eef3f8;
+  background: var(--color-bg-selected);
 }
 
 .calendar-week__day-name {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #5d6878;
+  color: var(--color-fg-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -266,11 +268,11 @@
 .calendar-week__day-weight {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #31526b;
+  color: var(--color-action-secondary);
   font-variant-numeric: tabular-nums;
 }
 
 .calendar-week__day-empty {
-  color: #c4ccd6;
+  color: var(--color-fg-placeholder);
   font-size: 0.78rem;
 }

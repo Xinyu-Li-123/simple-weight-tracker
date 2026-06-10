@@ -1,15 +1,15 @@
 .entry-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
 .entry-list li { margin: 0; }
-.entry-list span, .entry-list small { color: #5d6878; }
+.entry-list span, .entry-list small { color: var(--color-fg-secondary); }
 .record-card {
   display: flex;
   align-items: stretch;
   gap: 0.75rem;
   width: 100%;
   padding: 0.8rem;
-  border: 1px solid #e3e7ed;
+  border: 1px solid var(--color-border-subtle);
   border-radius: 16px;
-  background: #f8fafc;
+  background: var(--color-bg-subtle);
 }
 .record-card__main {
   display: grid;
@@ -26,15 +26,15 @@
   text-align: left;
 }
 .record-card__date {
-  color: #172033;
+  color: var(--color-fg-primary);
   font-weight: 700;
 }
 .record-card__weight {
-  color: #172033;
+  color: var(--color-fg-primary);
 }
 .record-card__note {
   overflow: hidden;
-  color: #5d6878;
+  color: var(--color-fg-secondary);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -54,11 +54,11 @@
   height: 2.3rem;
   padding: 0;
   border-radius: 999px;
-  color: #31526b;
+  color: var(--color-action-secondary);
 }
 .record-card__icon-button--danger {
-  color: #a12631;
-  background: rgba(161, 38, 49, 0.1);
+  color: var(--color-action-danger);
+  background: rgb(161 38 49 / 0.10);
 }
 .record-card--footer {
   width: auto;

@@ -3,13 +3,13 @@
 .form-field--readonly input,
 .form-field--readonly textarea,
 .form-field input:disabled {
-  border-color: #d9e1ea;
-  background: #f4f7fa;
-  color: #465467;
+  border-color: var(--color-border-disabled);
+  background: var(--color-bg-disabled);
+  color: var(--color-fg-disabled);
 }
 .form-field input:disabled {
   opacity: 1;
-  -webkit-text-fill-color: #465467;
+  -webkit-text-fill-color: var(--color-fg-disabled);
 }
 .form__actions {
   display: flex;
@@ -23,8 +23,8 @@
   margin: 0;
   padding: 0.75rem 0.85rem;
   border-radius: 14px;
-  background: #fdedee;
-  color: #8a1f29;
+  background: var(--color-status-danger-bg);
+  color: var(--color-status-danger-fg);
   font-weight: 700;
 }
 

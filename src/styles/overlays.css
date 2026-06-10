@@ -7,17 +7,17 @@
   justify-content: center;
   padding: 1rem;
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  background: rgba(23, 32, 51, 0.36);
+  background: var(--color-overlay);
   backdrop-filter: blur(6px);
 }
 .sheet {
   width: min(760px, 100%);
   max-height: min(85vh, 44rem);
   overflow: auto;
-  border: 1px solid #d8dee6;
+  border: 1px solid var(--color-border-default);
   border-radius: 28px;
-  background: #fdfefe;
-  box-shadow: 0 28px 80px rgba(23, 32, 51, 0.24);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-overlay);
 }
 .sheet__header {
   display: flex;
@@ -38,8 +38,8 @@
   height: 2.2rem;
   padding: 0;
   border-radius: 999px;
-  background: #eef3f8;
-  color: #172033;
+  background: var(--color-bg-selected);
+  color: var(--color-fg-primary);
 }
 .sheet .form {
   margin: 0;
@@ -55,15 +55,15 @@
   display: grid;
   place-items: center;
   padding: 1rem;
-  background: rgba(23, 32, 51, 0.4);
+  background: var(--color-overlay-strong);
   backdrop-filter: blur(6px);
 }
 .confirm-dialog {
   width: min(100%, 28rem);
-  border: 1px solid #d8dee6;
+  border: 1px solid var(--color-border-default);
   border-radius: 24px;
-  background: #fdfefe;
-  box-shadow: 0 28px 80px rgba(23, 32, 51, 0.24);
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-overlay);
 }
 .confirm-dialog__body {
   padding: 1.1rem 1.1rem 0.9rem;
@@ -75,7 +75,7 @@
 }
 .confirm-dialog__body p {
   margin: 0;
-  color: #5d6878;
+  color: var(--color-fg-secondary);
 }
 .confirm-dialog__actions {
   display: flex;
