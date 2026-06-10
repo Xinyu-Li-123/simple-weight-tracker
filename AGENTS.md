@@ -49,6 +49,16 @@
 - Plain CSS, no framework. All styles are global files in `src/styles/`.
 - CSS variables defined in `src/styles/base.css`.
 
+## i18n
+
+- Powered by **i18next** + **react-i18next**. Locale JSON files in `src/i18n/locales/`.
+- **`src/i18n/index.ts`** — i18next init + language detection. Exports `i18n` singleton, `useTranslation` (hook), `tUnsafe`, `existsUnsafe`.
+- **`src/i18n/languages.ts`** — `SUPPORTED_LANGUAGES` config array (code, label, dateFnsLocale, detectionTags). Single source of truth — no language codes hardcoded elsewhere.
+- **`src/i18n/errorCodes.ts`** — `E.*` constants. User-facing errors thrown as `new Error(E.KEY)` and translated at catch sites via `i18n.exists(msg) ? i18n.t(msg) : msg`. Dev-facing errors pass through as-is.
+- **TypeScript autocomplete**: `i18next.d.ts` augments types from `en.json`. All `t()` calls are strictly typed on literal keys.
+
+If you need details about i18n (e.g. how to add new lang), read `.agents/docs/i18n.md`.
+
 ## Repo notes
 
 - `notes/` directory is fully gitignored (design docs, TODOs are not tracked).
