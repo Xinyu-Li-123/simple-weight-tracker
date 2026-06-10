@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "@/i18n";
-import { WeightList } from "@/components/WeightList";
+import { WeightList } from "@/pages/root/home/WeightList";
 import { HistoryViewSwitcher } from "@/pages/root/home/HistoryViewSwitcher";
 import { CompactWeightList } from "@/pages/root/home/CompactWeightList";
 import { CalendarMonthView } from "@/pages/root/home/CalendarMonthView";

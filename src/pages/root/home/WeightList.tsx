@@ -20,7 +20,7 @@ export function WeightList({
   const { t } = useTranslation();
 
   return (
-    <section className="card">
+    <div>
       {entries.length === 0 ? (
         <p className="muted">{t("history.noEntries")}</p>
       ) : (
@@ -37,6 +37,6 @@ export function WeightList({
           ))}
         </ul>
       )}
-    </section>
+    </div>
   );
 }

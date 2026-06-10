@@ -220,42 +220,42 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
         )}
       </section>
 
-      <section className="card">
-        <h2>Testing</h2>
-        <div className="testing-panel__section">
-          <h3>Toast variants</h3>
-          <div className="testing-panel__actions">
-            <button
-              type="button"
-              className="testing-panel__button"
-              onClick={() => pushToast({ message: "Info notification", variant: "info" })}
-            >
-              Info
-            </button>
-            <button
-              type="button"
-              className="testing-panel__button"
-              onClick={() => pushToast({ message: "Success notification", variant: "success" })}
-            >
-              Success
-            </button>
-            <button
-              type="button"
-              className="testing-panel__button"
-              onClick={() => pushToast({ message: "Warning notification", variant: "warning" })}
-            >
-              Warning
-            </button>
-            <button
-              type="button"
-              className="testing-panel__button"
-              onClick={() => pushToast({ message: "Error notification", variant: "error" })}
-            >
-              Error
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* <section className="card"> */}
+      {/*   <h2>Testing</h2> */}
+      {/*   <div className="testing-panel__section"> */}
+      {/*     <h3>Toast variants</h3> */}
+      {/*     <div className="testing-panel__actions"> */}
+      {/*       <button */}
+      {/*         type="button" */}
+      {/*         className="testing-panel__button" */}
+      {/*         onClick={() => pushToast({ message: "Info notification", variant: "info" })} */}
+      {/*       > */}
+      {/*         Info */}
+      {/*       </button> */}
+      {/*       <button */}
+      {/*         type="button" */}
+      {/*         className="testing-panel__button" */}
+      {/*         onClick={() => pushToast({ message: "Success notification", variant: "success" })} */}
+      {/*       > */}
+      {/*         Success */}
+      {/*       </button> */}
+      {/*       <button */}
+      {/*         type="button" */}
+      {/*         className="testing-panel__button" */}
+      {/*         onClick={() => pushToast({ message: "Warning notification", variant: "warning" })} */}
+      {/*       > */}
+      {/*         Warning */}
+      {/*       </button> */}
+      {/*       <button */}
+      {/*         type="button" */}
+      {/*         className="testing-panel__button" */}
+      {/*         onClick={() => pushToast({ message: "Error notification", variant: "error" })} */}
+      {/*       > */}
+      {/*         Error */}
+      {/*       </button> */}
+      {/*     </div> */}
+      {/*   </div> */}
+      {/* </section> */}
     </>
   );
 }
