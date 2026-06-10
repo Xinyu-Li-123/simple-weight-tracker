@@ -1,0 +1,92 @@
+/* Theme — swap the uncommented line to switch palette */
+/* @import "@/styles/themes/default.css"; */
+@import "@/styles/themes/mint.css";
+
+:root {
+  /* ========== Core app tokens ========== */
+  --color-bg-canvas: var(--palette-canvas);
+  --color-bg-surface: var(--palette-surface);
+  --color-bg-subtle: color-mix(in srgb, var(--palette-ink) 3%, var(--palette-surface));
+  --color-bg-selected: color-mix(in srgb, var(--palette-accent) 10%, var(--palette-surface));
+  --color-bg-disabled: color-mix(in srgb, var(--palette-ink) 4%, var(--palette-surface));
+  --color-bg-floating: rgb(255 255 255 / 0.98);
+  --color-bg-toggle: color-mix(in srgb, var(--palette-ink) 4%, transparent);
+  --color-bg-trend-toggle: color-mix(in srgb, var(--palette-ink) 5%, transparent);
+  --color-header-bg: color-mix(in srgb, var(--palette-canvas) 94%, transparent);
+
+  --color-fg-primary: var(--palette-ink);
+  --color-fg-secondary: var(--palette-muted);
+  --color-fg-disabled: color-mix(in srgb, var(--palette-ink) 72%, var(--palette-surface));
+  --color-fg-placeholder: color-mix(in srgb, var(--palette-muted) 42%, var(--palette-surface));
+  --color-fg-on-primary: var(--palette-surface);
+  --color-fg-on-danger: var(--palette-surface);
+
+  --color-border-default: color-mix(in srgb, var(--palette-ink) 16%, var(--palette-surface));
+  --color-border-subtle: color-mix(in srgb, var(--palette-ink) 10%, var(--palette-surface));
+  --color-border-disabled: color-mix(in srgb, var(--palette-ink) 12%, var(--palette-surface));
+
+  --color-action-primary: var(--palette-ink);
+  --color-action-secondary: var(--palette-accent);
+  --color-action-danger: var(--palette-danger);
+  --color-action-warning: var(--palette-warning);
+
+  /* ========== Status tokens ========== */
+  --color-status-info-fg: var(--palette-info);
+  --color-status-info-bg: var(--palette-info-soft);
+  --color-status-info-border: color-mix(in srgb, var(--palette-info) 22%, var(--palette-surface));
+
+  --color-status-success-fg: var(--palette-success);
+  --color-status-success-bg: var(--palette-success-soft);
+  --color-status-success-border: color-mix(in srgb, var(--palette-success) 22%, var(--palette-surface));
+
+  --color-status-warning-fg: var(--palette-warning);
+  --color-status-warning-bg: var(--palette-warning-soft);
+  --color-status-warning-border: color-mix(in srgb, var(--palette-warning) 26%, var(--palette-surface));
+
+  --color-status-danger-fg: color-mix(in srgb, var(--palette-danger) 88%, black);
+  --color-status-danger-bg: var(--palette-danger-soft);
+  --color-status-danger-border: color-mix(in srgb, var(--palette-danger) 24%, var(--palette-surface));
+
+  /* ========== Danger alpha variants ========== */
+  --color-danger-bg-subtle: color-mix(in srgb, var(--palette-danger) 8%, transparent);
+  --color-danger-bg-icon: color-mix(in srgb, var(--palette-danger) 10%, transparent);
+  --color-danger-border-alpha: color-mix(in srgb, var(--palette-danger) 20%, transparent);
+
+  /* ========== Layers ========== */
+  --color-overlay: color-mix(in srgb, var(--palette-ink) 36%, transparent);
+  --color-overlay-strong: color-mix(in srgb, var(--palette-ink) 40%, transparent);
+
+  /* ========== Shadows ========== */
+  --shadow-card: 0 12px 30px color-mix(in srgb, var(--palette-ink) 6%, transparent);
+  --shadow-floating: 0 18px 36px color-mix(in srgb, var(--palette-ink) 16%, transparent);
+  --shadow-overlay: 0 28px 80px color-mix(in srgb, var(--palette-ink) 24%, transparent);
+  --shadow-drawer: 18px 0 44px color-mix(in srgb, var(--palette-ink) 18%, transparent);
+  --shadow-navigation: 0 10px 24px color-mix(in srgb, var(--palette-ink) 18%, transparent);
+  --shadow-combobox: 0 16px 28px color-mix(in srgb, var(--palette-ink) 10%, transparent);
+
+  /* ========== Gauge ========== */
+  --color-gauge-track: color-mix(in srgb, var(--palette-accent) 16%, var(--palette-surface));
+  --color-gauge-track-muted: color-mix(in srgb, var(--palette-accent) 8%, var(--palette-surface));
+  --color-gauge-detail: color-mix(in srgb, var(--palette-muted) 90%, var(--palette-ink));
+  --color-gauge-center-shadow: color-mix(in srgb, var(--palette-ink) 8%, transparent);
+  --color-gauge-marker-shadow: color-mix(in srgb, var(--palette-ink) 16%, transparent);
+
+  /* ========== Toast ========== */
+  --color-toast-fg: color-mix(in srgb, var(--palette-ink) 88%, var(--palette-accent));
+  --color-toast-bg: color-mix(in srgb, var(--palette-canvas) 97%, transparent);
+  --color-toast-border: color-mix(in srgb, var(--palette-accent) 22%, var(--palette-surface));
+  --color-toast-close-bg: color-mix(in srgb, var(--color-toast-fg) 8%, transparent);
+
+  --color-toast-info-border: color-mix(in srgb, var(--palette-info) 24%, var(--palette-surface));
+  --color-toast-info-bg: color-mix(in srgb, var(--palette-info-soft) 97%, transparent);
+
+  --color-toast-success-border: color-mix(in srgb, var(--palette-success) 24%, var(--palette-surface));
+  --color-toast-success-bg: color-mix(in srgb, var(--palette-success-soft) 97%, transparent);
+
+  --color-toast-warning-fg: color-mix(in srgb, var(--palette-warning) 90%, black);
+  --color-toast-warning-bg: color-mix(in srgb, var(--palette-warning-soft) 97%, transparent);
+
+  --color-toast-error-bg: color-mix(in srgb, var(--palette-danger-soft) 97%, transparent);
+
+  --record-sheet-footer-height: 3.25rem;
+}

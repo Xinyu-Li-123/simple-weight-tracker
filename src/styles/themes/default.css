@@ -1,92 +1,19 @@
 :root {
-  /* ========== Backgrounds ========== */
-  --color-bg-canvas: #f4f6f8;
-  --color-bg-surface: #ffffff;
-  --color-bg-subtle: #f8fafc;
-  --color-bg-selected: #eef3f8;
-  --color-bg-disabled: #f4f7fa;
-  --color-bg-floating: rgb(255 255 255 / 0.98);
-  --color-bg-toggle: rgb(23 32 51 / 0.04);
-  --color-bg-trend-toggle: rgb(23 32 51 / 0.05);
-  --color-header-bg: rgb(244 246 248 / 0.94);
+  /* ========== Palette inputs ========== */
+  --palette-canvas: #f4f6f8;
+  --palette-surface: #ffffff;
+  --palette-ink: #172033;
+  --palette-muted: #5d6878;
+  --palette-accent: #31526b;
 
-  /* ========== Foregrounds ========== */
-  --color-fg-primary: #172033;
-  --color-fg-secondary: #5d6878;
-  --color-fg-disabled: #465467;
-  --color-fg-placeholder: #c4ccd6;
-  --color-fg-on-primary: #ffffff;
-  --color-fg-on-danger: #ffffff;
+  --palette-danger: #a12631;
+  --palette-warning: #5d4b00;
+  --palette-success: #214d2f;
+  --palette-info: #14436c;
 
-  /* ========== Borders ========== */
-  --color-border-default: #d8dee6;
-  --color-border-subtle: #e3e7ed;
-  --color-border-disabled: #d9e1ea;
-
-  /* ========== Actions ========== */
-  --color-action-primary: #172033;
-  --color-action-secondary: #31526b;
-  --color-action-danger: #a12631;
-  --color-action-warning: #5d4b00;
-
-  /* ========== Status — info ========== */
-  --color-status-info-fg: #14436c;
-  --color-status-info-bg: #eef5ff;
-  --color-status-info-border: #c8dcf5;
-
-  /* ========== Status — success ========== */
-  --color-status-success-fg: #214d2f;
-  --color-status-success-bg: #eefaf2;
-  --color-status-success-border: #cbead4;
-
-  /* ========== Status — warning ========== */
-  --color-status-warning-fg: #5d4b00;
-  --color-status-warning-bg: #fff8df;
-  --color-status-warning-border: #f1df9f;
-
-  /* ========== Status — danger ========== */
-  --color-status-danger-fg: #8a1f29;
-  --color-status-danger-bg: #fdedee;
-  --color-status-danger-border: #f2b8bc;
-
-  /* ========== Danger — alpha variants ========== */
-  --color-danger-bg-subtle: rgb(161 38 49 / 0.08);
-  --color-danger-bg-icon: rgb(161 38 49 / 0.10);
-  --color-danger-border-alpha: rgb(161 38 49 / 0.20);
-
-  /* ========== Layers ========== */
-  --color-overlay: rgb(23 32 51 / 0.36);
-  --color-overlay-strong: rgb(23 32 51 / 0.4);
-
-  /* ========== Shadows ========== */
-  --shadow-card: 0 12px 30px rgb(23 32 51 / 0.06);
-  --shadow-floating: 0 18px 36px rgb(23 32 51 / 0.16);
-  --shadow-overlay: 0 28px 80px rgb(23 32 51 / 0.24);
-  --shadow-drawer: 18px 0 44px rgb(23 32 51 / 0.18);
-  --shadow-navigation: 0 10px 24px rgb(23 32 51 / 0.18);
-  --shadow-combobox: 0 16px 28px rgb(23 32 51 / 0.10);
-
-  /* ========== Gauge ========== */
-  --color-gauge-track: #dde5f0;
-  --color-gauge-track-muted: #edf2f7;
-  --color-gauge-detail: #667387;
-  --color-gauge-center-shadow: rgb(23 32 51 / 0.08);
-  --color-gauge-marker-shadow: rgb(23 32 51 / 0.16);
-
-  /* ========== Toast ========== */
-  --color-toast-fg: #1f3347;
-  --color-toast-bg: rgb(243 246 250 / 0.97);
-  --color-toast-border: #c5d0df;
-  --color-toast-close-bg: rgb(31 51 71 / 0.08);
-
-  --color-toast-info-border: #b9d5f3;
-  --color-toast-info-bg: rgb(234 244 255 / 0.97);
-
-  --color-toast-success-border: #b9e7c7;
-  --color-toast-success-bg: rgb(233 248 239 / 0.97);
-
-  --color-toast-warning-fg: #6a5300;
-  --color-toast-warning-bg: rgb(255 248 223 / 0.97);
-
-  --color-toast-error-bg: rgb(253 237 238 / 0.97);
+  /* Optional: use if you want softer status backgrounds */
+  --palette-danger-soft: #fdedee;
+  --palette-warning-soft: #fff8df;
+  --palette-success-soft: #eefaf2;
+  --palette-info-soft: #eef5ff;
 }
