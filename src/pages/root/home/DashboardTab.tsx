@@ -54,6 +54,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
   });
   const bmiLine = getBmiLine({ hasPlan: Boolean(plan), bmi: summary.metrics.bmi, t });
   const tdeeLine = getTdeeLine({ hasPlan: Boolean(plan), tdeeKcal: summary.metrics.tdeeKcal, t });
+  const calDeficitLine = getCalDeficitLine({ tdeeKcal: summary.metrics.tdeeKcal, t });
 
   const trendRangeOptions: Array<{ id: TrendRange; label: string }> = [
     { id: "10d", label: t("dashboard.10d") },
@@ -137,6 +138,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
               <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
           </>
         ) : (
@@ -158,6 +160,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
               <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
+              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
           </>
         )}
@@ -514,14 +517,25 @@ function getTdeeLine(input: { hasPlan: boolean; tdeeKcal: number | null; t: TFun
   const { t, hasPlan, tdeeKcal } = input;
 
   if (!hasPlan) {
-    return t("dashboard.dailyExpenditureAppears");
+    return t("dashboard.dailyBurnAppears");
   }
 
   if (tdeeKcal === null) {
-    return t("dashboard.dailyExpenditureAfterLog");
+    return t("dashboard.dailyBurnAfterLog");
   }
 
-  return t("dashboard.estimatedDaily", { kcal: Math.round(tdeeKcal) });
+  return t("dashboard.dailyBurnAbout", { kcal: Math.round(tdeeKcal) });
+}
+
+function getCalDeficitLine(input: { tdeeKcal: number | null; t: TFunction }): string {
+  const { t, tdeeKcal } = input;
+
+  if (tdeeKcal === null) return "";
+
+  const estiCalDeficit = tdeeKcal * 0.15;
+  const recCalDeficit = clamp(estiCalDeficit, 200, 500);
+
+  return t("dashboard.dailyDeficit", { kcal: recCalDeficit });
 }
 
 function toPath(points: Array<[number, number]>): string {
