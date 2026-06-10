@@ -17,7 +17,6 @@ export function SidebarDrawer({ open, items, onClose, onSelect }: Props) {
     <div className="drawer-backdrop" onClick={onClose}>
       <aside
         className="drawer"
-        aria-label={t("sidebar.title")}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="drawer__header">
