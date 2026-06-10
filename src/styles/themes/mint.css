@@ -1,20 +1,23 @@
 :root {
-  /* ========== Palette colors — Mint / Sage / Cream, corrected ========== */
-  --palette-canvas: #f6f1e8;
+  /* ========== Palette colors — Warm Mint / Sage, refined ========== */
+  --palette-canvas: #f5f0e6;
   --palette-surface: #fffaf2;
-  --palette-ink: #2c2c2c;
-  --palette-muted: #6b7c6a;
+  --palette-ink: #30332f;
+  --palette-muted: #6a7468;
 
-  /* Darker usable accent; light mint is kept for soft backgrounds */
-  --palette-accent: #4f8d64;
+  /* Slightly deeper than before for active states and chart/gauge emphasis */
+  --palette-accent: #557f5d;
 
-  --palette-danger: #a84b50;
-  --palette-warning: #8a6a24;
-  --palette-success: #4f8d64;
-  --palette-info: #5f7f8f;
+  /* Slightly less bright than the earlier mint */
+  --palette-accent-soft: #d6f2df;
 
-  --palette-danger-soft: #f6e4e2;
-  --palette-warning-soft: #f7efd9;
-  --palette-success-soft: #e8f7ed;
-  --palette-info-soft: #e7f0f3;
+  --palette-danger: #a24d50;
+  --palette-warning: #84631d;
+  --palette-success: #557f5d;
+  --palette-info: #5d7f8c;
+
+  --palette-danger-soft: #f4e3df;
+  --palette-warning-soft: #f6ecd2;
+  --palette-success-soft: #e5f3e8;
+  --palette-info-soft: #e5eef1;
 }

@@ -1,15 +1,16 @@
 /* Theme — swap the uncommented line to switch palette */
-/* @import "@/styles/themes/default.css"; */
-@import "@/styles/themes/mint.css";
+/* @import "@/styles/themes/navy.css"; */
+/* @import "@/styles/themes/mint.css"; */
+@import "@/styles/themes/nordic.css";
 
 :root {
   /* ========== Core app tokens ========== */
   --color-bg-canvas: var(--palette-canvas);
   --color-bg-surface: var(--palette-surface);
-  --color-bg-subtle: color-mix(in srgb, var(--palette-ink) 3%, var(--palette-surface));
-  --color-bg-selected: color-mix(in srgb, var(--palette-accent) 10%, var(--palette-surface));
-  --color-bg-disabled: color-mix(in srgb, var(--palette-ink) 4%, var(--palette-surface));
-  --color-bg-floating: rgb(255 255 255 / 0.98);
+  --color-bg-subtle: color-mix(in srgb, var(--palette-neutral) 16%, var(--palette-surface));
+  --color-bg-selected: color-mix(in srgb, var(--palette-accent-soft) 52%, var(--palette-surface));
+  --color-bg-disabled: color-mix(in srgb, var(--palette-neutral) 22%, var(--palette-surface));
+  --color-bg-floating: color-mix(in srgb, var(--palette-surface) 98%, transparent);
   --color-bg-toggle: color-mix(in srgb, var(--palette-ink) 4%, transparent);
   --color-bg-trend-toggle: color-mix(in srgb, var(--palette-ink) 5%, transparent);
   --color-header-bg: color-mix(in srgb, var(--palette-canvas) 94%, transparent);
@@ -20,10 +21,11 @@
   --color-fg-placeholder: color-mix(in srgb, var(--palette-muted) 42%, var(--palette-surface));
   --color-fg-on-primary: var(--palette-surface);
   --color-fg-on-danger: var(--palette-surface);
+  --color-fg-on-warning: var(--palette-surface);
 
-  --color-border-default: color-mix(in srgb, var(--palette-ink) 16%, var(--palette-surface));
-  --color-border-subtle: color-mix(in srgb, var(--palette-ink) 10%, var(--palette-surface));
-  --color-border-disabled: color-mix(in srgb, var(--palette-ink) 12%, var(--palette-surface));
+  --color-border-default: color-mix(in srgb, var(--palette-neutral) 54%, var(--palette-surface));
+  --color-border-subtle: color-mix(in srgb, var(--palette-neutral) 32%, var(--palette-surface));
+  --color-border-disabled: color-mix(in srgb, var(--palette-neutral) 38%, var(--palette-surface));
 
   --color-action-primary: var(--palette-ink);
   --color-action-secondary: var(--palette-accent);
@@ -65,16 +67,23 @@
   --shadow-combobox: 0 16px 28px color-mix(in srgb, var(--palette-ink) 10%, transparent);
 
   /* ========== Gauge ========== */
-  --color-gauge-track: color-mix(in srgb, var(--palette-accent) 16%, var(--palette-surface));
-  --color-gauge-track-muted: color-mix(in srgb, var(--palette-accent) 8%, var(--palette-surface));
+  --color-gauge-fill: var(--palette-accent);
+  --color-gauge-track: color-mix(in srgb, var(--palette-accent-soft) 42%, var(--palette-surface));
+  --color-gauge-track-muted: color-mix(in srgb, var(--palette-accent-soft) 20%, var(--palette-surface));
   --color-gauge-detail: color-mix(in srgb, var(--palette-muted) 90%, var(--palette-ink));
   --color-gauge-center-shadow: color-mix(in srgb, var(--palette-ink) 8%, transparent);
   --color-gauge-marker-shadow: color-mix(in srgb, var(--palette-ink) 16%, transparent);
 
+  /* ========== Chart ========== */
+  --color-chart-primary: var(--palette-accent);
+  --color-chart-secondary: color-mix(in srgb, var(--palette-accent) 72%, var(--palette-ink));
+  --color-chart-grid: color-mix(in srgb, var(--palette-neutral) 28%, var(--palette-surface));
+  --color-chart-axis: var(--palette-muted);
+
   /* ========== Toast ========== */
   --color-toast-fg: color-mix(in srgb, var(--palette-ink) 88%, var(--palette-accent));
   --color-toast-bg: color-mix(in srgb, var(--palette-canvas) 97%, transparent);
-  --color-toast-border: color-mix(in srgb, var(--palette-accent) 22%, var(--palette-surface));
+  --color-toast-border: color-mix(in srgb, var(--palette-neutral) 46%, var(--palette-surface));
   --color-toast-close-bg: color-mix(in srgb, var(--color-toast-fg) 8%, transparent);
 
   --color-toast-info-border: color-mix(in srgb, var(--palette-info) 24%, var(--palette-surface));

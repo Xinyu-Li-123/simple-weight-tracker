@@ -66,7 +66,7 @@
 }
 .progress-gauge__fill {
   fill: none;
-  stroke: var(--color-fg-primary);
+  stroke: var(--color-gauge-fill);
   stroke-width: 14;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -77,7 +77,7 @@
 }
 .progress-gauge__marker {
   fill: var(--color-bg-surface);
-  stroke: var(--color-fg-primary);
+  stroke: var(--color-gauge-fill);
   stroke-width: 3;
   filter: drop-shadow(0 8px 18px var(--color-gauge-marker-shadow));
 }
