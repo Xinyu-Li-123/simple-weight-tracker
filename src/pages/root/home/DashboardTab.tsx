@@ -566,7 +566,7 @@ function getCalDeficitLine(input: { tdeeKcal: number | null; t: TFunction }): st
   if (tdeeKcal === null) return "";
 
   const estiCalDeficit = tdeeKcal * 0.15;
-  const recCalDeficit = round(clamp(estiCalDeficit, 200, 500));
+  const recCalDeficit = Math.round(clamp(estiCalDeficit, 200, 500));
 
   return t("dashboard.dailyDeficit", { kcal: recCalDeficit });
 }
