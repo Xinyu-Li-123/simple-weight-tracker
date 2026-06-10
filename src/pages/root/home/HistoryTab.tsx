@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "@/i18n";
 import { WeightList } from "@/components/WeightList";
 import { HistoryViewSwitcher } from "@/pages/root/home/HistoryViewSwitcher";
 import { CompactWeightList } from "@/pages/root/home/CompactWeightList";
@@ -26,6 +27,7 @@ export function HistoryTab({
   onRequestDeleteEntry,
   onCreateForDate,
 }: Props) {
+  const { t } = useTranslation();
   const historyView = historyPreferences.historyView;
   const [month, setMonth] = useState(() => new Date());
   const [week, setWeek] = useState(() => new Date());
@@ -37,7 +39,7 @@ export function HistoryTab({
   return (
     <section className="card">
       <div className="history-header-row">
-        <h2>History</h2>
+        <h2>{t("history.title")}</h2>
         <HistoryViewSwitcher value={historyView} onChange={handleChangeView} />
       </div>
       {historyView === "list-compact" ? <CompactWeightList entries={entries} onOpenEntry={onOpenEntry} /> : null}

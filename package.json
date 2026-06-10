@@ -19,9 +19,11 @@
     "@vvo/tzdb": "^6.198.0",
     "date-fns": "latest",
     "dexie": "latest",
+    "i18next": "^26.3.1",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "react-i18next": "^17.0.8",
     "recharts": "^3.8.1",
     "vite-plugin-pwa": "latest"
   },

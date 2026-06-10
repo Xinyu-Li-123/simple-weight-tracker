@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { WeightRecordCard } from "@/components/WeightRecordCard";
 import type { WeightEntry } from "@/types/weight";
 
@@ -15,12 +16,13 @@ export function WeightList({
   onOpenEntry,
   onEditEntry,
   onRequestDeleteEntry,
-  emptyMessage = "No entries yet.",
 }: Props) {
+  const { t } = useTranslation();
+
   return (
     <section className="card">
       {entries.length === 0 ? (
-        <p className="muted">{emptyMessage}</p>
+        <p className="muted">{t("history.noEntries")}</p>
       ) : (
         <ul className="entry-list">
           {entries.map((entry) => (

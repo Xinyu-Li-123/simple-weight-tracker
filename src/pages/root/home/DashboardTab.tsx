@@ -1,11 +1,13 @@
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis, type LegendPayload } from "recharts";
-import { getBmiCategory } from "@/domain/energy";
+import { getBmiCategory, getBmiCategoryLabel } from "@/domain/energy";
 import { getPlanSummary } from "@/domain/planSummary";
-import { trendLabelDescription, trendLabelText, type TrendLabel } from "@/domain/trend";
+import { getTrendLabelDescription, getTrendLabelText } from "@/domain/trend";
 import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
+import { useTranslation } from "@/i18n";
 import type { DashboardMode, DashboardPreferences } from "@/preferences/types";
 import type { WeightPlan } from "@/types/plan";
 import type { WeightEntry } from "@/types/weight";
+import type { TFunction } from "i18next";
 
 type Props = {
   entries: WeightEntry[];
@@ -21,16 +23,8 @@ type ActiveRange = {
   toKg: number;
 };
 
-const trendRangeOptions: Array<{ id: TrendRange; label: string }> = [
-  { id: "10d", label: "10D" },
-  { id: "1m", label: "1M" },
-  { id: "3m", label: "3M" },
-  { id: "6m", label: "6M" },
-  { id: "1y", label: "1Y" },
-  { id: "all", label: "All" },
-];
-
 export function DashboardTab({ entries, plan, standalone, onOpenPlan, preferences, onChangePreferences }: Props) {
+  const { t } = useTranslation();
   const { progressMode, trendModePreference, trendRange } = preferences;
   const summary = getPlanSummary({ entries, plan });
   const chartData = getTrendChartData(entries, trendRange);
@@ -56,18 +50,19 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
     hasPlan: Boolean(plan),
     latestWeightKg: summary.latestWeightKg,
     trendLabel: summary.trend.label,
+    t,
   });
-  const bmiLine = getBmiLine({
-    hasPlan: Boolean(plan),
-    bmi: summary.metrics.bmi,
-  });
-  const tdeeLine = getTdeeLine({
-    hasPlan: Boolean(plan),
-    tdeeKcal: summary.metrics.tdeeKcal,
-  });
-  const calDeficitLine = getCalDeficitLine({
-    tdeeKcal: summary.metrics.tdeeKcal
-  })
+  const bmiLine = getBmiLine({ hasPlan: Boolean(plan), bmi: summary.metrics.bmi, t });
+  const tdeeLine = getTdeeLine({ hasPlan: Boolean(plan), tdeeKcal: summary.metrics.tdeeKcal, t });
+
+  const trendRangeOptions: Array<{ id: TrendRange; label: string }> = [
+    { id: "10d", label: t("dashboard.10d") },
+    { id: "1m", label: t("dashboard.1m") },
+    { id: "3m", label: t("dashboard.3m") },
+    { id: "6m", label: t("dashboard.6m") },
+    { id: "1y", label: t("dashboard.1y") },
+    { id: "all", label: t("dashboard.all") },
+  ];
 
   function updatePreferences(next: Partial<DashboardPreferences>) {
     onChangePreferences({
@@ -81,35 +76,35 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
       {!standalone ? (
         <section className="warning storage-warning">
           <div>
-            <strong>Use this app from your Home Screen for real use.</strong>
-            <p>iPhone: open in Safari, tap Share, then Add to Home Screen.</p>
-            <p>Android: open the browser menu, then Install app or Add to Home screen.</p>
+            <strong>{t("standalone.warning")}</strong>
+            <p>{t("standalone.iphone")}</p>
+            <p>{t("standalone.android")}</p>
           </div>
         </section>
       ) : null}
 
       {!plan ? (
         <section className="card dashboard-empty-plan">
-          <h2>Set up your plan</h2>
+          <h2>{t("dashboard.setUpPlanTitle")}</h2>
           <p className="muted">
-            Add your start weight, target weight, height, sex, age, and activity level to unlock milestone progress and zoomed trend views.
+            {t("dashboard.setUpPlanDesc")}
           </p>
-          <button type="button" onClick={onOpenPlan}>Set up plan</button>
+          <button type="button" onClick={onOpenPlan}>{t("dashboard.setUpPlanButton")}</button>
         </section>
       ) : null}
 
       <section className={plan ? "card dashboard-card" : "card dashboard-card dashboard-card--disabled"}>
         <div className="dashboard-card__header">
-          <h2>Progress</h2>
+          <h2>{t("dashboard.progress")}</h2>
           {plan ? (
-            <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Progress scope">
+            <div className="dashboard-card__mode-toggle" role="tablist" aria-label={t("dashboard.progressScopeAriaLabel")}>
               <button
                 type="button"
                 className={progressMode === "phase" ? "dashboard-card__mode-button dashboard-card__mode-button--active" : "dashboard-card__mode-button"}
                 aria-pressed={progressMode === "phase"}
                 onClick={() => updatePreferences({ progressMode: "phase" })}
               >
-                Phase
+                {t("dashboard.phase")}
               </button>
               <button
                 type="button"
@@ -117,7 +112,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
                 aria-pressed={progressMode === "full"}
                 onClick={() => updatePreferences({ progressMode: "full" })}
               >
-                Full
+                {t("dashboard.full")}
               </button>
             </div>
           ) : null}
@@ -130,19 +125,18 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               currentWeightKg={summary.latestWeightKg}
               progressPct={progressMeter?.progressPct ?? null}
               totalLossKg={summary.metrics.totalLossKg}
-              ariaLabel={`${progressMode === "phase" ? "Current phase" : "Full plan"} progress`}
+              ariaLabel={progressMode === "phase" ? t("dashboard.phase") : t("dashboard.full")}
             />
 
             <div className="dashboard-note" data-tone={plan ? summary.trend.label : undefined}>
-              <strong><span>Advice:&nbsp;&nbsp;</span>{recommendation.title}</strong>
+              <strong><span>{t("dashboard.advice")}:&nbsp;&nbsp;</span>{recommendation.title}</strong>
               <span>{recommendation.detail}</span>
             </div>
 
             <div className="dashboard-metrics-group">
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">Normal BMI is 18.5–25.0.</p>
+              <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
-              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
           </>
         ) : (
@@ -152,7 +146,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
               currentWeightKg={null}
               progressPct={null}
               totalLossKg={null}
-              ariaLabel="Progress placeholder"
+              ariaLabel={t("dashboard.progressAriaLabel")}
             />
 
             <div className="dashboard-note">
@@ -162,19 +156,18 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
 
             <div className="dashboard-metrics-group">
               <p className="dashboard-secondary-text muted">{bmiLine}</p>
-              <p className="dashboard-secondary-text muted">Normal BMI is 18.5–25.0.</p>
+              <p className="dashboard-secondary-text muted">{t("dashboard.bmiCategory_normal")}</p>
               <p className="dashboard-secondary-text muted">{tdeeLine}</p>
-              <p className="dashboard-secondary-text muted">{calDeficitLine}</p>
             </div>
           </>
         )}
-      </section >
+      </section>
 
       <section className={plan ? "card dashboard-card" : "card dashboard-card dashboard-card--disabled"}>
         <div className="dashboard-card__header">
-          <h2>Trend</h2>
+          <h2>{t("dashboard.trend")}</h2>
           {plan ? (
-            <div className="dashboard-card__mode-toggle" role="tablist" aria-label="Trend scope">
+            <div className="dashboard-card__mode-toggle" role="tablist" aria-label={t("dashboard.trendScopeAriaLabel")}>
               {trendPhaseAllowed ? (
                 <button
                   type="button"
@@ -182,7 +175,7 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
                   aria-pressed={trendMode === "phase"}
                   onClick={() => updatePreferences({ trendModePreference: "phase" })}
                 >
-                  Phase
+                  {t("dashboard.phase")}
                 </button>
               ) : null}
               <button
@@ -191,14 +184,14 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
                 aria-pressed={trendMode === "full"}
                 onClick={() => updatePreferences({ trendModePreference: "full" })}
               >
-                Full
+                {t("dashboard.full")}
               </button>
             </div>
           ) : null}
         </div>
         {plan ? (
           <div className="trend-controls">
-            <div className="trend-range-toggle" role="tablist" aria-label="Trend date range">
+            <div className="trend-range-toggle" role="tablist" aria-label={t("dashboard.trendRangeAriaLabel")}>
               {trendRangeOptions.map((option) => (
                 <button
                   key={option.id}
@@ -216,12 +209,12 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
 
         {!plan ? (
           <div className="trend-placeholder">
-            <p className="muted">Set up a plan to unlock the phase and full trend views.</p>
+            <p className="muted">{t("dashboard.setUpPlanToUnlock")}</p>
           </div>
         ) : trendRangeBand && chartData.points.length >= 2 ? (
           <WeightTrendChart data={chartData} range={trendRangeBand} mode={trendMode} />
         ) : (
-          <p className="muted">Record at least two weights in this range to draw a trend.</p>
+          <p className="muted">{t("dashboard.needTwoWeights")}</p>
         )}
       </section>
     </>
@@ -235,6 +228,7 @@ function HalfCircleGauge(input: {
   totalLossKg: number | null;
   ariaLabel: string;
 }) {
+  const { t } = useTranslation();
   const width = 320;
   const height = 166;
   const centerX = width / 2;
@@ -261,13 +255,13 @@ function HalfCircleGauge(input: {
               {formatKg(input.range.fromKg)}
             </text>
             <text x="34" y="142" className="progress-gauge__edge-caption" textAnchor="middle">
-              Start
+              {t("dashboard.start")}
             </text>
             <text x="284" y="125" className="progress-gauge__edge-value" textAnchor="middle">
               {formatKg(input.range.toKg)}
             </text>
             <text x="284" y="142" className="progress-gauge__edge-caption" textAnchor="middle">
-              Target
+              {t("dashboard.target")}
             </text>
           </>
         ) : (
@@ -276,30 +270,30 @@ function HalfCircleGauge(input: {
               —
             </text>
             <text x="44" y="142" className="progress-gauge__edge-caption" textAnchor="middle">
-              Start
+              {t("dashboard.start")}
             </text>
             <text x="276" y="125" className="progress-gauge__edge-value" textAnchor="middle">
               —
             </text>
             <text x="276" y="142" className="progress-gauge__edge-caption" textAnchor="middle">
-              Target
+              {t("dashboard.target")}
             </text>
           </>
         )}
         <text x={centerX} y="17" className="progress-gauge__current-caption" textAnchor="middle">
-          Current
+          {t("dashboard.current")}
         </text>
         <text x={centerX} y="37" className="progress-gauge__current-value" textAnchor="middle">
           {formatKg(input.currentWeightKg)}
         </text>
         <text x={centerX} y={centerY - 36} className="progress-gauge__center-caption" textAnchor="middle">
-          Total loss
+          {t("dashboard.totalLoss")}
         </text>
         <text x={centerX} y={centerY - 14} className="progress-gauge__center-value" textAnchor="middle">
           {formatKg(input.totalLossKg)}
         </text>
         <text x={centerX} y={centerY + 4} className="progress-gauge__center-detail" textAnchor="middle">
-          lost so far
+          {t("dashboard.lostSoFar")}
         </text>
       </svg>
     </div>
@@ -307,6 +301,7 @@ function HalfCircleGauge(input: {
 }
 
 function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: ActiveRange; mode: DashboardMode }) {
+  const { t } = useTranslation();
   const { points, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
 
   if (points.length === 0) return null;
@@ -321,9 +316,9 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
   const formatWeight = (v: number) => `${v.toFixed(1)} kg`;
 
   const lineName = {
-    daily: "Weight",
-    movingAvg: "Moving Average",
-    weekly: "Weekly Average"
+    daily: t("dashboard.chartWeight"),
+    movingAvg: t("dashboard.chartMovingAverage"),
+    weekly: t("dashboard.chartWeeklyAverage"),
   } as const;
 
   const legendOrder = new Map<string, number>(
@@ -361,7 +356,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
   }
 
   return (
-    <div className="chart-wrap" role="img" aria-label="Weight trend chart">
+    <div className="chart-wrap" role="img" aria-label={t("dashboard.chartAriaLabel")}>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={points} margin={{ top: 18, right: 18, bottom: 36, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e3e7ed" />
@@ -475,66 +470,58 @@ function getProgressMeter(input: {
 function getRecommendationCopy(input: {
   hasPlan: boolean;
   latestWeightKg: number | null;
-  trendLabel: TrendLabel;
+  trendLabel: string;
+  t: TFunction;
 }): { title: string; detail: string } {
+  const { t } = input;
+
   if (!input.hasPlan) {
     return {
-      title: "Add a plan",
-      detail: "Set up your plan to unlock phase progress and zoomed trend ranges.",
+      title: t("dashboard.addPlanTitle"),
+      detail: t("dashboard.addPlanDesc"),
     };
   }
 
   if (input.latestWeightKg === null) {
     return {
-      title: "Record your first weight",
-      detail: "The dashboard will start tracking progress as soon as you log an entry.",
+      title: t("dashboard.recordFirstWeight"),
+      detail: t("dashboard.recordFirstWeightDesc"),
     };
   }
 
   return {
-    title: trendLabelText[input.trendLabel],
-    detail: trendLabelDescription[input.trendLabel],
+    title: getTrendLabelText(input.trendLabel as Parameters<typeof getTrendLabelText>[0]),
+    detail: getTrendLabelDescription(input.trendLabel as Parameters<typeof getTrendLabelDescription>[0]),
   };
 }
 
-function getBmiLine(input: { hasPlan: boolean; bmi: number | null }): string {
-  if (!input.hasPlan) {
-    return "BMI will appear after you save a plan.";
+function getBmiLine(input: { hasPlan: boolean; bmi: number | null; t: TFunction }): string {
+  const { t, hasPlan, bmi } = input;
+
+  if (!hasPlan) {
+    return t("dashboard.bmiAppearsAfterPlan");
   }
 
-  if (input.bmi === null) {
-    return "BMI will appear after you log a weight.";
+  if (bmi === null) {
+    return t("dashboard.bmiAppearsAfterLog");
   }
 
-  const category = getBmiCategory(input.bmi);
-  return `Current BMI is ${input.bmi.toFixed(1)} - ${category.label}.`;
+  const category = getBmiCategory(bmi);
+  return t("dashboard.bmiCategory_current", { bmi: bmi.toFixed(1), category: getBmiCategoryLabel(category.category) });
 }
 
-function getTdeeLine(input: { hasPlan: boolean; tdeeKcal: number | null }): string {
-  if (!input.hasPlan) {
-    return "Daily burn will appear after you save a plan.";
+function getTdeeLine(input: { hasPlan: boolean; tdeeKcal: number | null; t: TFunction }): string {
+  const { t, hasPlan, tdeeKcal } = input;
+
+  if (!hasPlan) {
+    return t("dashboard.dailyExpenditureAppears");
   }
 
-  if (input.tdeeKcal === null) {
-    return "Daily burn appears after you log a weight.";
+  if (tdeeKcal === null) {
+    return t("dashboard.dailyExpenditureAfterLog");
   }
 
-  const minCalDeficit = 200;
-  const maxCalDeficit = 500;
-  const estiCalDeficit = input.tdeeKcal * 0.15;
-  const recCalDeficit = clamp(estiCalDeficit, minCalDeficit, maxCalDeficit);
-
-  return `Daily Burn is about ${formatKcal(input.tdeeKcal)}.`;
-}
-
-
-function getCalDeficitLine(input: { tdeeKcal: number | null }): string {
-  const minCalDeficit = 200;
-  const maxCalDeficit = 500;
-  const estiCalDeficit = input.tdeeKcal * 0.15;
-  const recCalDeficit = clamp(estiCalDeficit, minCalDeficit, maxCalDeficit);
-
-  return `Daily Calories Deficit should be ${recCalDeficit} kcal`;
+  return t("dashboard.estimatedDaily", { kcal: Math.round(tdeeKcal) });
 }
 
 function toPath(points: Array<[number, number]>): string {
@@ -582,11 +569,6 @@ function getGaugePoint(input: {
 function formatKg(value: number | null): string {
   if (value === null || !Number.isFinite(value)) return "—";
   return `${value.toFixed(1)} kg`;
-}
-
-function formatKcal(value: number | null): string {
-  if (value === null || !Number.isFinite(value)) return "—";
-  return `${Math.round(value)} kcal/day`;
 }
 
 function clamp(value: number, min: number, max: number): number {

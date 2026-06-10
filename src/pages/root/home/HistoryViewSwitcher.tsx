@@ -1,11 +1,5 @@
+import { useTranslation } from "@/i18n";
 import type { HistoryViewId } from "@/preferences/types";
-
-const views: Array<{ id: HistoryViewId; label: string }> = [
-  { id: "list-compact", label: "Cmpct" },
-  { id: "list-expanded", label: "List" },
-  { id: "calendar-week", label: "Week" },
-  { id: "calendar-month", label: "Month" },
-];
 
 type Props = {
   value: HistoryViewId;
@@ -13,8 +7,17 @@ type Props = {
 };
 
 export function HistoryViewSwitcher({ value, onChange }: Props) {
+  const { t } = useTranslation();
+
+  const views: Array<{ id: HistoryViewId; label: string }> = [
+    { id: "list-compact", label: t("history.viewCmpct") },
+    { id: "list-expanded", label: t("history.viewList") },
+    { id: "calendar-week", label: t("history.viewWeek") },
+    { id: "calendar-month", label: t("history.viewMonth") },
+  ];
+
   return (
-    <div className="history-view-switcher" role="tablist" aria-label="History view">
+    <div className="history-view-switcher" role="tablist" aria-label={t("history.viewAriaLabel")}>
       {views.map((view) => (
         <button
           key={view.id}

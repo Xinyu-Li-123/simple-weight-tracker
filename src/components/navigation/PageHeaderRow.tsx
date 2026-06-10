@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import { ChevronLeft, Menu } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function PageHeaderRow({ leftAction, children }: Props) {
+  const { t } = useTranslation();
   const menuAction = leftAction.kind === "menu";
 
   return (
@@ -27,7 +29,7 @@ export function PageHeaderRow({ leftAction, children }: Props) {
         type="button"
         className="page-header-row__icon-button"
         onClick={leftAction.onClick}
-        aria-label={leftAction.label ?? (menuAction ? "Open navigation menu" : "Back")}
+        aria-label={leftAction.label ?? (menuAction ? t("nav.openMenuAriaLabel") : t("nav.backAriaLabel"))}
       >
         {menuAction ? <Menu aria-hidden="true" size={20} strokeWidth={2.4} /> : null}
         {!menuAction ? <ChevronLeft aria-hidden="true" size={20} strokeWidth={2.4} /> : null}

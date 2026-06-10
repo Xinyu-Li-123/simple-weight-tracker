@@ -1,6 +1,7 @@
 import { db } from "@/db/db";
 import { isWeightPlan } from "@/db/weightPlan";
 import { CURRENT_BACKUP_SCHEMA_VERSION } from "@/export/exportJson";
+import { E } from "@/i18n/errorCodes";
 import type { WeightPlan } from "@/types/plan";
 import type { WeightEntry } from "@/types/weight";
 
@@ -36,23 +37,23 @@ export async function importJsonBackupText(text: string): Promise<ImportJsonResu
   const parsed = JSON.parse(text) as BackupFile;
 
   if (parsed.app !== "simple-weight-tracker" || parsed.schemaVersion !== CURRENT_BACKUP_SCHEMA_VERSION) {
-    throw new Error("Unsupported backup file. Export a new backup from the latest app version.");
+    throw new Error(E.BACKUP_UNSUPPORTED);
   }
 
   if (!Array.isArray(parsed.entries)) {
-    throw new Error("Backup entries are missing or invalid.");
+    throw new Error(E.BACKUP_INVALID_ENTRIES);
   }
 
   if (!parsed.entries.every(isWeightEntry)) {
-    throw new Error("Backup contains invalid entries.");
+    throw new Error(E.BACKUP_INVALID_ENTRIES);
   }
 
   if (!("plan" in parsed)) {
-    throw new Error("Backup plan field is missing.");
+    throw new Error(E.BACKUP_MISSING_PLAN);
   }
 
   if (parsed.plan !== null && !isWeightPlan(parsed.plan)) {
-    throw new Error("Backup contains an invalid plan.");
+    throw new Error(E.BACKUP_INVALID_PLAN);
   }
 
   const entries = parsed.entries as WeightEntry[];

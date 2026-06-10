@@ -1,5 +1,6 @@
 import type { WeightPhase } from "@/domain/plan";
 import type { WeeklyWeightStats } from "@/domain/weightStats";
+import { i18n } from "@/i18n";
 
 export type TrendLabel = "continue_logging" | "continue" | "adjust" | "ease_up";
 
@@ -11,19 +12,13 @@ export type TrendResult = {
   weeklyLossPct: number | null;
 };
 
-export const trendLabelText: Record<TrendLabel, string> = {
-  continue_logging: "Continue logging",
-  continue: "Continue",
-  adjust: "Adjust",
-  ease_up: "Ease up",
-};
+export function getTrendLabelText(label: TrendLabel): string {
+  return i18n.t(`trend.${label}`);
+}
 
-export const trendLabelDescription: Record<TrendLabel, string> = {
-  continue_logging: "Log more weights before judging the trend.",
-  continue: "Your current trend is within the plan range.",
-  adjust: "Weight is not falling enough for this phase.",
-  ease_up: "Weight is falling faster than the conservative range.",
-};
+export function getTrendLabelDescription(label: TrendLabel): string {
+  return i18n.t(`trend.${label}Desc`);
+}
 
 export function getTrendResult(input: {
   stats: WeeklyWeightStats;

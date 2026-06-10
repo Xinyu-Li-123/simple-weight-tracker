@@ -1,3 +1,5 @@
+import { useTranslation } from "@/i18n";
+
 type TabItem<T extends string> = {
   id: T;
   label: string;
@@ -10,8 +12,10 @@ type Props<T extends string> = {
 };
 
 export function TopTabs<T extends string>({ tabs, activeTab, onTabChange }: Props<T>) {
+  const { t } = useTranslation();
+
   return (
-    <nav className="top-tabs" aria-label="Page sections">
+    <nav className="top-tabs" aria-label={t("tabs.pageSectionsAriaLabel")}>
       {tabs.map((tab) => (
         <button
           key={tab.id}

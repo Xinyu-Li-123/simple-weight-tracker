@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "@/i18n";
+import { E } from "@/i18n/errorCodes";
 import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 import { generateMilestones } from "@/domain/milestones";
-import { activityLevelDescriptions, activityLevelLabels, type ActivityLevel, type Sex, type WeightPlan, type WeightPlanInput } from "@/types/plan";
+import { getActivityLevelDescription, getActivityLevelLabel, type ActivityLevel, type Sex, type WeightPlan, type WeightPlanInput } from "@/types/plan";
 
 type Props = {
   plan: WeightPlan | null;
@@ -12,6 +14,8 @@ type Props = {
 
 const defaultActivityLevel: ActivityLevel = "sedentary";
 const defaultSex: Sex = "male";
+const allActivityLevels: ActivityLevel[] = ["sedentary", "light", "moderate", "active"];
+const allSexes: Sex[] = ["male", "female"];
 
 export function PlanPage({ plan, onOpenSidebar, onSavePlan, onRequestDeletePlan }: Props) {
   return (
@@ -29,6 +33,7 @@ type PlanEditorProps = {
 };
 
 function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) {
+  const { t } = useTranslation();
   const [startWeightKg, setStartWeightKg] = useState(() => plan?.startWeightKg.toString() ?? "");
   const [targetWeightKg, setTargetWeightKg] = useState(() => plan?.targetWeightKg.toString() ?? "");
   const [heightCm, setHeightCm] = useState(() => plan?.heightCm.toString() ?? "");
@@ -76,7 +81,7 @@ function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) 
     try {
       await onSavePlan(input);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not save plan.");
+      setError(caught instanceof Error ? caught.message : t("toast.couldNotSavePlan"));
     } finally {
       setBusy(false);
     }
@@ -85,78 +90,79 @@ function PlanEditor({ plan, onSavePlan, onRequestDeletePlan }: PlanEditorProps) 
   return (
     <>
       <section className="card plan-intro-card">
-        <h2>{plan ? "Weight plan" : "Set up your plan"}</h2>
+        <h2>{plan ? t("plan.title") : t("plan.setUpTitle")}</h2>
         <p className="muted">
-          The plan stores your route, milestones, and conservative energy reference. Daily use still only requires body weight.
+          {t("plan.intro")}
         </p>
       </section>
 
       <form className="card plan-form" onSubmit={handleSubmit}>
         <div className="plan-form__grid">
           <label>
-            Start weight (kg)
-            <input inputMode="decimal" value={startWeightKg} onChange={(event) => setStartWeightKg(event.target.value)} placeholder="121" required />
+            {t("plan.startWeight")}
+            <input inputMode="decimal" value={startWeightKg} onChange={(event) => setStartWeightKg(event.target.value)} placeholder={t("plan.startWeightPlaceholder")} required />
           </label>
           <label>
-            Target weight (kg)
-            <input inputMode="decimal" value={targetWeightKg} onChange={(event) => setTargetWeightKg(event.target.value)} placeholder="80" required />
+            {t("plan.targetWeight")}
+            <input inputMode="decimal" value={targetWeightKg} onChange={(event) => setTargetWeightKg(event.target.value)} placeholder={t("plan.targetWeightPlaceholder")} required />
           </label>
           <label>
-            Height (cm)
-            <input inputMode="numeric" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} placeholder="175" required />
+            {t("plan.height")}
+            <input inputMode="numeric" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} placeholder={t("plan.heightPlaceholder")} required />
           </label>
           <label>
-            Age
-            <input inputMode="numeric" value={age} onChange={(event) => setAge(event.target.value)} placeholder="25" required />
+            {t("plan.age")}
+            <input inputMode="numeric" value={age} onChange={(event) => setAge(event.target.value)} placeholder={t("plan.agePlaceholder")} required />
           </label>
           <label>
-            Sex
+            {t("plan.sex")}
             <select value={sex} onChange={(event) => setSex(event.target.value as Sex)}>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
+              {allSexes.map((value) => (
+                <option key={value} value={value}>{t(`plan.${value}`)}</option>
+              ))}
             </select>
           </label>
           <label>
-            Activity level
+            {t("plan.activity")}
             <select value={activityLevel} onChange={(event) => setActivityLevel(event.target.value as ActivityLevel)}>
-              {Object.entries(activityLevelLabels).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+              {allActivityLevels.map((value) => (
+                <option key={value} value={value}>{getActivityLevelLabel(value)}</option>
               ))}
             </select>
           </label>
         </div>
 
-        <p className="muted plan-form__hint">{activityLevelDescriptions[activityLevel]}</p>
+        <p className="muted plan-form__hint">{getActivityLevelDescription(activityLevel)}</p>
 
         <label>
-          Milestones (kg)
+          {t("plan.milestones")}
           <textarea
             rows={3}
             value={milestonesText}
             onChange={(event) => setMilestonesText(event.target.value)}
-            placeholder="115, 110, 107, 100, 95, 92, 90, 85, 80"
+            placeholder={t("plan.milestonesPlaceholder")}
           />
         </label>
 
         <div className="milestone-preview" aria-live="polite">
-          <strong>Auto-generated milestones</strong>
+          <strong>{t("plan.generatedMilestones")}</strong>
           {generatedMilestones.length > 0 ? (
             <span>{generatedMilestones.join(" → ")}</span>
           ) : (
-            <span className="muted">Enter start, target, and height to generate milestones.</span>
+            <span className="muted">{t("plan.enterToGenerate")}</span>
           )}
         </div>
 
         {error ? <p className="form-error">{error}</p> : null}
 
         <div className="plan-form__actions">
-          <button type="submit" disabled={busy}>{busy ? "Saving..." : plan ? "Save plan" : "Create plan"}</button>
+          <button type="submit" disabled={busy}>{busy ? t("common.saving") : plan ? t("plan.savePlan") : t("plan.createPlan")}</button>
           <button type="button" className="secondary" onClick={fillGeneratedMilestones} disabled={generatedMilestones.length === 0 || busy}>
-            Use generated
+            {t("plan.useGenerated")}
           </button>
           {plan ? (
             <button type="button" className="ghost ghost-danger plan-form__delete" onClick={onRequestDeletePlan} disabled={busy}>
-              Delete plan
+              {t("plan.deletePlan")}
             </button>
           ) : null}
         </div>
@@ -184,13 +190,13 @@ function parsePlanInput(input: {
     .filter(Boolean)
     .map(Number);
 
-  if (!Number.isFinite(startWeightKg) || startWeightKg <= 0) return "Enter a valid start weight.";
-  if (!Number.isFinite(targetWeightKg) || targetWeightKg <= 0) return "Enter a valid target weight.";
-  if (startWeightKg <= targetWeightKg) return "Target weight must be lower than start weight.";
-  if (!Number.isFinite(heightCm) || heightCm <= 0) return "Enter a valid height.";
-  if (!Number.isFinite(age) || age <= 0) return "Enter a valid age.";
+  if (!Number.isFinite(startWeightKg) || startWeightKg <= 0) return E.INVALID_START_WEIGHT;
+  if (!Number.isFinite(targetWeightKg) || targetWeightKg <= 0) return E.INVALID_TARGET_WEIGHT;
+  if (startWeightKg <= targetWeightKg) return E.TARGET_NOT_LOWER;
+  if (!Number.isFinite(heightCm) || heightCm <= 0) return E.INVALID_HEIGHT;
+  if (!Number.isFinite(age) || age <= 0) return E.INVALID_AGE;
   if (input.milestonesText.trim() && milestonesKg.some((weightKg) => !Number.isFinite(weightKg))) {
-    return "Milestones must be numbers separated by commas.";
+    return E.MILESTONES_INVALID;
   }
 
   return {

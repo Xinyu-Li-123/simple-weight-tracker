@@ -1,4 +1,6 @@
 import type { WeightEntry } from "@/types/weight";
+import { i18n } from "@/i18n";
+import { getLanguageConfig } from "@/i18n/languages";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -302,7 +304,9 @@ function getMonthTickStep(range: TrendRange, rangeStart: number, rangeEnd: numbe
 }
 
 function formatMonth(timestamp: number): string {
-  return new Date(timestamp).toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+  const langConfig = getLanguageConfig(i18n.language);
+  const localeTag = langConfig?.intlLocale ?? langConfig?.code ?? "en";
+  return new Date(timestamp).toLocaleString(localeTag, { month: "short", timeZone: "UTC" });
 }
 
 function formatShortDate(timestamp: number): string {

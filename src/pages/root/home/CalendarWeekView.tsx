@@ -1,4 +1,5 @@
-import { useMemo } from "react"; import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   startOfWeek,
   endOfWeek,
@@ -8,6 +9,8 @@ import {
   subWeeks,
   format,
 } from "date-fns";
+import { useTranslation } from "@/i18n";
+import { getLanguageConfig } from "@/i18n/languages";
 import type { WeightEntry } from "@/types/weight";
 
 type Props = {
@@ -23,6 +26,9 @@ function toDateStr(date: Date): string {
 }
 
 export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCreateForDate }: Props) {
+  const { t, i18n } = useTranslation();
+  const langConfig = getLanguageConfig(i18n.language);
+  const locale = langConfig?.dateFnsLocale;
   const today = useMemo(() => new Date(), []);
 
   const entryByDate = useMemo(() => {
@@ -42,8 +48,8 @@ export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCre
   const weekLabel = useMemo(() => {
     const weekStart = days[0];
     const weekEnd = days[6];
-    return `${format(weekStart, "MMM d")} – ${format(weekEnd, "MMM d, yyyy")}`;
-  }, [days]);
+    return `${format(weekStart, "MMM d", { locale })} – ${format(weekEnd, "MMM d, yyyy", { locale })}`;
+  }, [days, locale]);
 
   return (
     <div className="calendar calendar-week">
@@ -51,7 +57,7 @@ export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCre
         <button
           type="button"
           className="calendar-week__nav-button"
-          aria-label="Previous week"
+          aria-label={t("calendar.prevWeek")}
           onClick={() => onNavigate(subWeeks(week, 1))}
         >
           <ChevronLeft size={16} strokeWidth={2.4} />
@@ -60,13 +66,13 @@ export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCre
         <button
           type="button"
           className="calendar-week__nav-button"
-          aria-label="Next week"
+          aria-label={t("calendar.nextWeek")}
           onClick={() => onNavigate(addWeeks(week, 1))}
         >
           <ChevronRight size={16} strokeWidth={2.4} />
         </button>
         <button type="button" className="calendar-week__today-button" onClick={() => onNavigate(new Date())}>
-          Today
+          {t("calendar.today")}
         </button>
       </div>
       <div className="calendar-week__days">
@@ -83,12 +89,16 @@ export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCre
             .filter(Boolean)
             .join(" ");
 
+          const weightText = entry
+            ? t("calendar.cellAriaWeight", { weight: entry.weight })
+            : "";
+
           return (
             <button
               key={dateStr}
               type="button"
               className={classes}
-              aria-label={`${dateStr}${entry ? `, ${entry.weight} kg` : ", no entry"}`}
+              aria-label={t("calendar.cellAriaLabel", { date: dateStr, weight: weightText })}
               onClick={() => {
                 if (entry) {
                   onOpenEntry(entry);
@@ -97,12 +107,12 @@ export function CalendarWeekView({ entries, week, onNavigate, onOpenEntry, onCre
                 }
               }}
             >
-              <span className="calendar-week__day-name">{format(day, "EEE")}</span>
-              <span className="calendar-week__day-date">{format(day, "d")}</span>
+              <span className="calendar-week__day-name">{format(day, "EEE", { locale })}</span>
+              <span className="calendar-week__day-date">{format(day, "d", { locale })}</span>
               {entry ? (
                 <span className="calendar-week__day-weight">{entry.weight} kg</span>
               ) : (
-                <span className="calendar-week__day-empty">—</span>
+                <span className="calendar-week__day-empty">{t("calendar.noEntry")}</span>
               )}
             </button>
           );

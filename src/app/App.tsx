@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation, i18n, tUnsafe, existsUnsafe } from "@/i18n";
 import { BottomNav } from "@/components/BottomNav";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { RecordSheet } from "@/components/RecordSheet";
@@ -40,7 +41,15 @@ type ConfirmationRequest = {
   onConfirm: () => Promise<boolean>;
 };
 
+function translateError(error: unknown, fallbackKey: string): string {
+  if (!(error instanceof Error) || !error.message.trim()) return tUnsafe(fallbackKey);
+  const msg = error.message;
+  if (existsUnsafe(msg)) return tUnsafe(msg);
+  return msg;
+}
+
 export function App() {
+  const { t } = useTranslation();
   const [rootPage, setRootPage] = useState<RootPageId>("home");
   const [utilityPage, setUtilityPage] = useState<UtilityPageId | null>(null);
   const [recordSheetState, setRecordSheetState] = useState<RecordSheetState | null>(null);
@@ -119,15 +128,10 @@ export function App() {
       await upsertWeightEntry(input);
       setStatus(await requestPersistentStorage());
       await refresh();
-      pushToast({ message: "Saved locally.", variant: "success" });
+      pushToast({ message: t("toast.savedLocally"), variant: "success" });
       setRecordSheetState(null);
     } catch (error) {
-      const message =
-        error instanceof Error && error.message.trim()
-          ? error.message
-          : "Could not save entry.";
-
-      pushToast({ message, variant: "error" });
+      pushToast({ message: translateError(error, "toast.saveFailed"), variant: "error" });
     }
   }
 
@@ -136,15 +140,10 @@ export function App() {
       await upsertWeightEntry(input);
       setStatus(await requestPersistentStorage());
       await refresh();
-      pushToast({ message: "Record updated.", variant: "success" });
+      pushToast({ message: t("toast.recordUpdated"), variant: "success" });
       setRecordSheetState(null);
     } catch (error) {
-      const message =
-        error instanceof Error && error.message.trim()
-          ? error.message
-          : "Could not update record.";
-
-      pushToast({ message, variant: "error" });
+      pushToast({ message: translateError(error, "toast.updateFailed"), variant: "error" });
     }
   }
 
@@ -152,16 +151,11 @@ export function App() {
     try {
       await deleteWeightEntry(id);
       await refresh();
-      pushToast({ message: "Record deleted.", variant: "success" });
+      pushToast({ message: t("toast.recordDeleted"), variant: "success" });
       setRecordSheetState((current) => (current?.entry?.id === id ? null : current));
       return true;
     } catch (error) {
-      const message =
-        error instanceof Error && error.message.trim()
-          ? error.message
-          : "Could not delete record.";
-
-      pushToast({ message, variant: "error" });
+      pushToast({ message: translateError(error, "toast.deleteFailed"), variant: "error" });
       return false;
     }
   }
@@ -173,14 +167,14 @@ export function App() {
     if (kind === "csv") downloadTextFile(`weight-log-${date}.csv`, createCsv(current), "text/csv");
     if (kind === "md") downloadTextFile(`weight-log-${date}.md`, createMarkdown(current), "text/markdown");
     if (kind === "txt") downloadTextFile(`weight-log-${date}.txt`, createTxt(current), "text/plain");
-    pushToast({ message: `Exported ${kind.toUpperCase()}.`, variant: "success" });
+    pushToast({ message: t("toast.exported", { format: kind.toUpperCase() }), variant: "success" });
   }
 
   async function handleImport(text: string) {
     setConfirmation({
-      title: "Import backup and replace current data?",
-      description: "This will permanently replace your current history and plan with the contents of the selected backup.",
-      confirmLabel: "Import and replace",
+      title: t("confirm.importTitle"),
+      description: t("confirm.importDesc"),
+      confirmLabel: t("confirm.importButton"),
       tone: "danger",
       onConfirm: () => handleConfirmImport(text),
     });
@@ -191,17 +185,15 @@ export function App() {
       const result = await importJsonBackupText(text);
       await refresh();
       pushToast({
-        message: `Restored ${result.entriesCount} entries${result.importedPlan ? " and plan" : ""}.`,
+        message: t("toast.restored", {
+          count: result.entriesCount,
+          plan: result.importedPlan ? t("toast.restoredPlan") : "",
+        }),
         variant: "success",
       });
       return true;
     } catch (error) {
-      const message =
-        error instanceof Error && error.message.trim()
-          ? error.message
-          : "Import failed.";
-
-      pushToast({ message, variant: "error" });
+      pushToast({ message: translateError(error, "toast.importFailed"), variant: "error" });
       return false;
     }
   }
@@ -210,22 +202,17 @@ export function App() {
   async function handleSavePlan(input: WeightPlanInput) {
     await saveWeightPlan(input);
     await refresh();
-    pushToast({ message: "Plan saved.", variant: "success" });
+    pushToast({ message: t("toast.planSaved"), variant: "success" });
   }
 
   async function handleDeletePlan(): Promise<boolean> {
     try {
       await deleteWeightPlan();
       await refresh();
-      pushToast({ message: "Plan deleted.", variant: "success" });
+      pushToast({ message: t("toast.planDeleted"), variant: "success" });
       return true;
     } catch (error) {
-      const message =
-        error instanceof Error && error.message.trim()
-          ? error.message
-          : "Could not delete plan.";
-
-      pushToast({ message, variant: "error" });
+      pushToast({ message: translateError(error, "toast.deletePlanFailed"), variant: "error" });
       return false;
     }
   }
@@ -255,6 +242,14 @@ export function App() {
     }));
   }
 
+  function handleChangeLanguage(language: string) {
+    setAppPreferences((current) => ({
+      ...current,
+      language,
+    }));
+    void i18n.changeLanguage(language);
+  }
+
   function handleNavigate(page: RootPageId) {
     setRootPage(page);
     setUtilityPage(null);
@@ -267,9 +262,9 @@ export function App() {
 
   function requestDeleteEntry(entry: WeightEntry) {
     setConfirmation({
-      title: "Delete record?",
-      description: `Delete the record for ${entry.date} at ${entry.weight} kg? This cannot be undone.`,
-      confirmLabel: "Delete record",
+      title: t("confirm.deleteRecord"),
+      description: t("confirm.deleteRecordDesc", { date: entry.date, weight: entry.weight }),
+      confirmLabel: t("confirm.deleteRecordButton"),
       tone: "danger",
       onConfirm: () => handleDeleteEntry(entry.id),
     });
@@ -277,9 +272,9 @@ export function App() {
 
   function requestDeletePlan() {
     setConfirmation({
-      title: "Delete plan?",
-      description: "Delete your current weight plan and milestones? This cannot be undone.",
-      confirmLabel: "Delete plan",
+      title: t("confirm.deletePlan"),
+      description: t("confirm.deletePlanDesc"),
+      confirmLabel: t("confirm.deletePlanButton"),
       tone: "danger",
       onConfirm: handleDeletePlan,
     });
@@ -337,8 +332,10 @@ export function App() {
         {utilityPage === "settings" ? (
           <SettingsPage
             timezonePreference={appPreferences.timezone}
+            language={appPreferences.language}
             onBack={() => setUtilityPage(null)}
             onChangeTimezonePreference={handleChangeTimezonePreference}
+            onChangeLanguage={handleChangeLanguage}
           />
         ) : null}
         {utilityPage === "backup-export" ? (
@@ -375,7 +372,7 @@ export function App() {
         open={confirmOpen}
         title={confirmation?.title ?? ""}
         description={confirmation?.description ?? ""}
-        confirmLabel={confirmation?.confirmLabel ?? "Confirm"}
+        confirmLabel={confirmation?.confirmLabel ?? t("common.confirm")}
         cancelLabel={confirmation?.cancelLabel}
         tone={confirmation?.tone}
         busy={confirmBusy}

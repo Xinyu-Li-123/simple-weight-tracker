@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "@/i18n";
 import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 import { TopTabs } from "@/components/navigation/TopTabs";
 import type { DashboardPreferences, HistoryPreferences } from "@/preferences/types";
@@ -8,11 +9,6 @@ import { DashboardTab } from "@/pages/root/home/DashboardTab";
 import { HistoryTab } from "@/pages/root/home/HistoryTab";
 
 type HomeTabId = "dashboard" | "history";
-
-const homeTabs: Array<{ id: HomeTabId; label: string }> = [
-  { id: "dashboard", label: "Dashboard" },
-  { id: "history", label: "History" },
-];
 
 type Props = {
   entries: WeightEntry[];
@@ -45,7 +41,13 @@ export function HomePage({
   onRequestDeleteEntry,
   onCreateForDate,
 }: Props) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<HomeTabId>("dashboard");
+
+  const homeTabs: Array<{ id: HomeTabId; label: string }> = [
+    { id: "dashboard", label: t("tabs.dashboard") },
+    { id: "history", label: t("tabs.history") },
+  ];
 
   return (
     <>

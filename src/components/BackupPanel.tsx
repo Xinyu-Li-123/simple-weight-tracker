@@ -1,4 +1,5 @@
 import { ChangeEvent, useRef } from "react";
+import { useTranslation } from "@/i18n";
 
 type Props = {
   onExportJson: () => Promise<void>;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function BackupPanel({ onExportJson, onExportCsv, onExportMarkdown, onExportTxt, onImportJson }: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleImport(event: ChangeEvent<HTMLInputElement>) {
@@ -20,13 +22,13 @@ export function BackupPanel({ onExportJson, onExportCsv, onExportMarkdown, onExp
 
   return (
     <section className="card backup-actions">
-      <h2>Backup and export</h2>
-      <button onClick={onExportJson}>Export JSON backup</button>
-      <button onClick={onExportCsv}>Export CSV</button>
-      <button onClick={onExportMarkdown}>Export Markdown</button>
-      <button onClick={onExportTxt}>Export TXT</button>
+      <h2>{t("backup.title")}</h2>
+      <button onClick={onExportJson}>{t("backup.exportJson")}</button>
+      <button onClick={onExportCsv}>{t("backup.exportCsv")}</button>
+      <button onClick={onExportMarkdown}>{t("backup.exportMarkdown")}</button>
+      <button onClick={onExportTxt}>{t("backup.exportTxt")}</button>
       <button className="ghost-danger backup-actions__import" onClick={() => inputRef.current?.click()}>
-        Import and replace from JSON backup
+        {t("backup.import")}
       </button>
       <input ref={inputRef} type="file" accept="application/json,.json" hidden onChange={handleImport} />
     </section>

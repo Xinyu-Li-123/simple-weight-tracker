@@ -1,4 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslation } from "@/i18n";
 import type { WeightEntry } from "@/types/weight";
 
 type Props = {
@@ -20,6 +21,7 @@ export function WeightRecordCard({
   noteExpanded = false,
   className,
 }: Props) {
+  const { t } = useTranslation();
   const classes = ["record-card", className].filter(Boolean).join(" ");
 
   return (
@@ -50,7 +52,7 @@ export function WeightRecordCard({
       {(onEdit || onDelete) ? (
         <div className="record-card__actions">
           {onEdit ? (
-            <button type="button" className="ghost record-card__icon-button" onClick={onEdit} aria-label={`Edit record for ${entry.date}`}>
+            <button type="button" className="ghost record-card__icon-button" onClick={onEdit} aria-label={t("record.editAriaLabel", { date: entry.date })}>
               <Pencil aria-hidden="true" size={16} strokeWidth={2.2} />
             </button>
           ) : null}
@@ -59,7 +61,7 @@ export function WeightRecordCard({
               type="button"
               className="ghost ghost-danger record-card__icon-button record-card__icon-button--danger"
               onClick={onDelete}
-              aria-label={`Delete record for ${entry.date}`}
+              aria-label={t("record.deleteAriaLabel", { date: entry.date })}
             >
               <Trash2 aria-hidden="true" size={16} strokeWidth={2.2} />
             </button>

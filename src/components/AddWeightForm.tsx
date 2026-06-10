@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from "react";
+import { useTranslation } from "@/i18n";
 import { MAX_WEIGHT_ENTRY_NOTE_LENGTH } from "@/db/weightEntryValidation";
 
 export type WeightEntryDraft = {
@@ -28,6 +29,7 @@ export function AddWeightForm({
   selectWeightOnMount = false,
   defaultDate,
 }: Props) {
+  const { t } = useTranslation();
   const [date, setDate] = useState(initialValue?.date ?? defaultDate);
   const [weight, setWeight] = useState(initialValue?.weight?.toString() ?? "");
   const [note, setNote] = useState(initialValue?.note ?? "");
@@ -63,10 +65,9 @@ export function AddWeightForm({
   }
 
   return (
-    // Set form bg color to transparent, b/c some weird Firefox quirk makes the bottom left corner not rounded like other corners
     <form className="card form" style={{ backgroundColor: 'rgba(0,0,0,0)' }} onSubmit={handleSubmit}>
       <label className="form-field">
-        Date
+        {t("record.date")}
         <input
           type="date"
           value={date}
@@ -76,25 +77,25 @@ export function AddWeightForm({
         />
       </label>
       <label className={!isView ? "form-field" : "form-field form-field--readonly"}>
-        Weight (kg)
+        {t("record.weight")}
         <input
           ref={weightInputRef}
           inputMode="decimal"
           value={weight}
           onChange={(event) => setWeight(event.target.value)}
-          placeholder="68.4"
+          placeholder={t("record.weightPlaceholder")}
           required
           readOnly={isView}
           aria-readonly={isView}
         />
       </label>
       <label className={!isView ? "form-field" : "form-field form-field--readonly"}>
-        Note
+        {t("record.note")}
         <textarea
           rows={3}
           value={note}
           onChange={(event) => setNote(event.target.value)}
-          placeholder="optional"
+          placeholder={t("record.notePlaceholder")}
           maxLength={MAX_WEIGHT_ENTRY_NOTE_LENGTH}
           readOnly={isView}
           aria-readonly={isView}
@@ -102,9 +103,9 @@ export function AddWeightForm({
       </label>
       {!isView ? (
         <div className="form__actions">
-          <button type="submit" disabled={busy}>{busy ? "Saving..." : isCreate ? "Save" : "Save"}</button>
+          <button type="submit" disabled={busy}>{busy ? t("common.saving") : t("common.save")}</button>
           {!isCreate && onCancel ? (
-            <button type="button" className="secondary" onClick={onCancel} disabled={busy}>Cancel</button>
+            <button type="button" className="secondary" onClick={onCancel} disabled={busy}>{t("common.cancel")}</button>
           ) : null}
         </div>
       ) : null}

@@ -12,9 +12,9 @@ import {
   subMonths,
   format,
 } from "date-fns";
+import { useTranslation } from "@/i18n";
+import { getLanguageConfig } from "@/i18n/languages";
 import type { WeightEntry } from "@/types/weight";
-
-const DAY_HEADERS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 type Props = {
   entries: WeightEntry[];
@@ -29,7 +29,15 @@ function toDateStr(date: Date): string {
 }
 
 export function CalendarMonthView({ entries, month, onNavigate, onOpenEntry, onCreateForDate }: Props) {
+  const { t, i18n } = useTranslation();
+  const langConfig = getLanguageConfig(i18n.language);
+  const locale = langConfig?.dateFnsLocale;
   const today = useMemo(() => new Date(), []);
+
+  const dayHeaders = [
+    t("calendar.mon"), t("calendar.tue"), t("calendar.wed"),
+    t("calendar.thu"), t("calendar.fri"), t("calendar.sat"), t("calendar.sun"),
+  ];
 
   const entryByDate = useMemo(() => {
     const map = new Map<string, WeightEntry>();
@@ -53,26 +61,26 @@ export function CalendarMonthView({ entries, month, onNavigate, onOpenEntry, onC
         <button
           type="button"
           className="calendar-month__nav-button"
-          aria-label="Previous month"
+          aria-label={t("calendar.prevMonth")}
           onClick={() => onNavigate(subMonths(month, 1))}
         >
           <ChevronLeft size={16} strokeWidth={2.4} />
         </button>
-        <span className="calendar-month__nav-label">{format(month, "MMMM yyyy")}</span>
+        <span className="calendar-month__nav-label">{format(month, "MMMM yyyy", { locale })}</span>
         <button
           type="button"
           className="calendar-month__nav-button"
-          aria-label="Next month"
+          aria-label={t("calendar.nextMonth")}
           onClick={() => onNavigate(addMonths(month, 1))}
         >
           <ChevronRight size={16} strokeWidth={2.4} />
         </button>
         <button type="button" className="calendar-month__today-button" onClick={() => onNavigate(new Date())}>
-          Today
+          {t("calendar.today")}
         </button>
       </div>
       <div className="calendar-month__grid">
-        {DAY_HEADERS.map((day) => (
+        {dayHeaders.map((day) => (
           <div key={day} className="calendar-month__day-header">
             {day}
           </div>
@@ -92,13 +100,17 @@ export function CalendarMonthView({ entries, month, onNavigate, onOpenEntry, onC
             .filter(Boolean)
             .join(" ");
 
+          const weightText = entry
+            ? t("calendar.cellAriaWeight", { weight: entry.weight })
+            : "";
+
           return (
             <button
               key={dateStr}
               type="button"
               className={cellClasses}
               disabled={outside}
-              aria-label={`${dateStr}${entry ? `, ${entry.weight} kg` : ""}`}
+              aria-label={t("calendar.cellAriaLabel", { date: dateStr, weight: weightText })}
               onClick={() => {
                 if (entry) {
                   onOpenEntry(entry);
@@ -107,7 +119,7 @@ export function CalendarMonthView({ entries, month, onNavigate, onOpenEntry, onC
                 }
               }}
             >
-              <span className="calendar-month__cell-date">{format(day, "d")}</span>
+              <span className="calendar-month__cell-date">{format(day, "d", { locale })}</span>
               {entry ? <span className="calendar-month__cell-weight">{entry.weight}</span> : null}
             </button>
           );

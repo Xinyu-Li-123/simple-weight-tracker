@@ -1,3 +1,4 @@
+import { useTranslation } from "@/i18n";
 import type { StoragePersistenceStatus } from "@/pwa/storagePersistence";
 
 type Props = {
@@ -12,22 +13,24 @@ function formatBytes(value: number | null) {
 }
 
 export function StorageStatusCard({ standalone, status, onRequest }: Props) {
+  const { t } = useTranslation();
+
   return (
     <section className="card">
-      <h2>Data safety</h2>
+      <h2>{t("dataSafety.title")}</h2>
       <dl className="status-grid">
-        <dt>Run mode</dt>
-        <dd>{standalone ? "Home Screen PWA" : "Safari tab / browser"}</dd>
-        <dt>Persistent storage</dt>
-        <dd>{status?.persisted ? "Enabled" : status?.supported ? "Not enabled" : "Not supported"}</dd>
-        <dt>Usage</dt>
+        <dt>{t("dataSafety.runMode")}</dt>
+        <dd>{standalone ? t("dataSafety.pwa") : t("dataSafety.browser")}</dd>
+        <dt>{t("dataSafety.persistentStorage")}</dt>
+        <dd>{status?.persisted ? t("dataSafety.enabled") : status?.supported ? t("dataSafety.notEnabled") : t("dataSafety.notSupported")}</dd>
+        <dt>{t("dataSafety.usage")}</dt>
         <dd>{formatBytes(status?.usage ?? null)}</dd>
-        <dt>Quota</dt>
+        <dt>{t("dataSafety.quota")}</dt>
         <dd>{formatBytes(status?.quota ?? null)}</dd>
       </dl>
-      {!standalone ? <p className="warning">For real use, add this app to the iPhone Home Screen and open it from there.</p> : null}
-      {!status?.persisted ? <p className="warning">Persistent storage is not active. Export JSON backups before changing device, deleting the app, or clearing website data.</p> : null}
-      <button type="button" onClick={onRequest}>Check / request persistent storage</button>
+      {!standalone ? <p className="warning">{t("dataSafety.addToHomeScreen")}</p> : null}
+      {!status?.persisted ? <p className="warning">{t("dataSafety.persistenceWarning")}</p> : null}
+      <button type="button" onClick={onRequest}>{t("dataSafety.checkPersist")}</button>
     </section>
   );
 }

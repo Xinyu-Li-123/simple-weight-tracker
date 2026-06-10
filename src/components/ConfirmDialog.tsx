@@ -1,3 +1,5 @@
+import { useTranslation } from "@/i18n";
+
 type Props = {
   open: boolean;
   title: string;
@@ -15,12 +17,14 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = "Cancel",
+  cancelLabel,
   tone = "danger",
   busy = false,
   onCancel,
   onConfirm,
 }: Props) {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   return (
@@ -38,10 +42,10 @@ export function ConfirmDialog({
         </div>
         <div className="confirm-dialog__actions">
           <button type="button" className="secondary" onClick={onCancel} disabled={busy}>
-            {cancelLabel}
+            {cancelLabel ?? t("common.cancel")}
           </button>
           <button type="button" className={tone === "danger" ? "danger" : undefined} onClick={() => void onConfirm()} disabled={busy}>
-            {busy ? "Working..." : confirmLabel}
+            {busy ? t("common.working") : confirmLabel}
           </button>
         </div>
       </section>

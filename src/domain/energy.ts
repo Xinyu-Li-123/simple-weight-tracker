@@ -1,4 +1,5 @@
 import type { ActivityLevel, Sex } from "@/types/plan";
+import { i18n } from "@/i18n";
 
 export const conservativeActivityMultipliers: Record<ActivityLevel, number> = {
   sedentary: 1.2,
@@ -11,17 +12,20 @@ export type BmiCategory = "underweight" | "normal" | "overweight" | "obese_1" | 
 
 export type BmiCategoryInfo = {
   category: BmiCategory;
-  label: string;
 };
 
 const BMI_CATEGORIES: { max: number; info: BmiCategoryInfo }[] = [
-  { max: 18.5, info: { category: "underweight", label: "Underweight" } },
-  { max: 25, info: { category: "normal", label: "Normal range" } },
-  { max: 30, info: { category: "overweight", label: "Overweight (Pre-obese)" } },
-  { max: 35, info: { category: "obese_1", label: "Obese (Class I)" } },
-  { max: 40, info: { category: "obese_2", label: "Obese (Class II)" } },
-  { max: Infinity, info: { category: "obese_3", label: "Obese (Class III)" } },
+  { max: 18.5, info: { category: "underweight" } },
+  { max: 25, info: { category: "normal" } },
+  { max: 30, info: { category: "overweight" } },
+  { max: 35, info: { category: "obese_1" } },
+  { max: 40, info: { category: "obese_2" } },
+  { max: Infinity, info: { category: "obese_3" } },
 ];
+
+export function getBmiCategoryLabel(category: BmiCategory): string {
+  return i18n.t(`dashboard.bmiCategory_${category}`);
+}
 
 export function getBmiCategory(bmi: number): BmiCategoryInfo {
   for (const { max, info } of BMI_CATEGORIES) {

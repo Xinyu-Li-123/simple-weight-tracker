@@ -1,3 +1,5 @@
+import { i18n } from "@/i18n";
+
 export type Sex = "male" | "female";
 
 export type ActivityLevel = "sedentary" | "light" | "moderate" | "active";
@@ -25,16 +27,10 @@ export type WeightPlanInput = {
   milestonesKg?: number[];
 };
 
-export const activityLevelLabels: Record<ActivityLevel, string> = {
-  sedentary: "Sedentary",
-  light: "Light activity",
-  moderate: "Moderate activity",
-  active: "High activity",
-};
+export function getActivityLevelLabel(level: ActivityLevel): string {
+  return i18n.t(`plan.activity_${level}`);
+}
 
-export const activityLevelDescriptions: Record<ActivityLevel, string> = {
-  sedentary: "Mostly sitting, little planned activity.",
-  light: "Some walking or light exercise.",
-  moderate: "Regular walking or light exercise most weeks.",
-  active: "Physical work or frequent structured exercise.",
-};
+export function getActivityLevelDescription(level: ActivityLevel): string {
+  return i18n.t(`plan.activity_${level}Desc`);
+}

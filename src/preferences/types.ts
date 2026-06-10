@@ -42,6 +42,7 @@ export type AppPreferences = {
   dashboard: DashboardPreferences;
   history: HistoryPreferences;
   timezone: TimezonePreference;
+  language: string;
 };
 
 export const defaultDashboardPreferences: DashboardPreferences = {
@@ -62,4 +63,5 @@ export const defaultAppPreferences: AppPreferences = {
   dashboard: defaultDashboardPreferences,
   history: defaultHistoryPreferences,
   timezone: defaultTimezonePreference,
+  language: "en",
 };

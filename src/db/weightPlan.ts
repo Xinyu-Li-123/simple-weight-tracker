@@ -1,3 +1,4 @@
+import { E } from "@/i18n/errorCodes";
 import { db } from "@/db/db";
 import { generateMilestones, normalizeMilestones } from "@/domain/milestones";
 import type { WeightPlan, WeightPlanInput } from "@/types/plan";
@@ -42,7 +43,7 @@ export async function saveWeightPlan(input: WeightPlanInput): Promise<WeightPlan
 
 export async function putWeightPlan(plan: WeightPlan): Promise<void> {
   if (!isWeightPlan(plan)) {
-    throw new Error("Invalid plan.");
+    throw new Error(E.PLAN_INVALID);
   }
 
   await db.weightPlans.put(plan);
@@ -83,19 +84,19 @@ export function isWeightPlan(value: unknown): value is WeightPlan {
 
 function validateWeightPlanInput(input: WeightPlanInput): void {
   if (!Number.isFinite(input.startWeightKg) || input.startWeightKg <= 0) {
-    throw new Error("Enter a valid start weight.");
+    throw new Error(E.INVALID_START_WEIGHT);
   }
   if (!Number.isFinite(input.targetWeightKg) || input.targetWeightKg <= 0) {
-    throw new Error("Enter a valid target weight.");
+    throw new Error(E.INVALID_TARGET_WEIGHT);
   }
   if (input.startWeightKg <= input.targetWeightKg) {
-    throw new Error("Target weight must be lower than start weight.");
+    throw new Error(E.TARGET_NOT_LOWER);
   }
   if (!Number.isFinite(input.heightCm) || input.heightCm <= 0) {
-    throw new Error("Enter a valid height.");
+    throw new Error(E.INVALID_HEIGHT);
   }
   if (!Number.isFinite(input.age) || input.age <= 0) {
-    throw new Error("Enter a valid age.");
+    throw new Error(E.INVALID_AGE);
   }
 }
 

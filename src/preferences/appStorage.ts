@@ -1,4 +1,5 @@
 import type { TrendRange } from "@/domain/weightStats";
+import { isValidLanguage } from "@/i18n/languages";
 import {
   defaultAppPreferences,
   defaultDashboardPreferences,
@@ -39,6 +40,9 @@ export function loadAppPreferences(): AppPreferences {
             ...parsed.data.history,
           },
           timezone,
+          language: isValidLanguage(parsed.data.language)
+            ? parsed.data.language
+            : defaultAppPreferences.language,
         };
       }
     }
@@ -56,6 +60,7 @@ export function loadAppPreferences(): AppPreferences {
       },
       history: defaultHistoryPreferences,
       timezone: defaultAppPreferences.timezone,
+      language: defaultAppPreferences.language,
     };
   } catch {
     return defaultAppPreferences;
@@ -91,7 +96,7 @@ function isAppPreferences(value: unknown): value is AppPreferences {
   if (!value || typeof value !== "object") return false;
 
   const preferences = value as Record<string, unknown>;
-  return isDashboardPreferences(preferences.dashboard) && isHistoryPreferences(preferences.history) && normalizeTimezonePreference(preferences.timezone) !== null;
+  return isDashboardPreferences(preferences.dashboard) && isHistoryPreferences(preferences.history) && normalizeTimezonePreference(preferences.timezone) !== null && typeof preferences.language === "string" && isValidLanguage(preferences.language);
 }
 
 function isDashboardPreferences(value: unknown): value is DashboardPreferences {

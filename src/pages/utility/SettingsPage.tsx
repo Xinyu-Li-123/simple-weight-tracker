@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from "react";
+import { useTranslation } from "@/i18n";
+import { SUPPORTED_LANGUAGES } from "@/i18n/languages";
 import { PageHeaderRow } from "@/components/navigation/PageHeaderRow";
 import {
   getBrowserTimezone,
@@ -11,11 +13,20 @@ import type { TimezonePreference } from "@/preferences/types";
 
 type Props = {
   timezonePreference: TimezonePreference;
+  language: string;
   onBack: () => void;
   onChangeTimezonePreference: (preference: TimezonePreference) => void;
+  onChangeLanguage: (language: string) => void;
 };
 
-export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePreference }: Props) {
+export function SettingsPage({
+  timezonePreference,
+  language,
+  onBack,
+  onChangeTimezonePreference,
+  onChangeLanguage,
+}: Props) {
+  const { t, i18n } = useTranslation();
   const browserTimezone = getBrowserTimezone();
   const effectiveTimezone = getTimezoneDisplayName(timezonePreference);
   const [draftTimezone, setDraftTimezone] = useState(getTimezoneDisplayName(timezonePreference));
@@ -44,7 +55,7 @@ export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePrefe
       return;
     }
 
-    setApplyError("Select an option from the dropdown or enter an exact city, timezone name, IANA timezone, or UTC offset.");
+    setApplyError(t("settings.selectFromDropdown"));
   }
 
   function handleSelectSuggestion(suggestion: TimezoneSuggestion) {
@@ -74,21 +85,44 @@ export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePrefe
     setDropdownOpen(true);
   }
 
+  function handleLanguageChange(code: string) {
+    onChangeLanguage(code);
+    void i18n.changeLanguage(code);
+  }
+
   return (
     <>
       <PageHeaderRow leftAction={{ kind: "back", onClick: onBack }} />
       <section className="card settings-card">
-        <h2>Settings</h2>
+        <h2>{t("settings.title")}</h2>
+
         <div className="settings-section">
           <div>
-            <h3>Date and Time</h3>
+            <h3>{t("settings.language")}</h3>
+          </div>
+          <label>
+            {t("settings.language")}
+            <select
+              value={language}
+              onChange={(event) => handleLanguageChange(event.target.value)}
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>{lang.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="settings-section">
+          <div>
+            <h3>{t("settings.dateTime")}</h3>
             <p className="muted">
-              This controls when the app considers a new local day to begin. It stays on this browser/device and is not included in backup import or export.
+              {t("settings.dateTimeDesc")}
             </p>
           </div>
 
           <label>
-            Timezone mode
+            {t("settings.timezoneMode")}
             <select
               value={timezonePreference.mode}
               onChange={(event) => {
@@ -106,21 +140,21 @@ export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePrefe
                 onChangeTimezonePreference({ mode: "auto" });
               }}
             >
-              <option value="auto">Use device timezone</option>
-              <option value="fixed">Use fixed timezone</option>
+              <option value="auto">{t("settings.useDevice")}</option>
+              <option value="fixed">{t("settings.useFixed")}</option>
             </select>
           </label>
 
           <dl className="status-grid">
-            <dt>Current device timezone</dt>
+            <dt>{t("settings.currentDevice")}</dt>
             <dd>{browserTimezone}</dd>
-            <dt>Effective timezone</dt>
+            <dt>{t("settings.effectiveTimezone")}</dt>
             <dd>{effectiveTimezone}</dd>
           </dl>
 
           {timezonePreference.mode === "fixed" ? (
             <label>
-              Fixed timezone
+              {t("settings.fixedTimezone")}
               <div className="settings-combobox">
                 <input
                   value={draftTimezone}
@@ -131,7 +165,7 @@ export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePrefe
                   }}
                   onFocus={handleInputFocus}
                   onBlur={handleInputBlur}
-                  placeholder="Shanghai, Pacific Time, America/Toronto, UTC+8"
+                  placeholder={t("settings.fixedPlaceholder")}
                   aria-invalid={applyError ? true : undefined}
                 />
                 {dropdownOpen && suggestions.length > 0 ? (
@@ -153,9 +187,9 @@ export function SettingsPage({ timezonePreference, onBack, onChangeTimezonePrefe
                   </div>
                 ) : null}
               </div>
-              <span className="muted">Accepted exact forms: city name, timezone name, IANA timezone, or UTC offset.</span>
+              <span className="muted">{t("settings.fixedHint")}</span>
               <button type="button" className="secondary" onClick={commitDraftTimezone} disabled={draftTimezone.trim().length === 0}>
-                Apply timezone
+                {t("settings.applyTimezone")}
               </button>
             </label>
           ) : null}

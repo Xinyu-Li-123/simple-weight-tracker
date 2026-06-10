@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useTranslation } from "@/i18n";
 import { AddWeightForm, type WeightEntryDraft, type WeightEntryFormMode } from "@/components/AddWeightForm";
 import { WeightRecordCard } from "@/components/WeightRecordCard";
 import type { WeightEntry } from "@/types/weight";
@@ -18,6 +19,8 @@ type Props = {
 };
 
 export function RecordSheet({ open, mode, entry, prefillDate, onClose, onCancelEdit, onCreate, onUpdate, onRequestDelete, onEdit, defaultDate }: Props) {
+  const { t } = useTranslation();
+
   if (!open) return null;
 
   const formValue = entry
@@ -26,7 +29,7 @@ export function RecordSheet({ open, mode, entry, prefillDate, onClose, onCancelE
       ? { date: prefillDate, weight: undefined as unknown as number, note: undefined }
       : undefined;
   const formKey = entry ? `${mode}:${entry.id}:${entry.updatedAt}` : `${mode}:${prefillDate ?? defaultDate}`;
-  const title = mode === "create" ? "Create record" : mode === "edit" ? "Edit record" : "Record details";
+  const titleKey = mode === "create" ? "record.createTitle" : mode === "edit" ? "record.editTitle" : "record.viewTitle";
 
   async function handleSave(input: WeightEntryDraft) {
     if (mode === "edit") {
@@ -47,8 +50,8 @@ export function RecordSheet({ open, mode, entry, prefillDate, onClose, onCancelE
         onClick={(event) => event.stopPropagation()}
       >
         <div className="sheet__header">
-          <h1 id="record-sheet-title">{title}</h1>
-          <button type="button" className="sheet__close" onClick={onClose} aria-label="Close record form">
+          <h1 id="record-sheet-title">{t(titleKey)}</h1>
+          <button type="button" className="sheet__close" onClick={onClose} aria-label={t("record.close")}>
             <X aria-hidden="true" size={18} strokeWidth={2.4} />
           </button>
         </div>
