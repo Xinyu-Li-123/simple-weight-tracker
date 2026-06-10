@@ -1,6 +1,6 @@
 /* Theme — swap the uncommented line to switch palette */
 /* @import "@/styles/themes/navy.css"; */
-/* @import "@/styles/themes/mint.css"; */
+/* @import "@/styles/themes/macha_latte.css"; */
 @import "@/styles/themes/nordic.css";
 
 :root {
@@ -23,9 +23,9 @@
   --color-fg-on-danger: var(--palette-surface);
   --color-fg-on-warning: var(--palette-surface);
 
-  --color-border-default: color-mix(in srgb, var(--palette-neutral) 54%, var(--palette-surface));
-  --color-border-subtle: color-mix(in srgb, var(--palette-neutral) 32%, var(--palette-surface));
-  --color-border-disabled: color-mix(in srgb, var(--palette-neutral) 38%, var(--palette-surface));
+  --color-border-default: color-mix(in srgb, var(--palette-ink) 22%, var(--palette-surface));
+  --color-border-subtle: color-mix(in srgb, var(--palette-ink) 12%, var(--palette-surface));
+  --color-border-disabled: color-mix(in srgb, var(--palette-ink) 16%, var(--palette-surface));
 
   --color-action-primary: var(--palette-ink);
   --color-action-secondary: var(--palette-accent);
