@@ -1,4 +1,4 @@
-import { useTranslation, tUnsafe } from "@/i18n";
+import { tUnsafe } from "@/i18n";
 import type { SidebarItem, UtilityPageId } from "@/app/pages";
 
 type Props = {
@@ -9,8 +9,6 @@ type Props = {
 };
 
 export function SidebarDrawer({ open, items, onClose, onSelect }: Props) {
-  const { t } = useTranslation();
-
   if (!open) return null;
 
   return (

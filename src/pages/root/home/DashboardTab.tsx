@@ -1,14 +1,14 @@
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis, type LegendPayload } from "recharts";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { getBmiCategory, getBmiCategoryLabel } from "@/domain/energy";
 import { getPlanSummary } from "@/domain/planSummary";
-import { getTrendLabelDescription, getTrendLabelText } from "@/domain/trend";
-import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
+import { getTrendLabelText, type TrendLabel, type TrendResult } from "@/domain/trend";
+import { getTrendChartData, type TrendChartData, type TrendRange, type TrendOverlayPoint } from "@/domain/weightStats";
 import { useTranslation } from "@/i18n";
-import { useToast } from "@/toast/useToast";
 import type { DashboardMode, DashboardPreferences } from "@/preferences/types";
 import type { WeightPlan } from "@/types/plan";
 import type { WeightEntry } from "@/types/weight";
 import type { TFunction } from "i18next";
+import type { PlanSummary } from "@/domain/planSummary";
 
 type Props = {
   entries: WeightEntry[];
@@ -26,7 +26,6 @@ type ActiveRange = {
 
 export function DashboardTab({ entries, plan, standalone, onOpenPlan, preferences, onChangePreferences }: Props) {
   const { t } = useTranslation();
-  const { pushToast } = useToast();
   const { progressMode, trendModePreference, trendRange } = preferences;
   const summary = getPlanSummary({ entries, plan });
   const chartData = getTrendChartData(entries, trendRange);
@@ -51,7 +50,8 @@ export function DashboardTab({ entries, plan, standalone, onOpenPlan, preference
   const recommendation = getRecommendationCopy({
     hasPlan: Boolean(plan),
     latestWeightKg: summary.latestWeightKg,
-    trendLabel: summary.trend.label,
+    weekly: summary.weekly,
+    trend: summary.trend,
     t,
   });
   const bmiLine = getBmiLine({ hasPlan: Boolean(plan), bmi: summary.metrics.bmi, t });
@@ -338,7 +338,7 @@ function HalfCircleGauge(input: {
 
 function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: ActiveRange; mode: DashboardMode }) {
   const { t } = useTranslation();
-  const { points, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
+  const { points, overlayPoints, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
 
   if (points.length === 0) return null;
 
@@ -353,15 +353,15 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
 
   const lineName = {
     daily: t("dashboard.chartWeight"),
-    movingAvg: t("dashboard.chartMovingAverage"),
     weekly: t("dashboard.chartWeeklyAverage"),
   } as const;
-
-  const legendOrder = new Map<string, number>(
-    Object.values(lineName).map((name, index) => [name, index]),
-  );
-  const sortLegendItem = (item: LegendPayload) =>
-    legendOrder.get(String(item.value)) ?? Number.MAX_SAFE_INTEGER;
+  const overlayData: TrendOverlayPoint[] | undefined = usesWeeklyAverage ? undefined : overlayPoints;
+  const legendItems = usesWeeklyAverage
+    ? [{ label: lineName.weekly, tone: "primary" as const, dashed: false }]
+    : [
+      { label: lineName.daily, tone: "primary" as const, dashed: false },
+      { label: lineName.weekly, tone: "secondary" as const, dashed: true },
+    ];
 
   function CustomXAxisTick(props: Record<string, unknown>) {
     const x = props.x as number;
@@ -373,8 +373,8 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
     if (tick.kind === "year_separator") {
       return (
         <g transform={`translate(${x},${y})`}>
-          <line x1={0} y1={-200} x2={0} y2={30} stroke="#5d6878" strokeWidth={1} strokeDasharray="2 3" />
-          <text x={15} y={18} textAnchor="middle" fill="#5d6878" fontSize={11} fontWeight={700}>
+          <line x1={0} y1={-200} x2={0} y2={30} stroke="var(--color-chart-axis)" strokeWidth={1} strokeDasharray="2 3" />
+          <text x={15} y={18} textAnchor="middle" fill="var(--color-chart-axis)" fontSize={11} fontWeight={700}>
             {tick.label}
           </text>
         </g>
@@ -383,8 +383,8 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
 
     return (
       <g transform={`translate(${x},${y})`}>
-        <line x1={0} y1={-6} x2={0} y2={0} stroke="#c4ccda" />
-        <text x={0} y={0} textAnchor="middle" fill="#5d6878" fontSize={13} fontWeight={700}>
+        <line x1={0} y1={-6} x2={0} y2={0} stroke="var(--color-chart-grid)" />
+        <text x={0} y={0} textAnchor="middle" fill="var(--color-chart-axis)" fontSize={13} fontWeight={700}>
           {tick.label}
         </text>
       </g>
@@ -394,8 +394,8 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
   return (
     <div className="chart-wrap" role="img" aria-label={t("dashboard.chartAriaLabel")}>
       <ResponsiveContainer width="100%" height={260}>
-        <LineChart data={points} margin={{ top: 18, right: 18, bottom: 36, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e3e7ed" />
+        <LineChart data={points} margin={{ top: 18, right: 18, bottom: 20, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-chart-grid)" />
           <XAxis
             dataKey="timestamp"
             type="number"
@@ -411,7 +411,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             domain={yDomain}
             ticks={yTicks}
             tickFormatter={formatWeight}
-            tick={{ fontSize: 13, fontWeight: 700, fill: "#5d6878" }}
+            tick={{ fontSize: 13, fontWeight: 700, fill: "var(--color-chart-axis)" }}
             axisLine={false}
             tickLine={false}
             width={64}
@@ -421,9 +421,9 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             name={usesWeeklyAverage ? lineName.weekly : lineName.daily}
             type="monotone"
             dataKey="weightKg"
-            stroke="#172033"
-            strokeWidth={2.2}
-            dot={{ r: 3.2, fill: "#fdfefe", stroke: "#5d6878", strokeWidth: 2 }}
+            stroke="var(--color-chart-primary)"
+            strokeWidth={2.6}
+            dot={{ r: 2.8, fill: "var(--color-bg-surface)", stroke: "var(--color-chart-primary)", strokeWidth: 1.5 }}
             isAnimationActive={false}
             activeDot={false}
             connectNulls={false}
@@ -431,11 +431,14 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
           />
           {!usesWeeklyAverage && (
             <Line
-              name={lineName.movingAvg}
-              type="monotone"
-              dataKey="movingAverageKg"
-              stroke="#5d6878"
-              strokeWidth={3.2}
+              data={overlayData}
+              name={lineName.weekly}
+              type="linear"
+              dataKey="valueKg"
+              stroke="var(--color-chart-secondary)"
+              strokeWidth={1.9}
+              strokeOpacity={0.55}
+              strokeDasharray="6 4"
               dot={false}
               isAnimationActive={false}
               activeDot={false}
@@ -443,9 +446,16 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
               zIndex={4}
             />
           )}
-          <Legend verticalAlign="bottom" height={30} wrapperStyle={{ fontSize: 12, fontWeight: 700 }} itemSorter={sortLegendItem} />
         </LineChart>
       </ResponsiveContainer>
+      <div className="chart-legend" aria-hidden="true">
+        {legendItems.map((item) => (
+          <span key={item.label} className="chart-legend__item">
+            <span className={`chart-legend__swatch chart-legend__swatch--${item.tone}${item.dashed ? " chart-legend__swatch--dashed" : ""}`} />
+            <span>{item.label}</span>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -507,7 +517,8 @@ function getProgressMeter(input: {
 function getRecommendationCopy(input: {
   hasPlan: boolean;
   latestWeightKg: number | null;
-  trendLabel: string;
+  weekly: PlanSummary["weekly"];
+  trend: TrendResult;
   t: TFunction;
 }): { title: string; detail: string } {
   const { t } = input;
@@ -526,10 +537,39 @@ function getRecommendationCopy(input: {
     };
   }
 
+  if (
+    input.weekly.enoughData &&
+    input.weekly.recentAvgKg !== null &&
+    input.weekly.previousAvgKg !== null &&
+    input.trend.minLossKg !== null &&
+    input.trend.maxLossKg !== null
+  ) {
+    const weeklyChangeKg = input.weekly.previousAvgKg - input.weekly.recentAvgKg;
+    const roundedChangeKg = Number(weeklyChangeKg.toFixed(1));
+    const changeKey =
+      roundedChangeKg > 0 ? "dashboard.weeklyChangeDown" :
+      roundedChangeKg < 0 ? "dashboard.weeklyChangeUp" :
+      "dashboard.weeklyChangeSame";
+
+    return {
+      title: getTrendLabelText(input.trend.label),
+      detail: t("dashboard.weeklySummaryDetail", {
+        avgKg: formatWeightValue(input.weekly.recentAvgKg),
+        changeText: t(changeKey, { kg: formatWeightValue(Math.abs(roundedChangeKg)) }),
+        minKg: formatWeightValue(input.trend.minLossKg),
+        maxKg: formatWeightValue(input.trend.maxLossKg),
+      }),
+    };
+  }
+
   return {
-    title: getTrendLabelText(input.trendLabel as Parameters<typeof getTrendLabelText>[0]),
-    detail: getTrendLabelDescription(input.trendLabel as Parameters<typeof getTrendLabelDescription>[0]),
+    title: getTrendLabelText(input.trend.label as TrendLabel),
+    detail: t(`trend.${input.trend.label}Desc`),
   };
+}
+
+function formatWeightValue(value: number): string {
+  return value.toFixed(1);
 }
 
 function getBmiLine(input: { hasPlan: boolean; bmi: number | null; t: TFunction }): string {
