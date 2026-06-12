@@ -63,12 +63,30 @@ export function averageWeight(entries: WeightEntry[]): number | null {
 }
 
 export function getWeeklyWeightStats(entries: WeightEntry[]): WeeklyWeightStats {
-  const descending = sortEntriesDescending(entries);
-  const recent = descending.slice(0, 7);
-  const previous = descending.slice(7, 14);
+  const ascending = sortEntriesAscending(entries);
+  const latestEntry = ascending[ascending.length - 1];
+
+  if (!latestEntry) {
+    return {
+      enoughData: false,
+      recentAvgKg: null,
+      previousAvgKg: null,
+      weeklyChangeKg: null,
+      weeklyLossKg: null,
+      weeklyLossPct: null,
+      recentEntriesCount: 0,
+      previousEntriesCount: 0,
+    };
+  }
+
+  const buckets = bucketEntriesByWeek(ascending);
+  const recentWeekStart = startOfUtcWeek(toUtcTimestamp(latestEntry.date));
+  const previousWeekStart = recentWeekStart - 7 * DAY_MS;
+  const recent = buckets.get(recentWeekStart) ?? [];
+  const previous = buckets.get(previousWeekStart) ?? [];
   const recentAvgKg = averageWeight(recent);
   const previousAvgKg = averageWeight(previous);
-  const enoughData = recent.length >= 7 && previous.length >= 7;
+  const enoughData = recent.length >= 1 && previous.length >= 1;
 
   if (!enoughData || recentAvgKg === null || previousAvgKg === null) {
     return {
@@ -97,6 +115,22 @@ export function getWeeklyWeightStats(entries: WeightEntry[]): WeeklyWeightStats 
     recentEntriesCount: recent.length,
     previousEntriesCount: previous.length,
   };
+}
+
+function bucketEntriesByWeek(entries: WeightEntry[]): Map<number, WeightEntry[]> {
+  const buckets = new Map<number, WeightEntry[]>();
+
+  for (const entry of entries) {
+    const weekStart = startOfUtcWeek(toUtcTimestamp(entry.date));
+    const bucket = buckets.get(weekStart);
+    if (bucket) {
+      bucket.push(entry);
+    } else {
+      buckets.set(weekStart, [entry]);
+    }
+  }
+
+  return buckets;
 }
 
 export function getChartPoints(entries: WeightEntry[], limit = 30): ChartPoint[] {
@@ -166,19 +200,7 @@ function buildRawPoints(entries: WeightEntry[]): ChartPoint[] {
 }
 
 function buildWeeklyAveragePoints(entries: WeightEntry[]): ChartPoint[] {
-  const buckets = new Map<number, WeightEntry[]>();
-
-  for (const entry of entries) {
-    const weekStart = startOfUtcWeek(toUtcTimestamp(entry.date));
-    const bucket = buckets.get(weekStart);
-    if (bucket) {
-      bucket.push(entry);
-    } else {
-      buckets.set(weekStart, [entry]);
-    }
-  }
-
-  return Array.from(buckets.entries())
+  return Array.from(bucketEntriesByWeek(entries).entries())
     .sort((a, b) => a[0] - b[0])
     .map(([weekStart, bucket]) => ({
       date: bucket[bucket.length - 1]?.date ?? formatIsoDate(weekStart),
@@ -191,22 +213,10 @@ function buildWeeklyAveragePoints(entries: WeightEntry[]): ChartPoint[] {
 function buildWeeklyAverageBlocks(entries: WeightEntry[], rangeStart: number, rangeEnd: number): TrendWeeklyBlock[] {
   if (entries.length === 0) return [];
 
-  const buckets = new Map<number, WeightEntry[]>();
-
-  for (const entry of entries) {
-    const weekStart = startOfUtcWeek(toUtcTimestamp(entry.date));
-    const bucket = buckets.get(weekStart);
-    if (bucket) {
-      bucket.push(entry);
-    } else {
-      buckets.set(weekStart, [entry]);
-    }
-  }
-
-  return Array.from(buckets.entries())
+  return Array.from(bucketEntriesByWeek(entries).entries())
     .sort((a, b) => a[0] - b[0])
     .flatMap(([weekStart, bucket]) => {
-    const averageKg = averageWeight(bucket);
+      const averageKg = averageWeight(bucket);
       if (averageKg === null) return [];
 
       const weekEnd = weekStart + 6 * DAY_MS;
