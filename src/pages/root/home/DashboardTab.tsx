@@ -1,8 +1,8 @@
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, ReferenceArea, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { getBmiCategory, getBmiCategoryLabel } from "@/domain/energy";
 import { getPlanSummary } from "@/domain/planSummary";
 import { getTrendLabelText, type TrendLabel, type TrendResult } from "@/domain/trend";
-import { getTrendChartData, type TrendChartData, type TrendRange, type TrendOverlayPoint } from "@/domain/weightStats";
+import { getTrendChartData, type TrendChartData, type TrendRange } from "@/domain/weightStats";
 import { useTranslation } from "@/i18n";
 import type { DashboardMode, DashboardPreferences } from "@/preferences/types";
 import type { WeightPlan } from "@/types/plan";
@@ -338,7 +338,7 @@ function HalfCircleGauge(input: {
 
 function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: ActiveRange; mode: DashboardMode }) {
   const { t } = useTranslation();
-  const { points, overlayPoints, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
+  const { points, weeklyBlocks, ticks, rangeStart, rangeEnd, usesWeeklyAverage } = data;
 
   if (points.length === 0) return null;
 
@@ -355,13 +355,13 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
     daily: t("dashboard.chartWeight"),
     weekly: t("dashboard.chartWeeklyAverage"),
   } as const;
-  const overlayData: TrendOverlayPoint[] | undefined = usesWeeklyAverage ? undefined : overlayPoints;
   const legendItems = usesWeeklyAverage
     ? [{ label: lineName.weekly, tone: "primary" as const, dashed: false }]
     : [
       { label: lineName.daily, tone: "primary" as const, dashed: false },
-      { label: lineName.weekly, tone: "secondary" as const, dashed: true },
+      { label: lineName.weekly, tone: "secondary" as const, dashed: false },
     ];
+  const yBottom = yDomain[0];
 
   function CustomXAxisTick(props: Record<string, unknown>) {
     const x = props.x as number;
@@ -395,6 +395,13 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
     <div className="chart-wrap" role="img" aria-label={t("dashboard.chartAriaLabel")}>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={points} margin={{ top: 18, right: 18, bottom: 20, left: 0 }}>
+          <defs>
+            <linearGradient id="trendWeeklyBlockFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-chart-secondary)" stopOpacity="0.24" />
+              <stop offset="55%" stopColor="var(--color-chart-secondary)" stopOpacity="0.12" />
+              <stop offset="100%" stopColor="var(--color-chart-secondary)" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-chart-grid)" />
           <XAxis
             dataKey="timestamp"
@@ -417,6 +424,38 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             width={64}
             padding={{ bottom: 20 }}
           />
+          {!usesWeeklyAverage && (
+            <>
+              {weeklyBlocks.map((block) => (
+                <ReferenceArea
+                  key={`${block.startTimestamp}-${block.endTimestamp}-fill`}
+                  x1={block.startTimestamp}
+                  x2={block.endTimestamp}
+                  y1={yBottom}
+                  y2={block.valueKg}
+                  ifOverflow="hidden"
+                  fill="url(#trendWeeklyBlockFill)"
+                  stroke="none"
+                  zIndex={1}
+                />
+              ))}
+              {weeklyBlocks.map((block) => (
+                <ReferenceLine
+                  key={`${block.startTimestamp}-${block.endTimestamp}-edge`}
+                  segment={[
+                    { x: block.startTimestamp, y: block.valueKg },
+                    { x: block.endTimestamp, y: block.valueKg },
+                  ]}
+                  ifOverflow="hidden"
+                  stroke="var(--color-chart-secondary)"
+                  strokeOpacity={0.82}
+                  strokeDasharray="5 5"
+                  strokeWidth={2}
+                  zIndex={4}
+                />
+              ))}
+            </>
+          )}
           <Line
             name={usesWeeklyAverage ? lineName.weekly : lineName.daily}
             type="monotone"
@@ -429,23 +468,6 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             connectNulls={false}
             zIndex={5}
           />
-          {!usesWeeklyAverage && (
-            <Line
-              data={overlayData}
-              name={lineName.weekly}
-              type="linear"
-              dataKey="valueKg"
-              stroke="var(--color-chart-secondary)"
-              strokeWidth={1.9}
-              strokeOpacity={0.55}
-              strokeDasharray="6 4"
-              dot={false}
-              isAnimationActive={false}
-              activeDot={false}
-              connectNulls={false}
-              zIndex={4}
-            />
-          )}
         </LineChart>
       </ResponsiveContainer>
       <div className="chart-legend" aria-hidden="true">
@@ -548,8 +570,8 @@ function getRecommendationCopy(input: {
     const roundedChangeKg = Number(weeklyChangeKg.toFixed(1));
     const changeKey =
       roundedChangeKg > 0 ? "dashboard.weeklyChangeDown" :
-      roundedChangeKg < 0 ? "dashboard.weeklyChangeUp" :
-      "dashboard.weeklyChangeSame";
+        roundedChangeKg < 0 ? "dashboard.weeklyChangeUp" :
+          "dashboard.weeklyChangeSame";
 
     return {
       title: getTrendLabelText(input.trend.label),

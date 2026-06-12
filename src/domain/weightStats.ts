@@ -22,9 +22,10 @@ export type ChartPoint = {
   timestamp: number;
 };
 
-export type TrendOverlayPoint = {
-  timestamp: number;
-  valueKg: number | null;
+export type TrendWeeklyBlock = {
+  startTimestamp: number;
+  endTimestamp: number;
+  valueKg: number;
 };
 
 export type TrendRange = "10d" | "1m" | "3m" | "6m" | "1y" | "all";
@@ -37,7 +38,7 @@ export type TrendChartTick = {
 
 export type TrendChartData = {
   points: ChartPoint[];
-  overlayPoints: TrendOverlayPoint[];
+  weeklyBlocks: TrendWeeklyBlock[];
   ticks: TrendChartTick[];
   rangeStart: number;
   rangeEnd: number;
@@ -120,7 +121,7 @@ export function getTrendChartData(entries: WeightEntry[], range: TrendRange): Tr
     const today = startOfUtcDay(Date.now());
     return {
       points: [],
-      overlayPoints: [],
+      weeklyBlocks: [],
       ticks: [],
       rangeStart: today,
       rangeEnd: today,
@@ -138,11 +139,11 @@ export function getTrendChartData(entries: WeightEntry[], range: TrendRange): Tr
   });
   const usesWeeklyAverage = range === "3m" || range === "6m" || range === "1y" || range === "all";
   const points = usesWeeklyAverage ? buildWeeklyAveragePoints(visibleEntries) : buildRawPoints(visibleEntries);
-  const overlayPoints = usesWeeklyAverage ? [] : buildWeeklyAverageOverlayPoints(visibleEntries, rangeStart, rangeEnd);
+  const weeklyBlocks = usesWeeklyAverage ? [] : buildWeeklyAverageBlocks(visibleEntries, rangeStart, rangeEnd);
 
   return {
     points,
-    overlayPoints,
+    weeklyBlocks,
     ticks: buildTrendTicks(range, rangeStart, rangeEnd),
     rangeStart,
     rangeEnd,
@@ -187,7 +188,7 @@ function buildWeeklyAveragePoints(entries: WeightEntry[]): ChartPoint[] {
     }));
 }
 
-function buildWeeklyAverageOverlayPoints(entries: WeightEntry[], rangeStart: number, rangeEnd: number): TrendOverlayPoint[] {
+function buildWeeklyAverageBlocks(entries: WeightEntry[], rangeStart: number, rangeEnd: number): TrendWeeklyBlock[] {
   if (entries.length === 0) return [];
 
   const buckets = new Map<number, WeightEntry[]>();
@@ -202,29 +203,22 @@ function buildWeeklyAverageOverlayPoints(entries: WeightEntry[], rangeStart: num
     }
   }
 
-  const points: TrendOverlayPoint[] = [];
-
-  for (const [weekStart, bucket] of Array.from(buckets.entries()).sort((a, b) => a[0] - b[0])) {
+  return Array.from(buckets.entries())
+    .sort((a, b) => a[0] - b[0])
+    .flatMap(([weekStart, bucket]) => {
     const averageKg = averageWeight(bucket);
-    if (averageKg === null) continue;
+      if (averageKg === null) return [];
 
-    const weekEnd = weekStart + 6 * DAY_MS;
-    const segmentStart = Math.max(rangeStart, weekStart);
-    const segmentEnd = Math.min(rangeEnd, weekEnd);
+      const weekEnd = weekStart + 6 * DAY_MS;
+      const blockStart = Math.max(rangeStart, weekStart);
+      const blockEnd = Math.min(rangeEnd + DAY_MS, weekEnd + DAY_MS);
 
-    points.push(
-      { timestamp: segmentStart, valueKg: averageKg },
-      { timestamp: segmentEnd, valueKg: averageKg },
-      { timestamp: segmentEnd, valueKg: null },
-    );
-  }
-
-  const lastPoint = points[points.length - 1];
-  if (lastPoint?.valueKg === null) {
-    points.pop();
-  }
-
-  return points;
+      return [{
+        startTimestamp: blockStart,
+        endTimestamp: blockEnd,
+        valueKg: averageKg,
+      }];
+    });
 }
 
 function buildTrendTicks(range: TrendRange, rangeStart: number, rangeEnd: number): TrendChartTick[] {
