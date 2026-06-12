@@ -415,6 +415,7 @@ function WeightTrendChart({ data, range, mode }: { data: TrendChartData; range: 
             axisLine={false}
             tickLine={false}
             width={64}
+            padding={{ bottom: 20 }}
           />
           <Line
             name={usesWeeklyAverage ? lineName.weekly : lineName.daily}
